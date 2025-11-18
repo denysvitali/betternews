@@ -1,8 +1,8 @@
 import StoryPageClient from './StoryPageClient';
 
 export function generateStaticParams(): { id: string }[] {
-    // Generate a placeholder page - actual data is fetched client-side
-    return [{ id: 'placeholder' }];
+    // Return empty array - all routes handled by 404 page for dynamic content
+    return [];
 }
 
 interface PageProps {
