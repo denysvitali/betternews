@@ -1,7 +1,8 @@
 import StoryPageClient from './StoryPageClient';
 
 export function generateStaticParams(): { id: string }[] {
-    return [];
+    // Generate a placeholder page - actual data is fetched client-side
+    return [{ id: 'placeholder' }];
 }
 
 interface PageProps {

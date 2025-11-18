@@ -1,7 +1,8 @@
 import UserPageClient from './UserPageClient';
 
 export function generateStaticParams(): { username: string }[] {
-    return [];
+    // Generate a placeholder page - actual data is fetched client-side
+    return [{ username: 'placeholder' }];
 }
 
 interface PageProps {
