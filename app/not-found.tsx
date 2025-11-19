@@ -10,16 +10,16 @@ export default function NotFound() {
   const pathname = usePathname();
 
   // Check if the path matches a story or user route pattern
-  const storyMatch = pathname?.match(/\/story\/\d+$/);
-  const userMatch = pathname?.match(/\/user\/[^/]+$/);
+  const storyMatch = pathname?.match(/\/story\/(\d+)$/);
+  const userMatch = pathname?.match(/\/user\/([^/]+)$/);
 
   // Render the appropriate client component for dynamic routes
-  if (storyMatch) {
-    return <StoryPageClient />;
+  if (storyMatch && storyMatch[1]) {
+    return <StoryPageClient storyId={parseInt(storyMatch[1])} />;
   }
 
-  if (userMatch) {
-    return <UserPageClient />;
+  if (userMatch && userMatch[1]) {
+    return <UserPageClient username={userMatch[1]} />;
   }
 
   // Default 404 page for actual not-found routes

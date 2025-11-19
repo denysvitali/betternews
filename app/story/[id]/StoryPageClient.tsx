@@ -15,11 +15,13 @@ import { getDomain } from "@/lib/utils";
 
 interface StoryPageClientProps {
     initialStory?: Story | null;
+    storyId?: number;
 }
 
-export default function StoryPageClient({ initialStory }: StoryPageClientProps) {
+export default function StoryPageClient({ initialStory, storyId: propStoryId }: StoryPageClientProps) {
     const params = useParams();
-    const storyId = parseInt(params?.id as string || "0");
+    const paramId = params?.id ? (Array.isArray(params.id) ? params.id[0] : params.id) : undefined;
+    const storyId = propStoryId || (paramId ? parseInt(paramId) : 0);
     const { story: fetchedStory, loading: fetching, error: fetchError } = useStory(initialStory ? 0 : storyId);
 
     const story = initialStory || fetchedStory;

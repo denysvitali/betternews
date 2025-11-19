@@ -7,10 +7,15 @@ import { UserProfile } from "@/components/UserProfile";
 import { Loader2 } from "lucide-react";
 import { Suspense } from "react";
 
-function UserPageContent() {
+interface UserPageProps {
+    username?: string;
+}
+
+function UserPageContent({ username: propUsername }: UserPageProps) {
     const params = useParams();
     const searchParams = useSearchParams();
-    const username = params?.username as string || "";
+    const paramUsername = params?.username ? (Array.isArray(params.username) ? params.username[0] : params.username) : undefined;
+    const username = propUsername || paramUsername || "";
     const tab = searchParams.get("tab") || "submissions";
 
     const { user, loading: userLoading, error: userError } = useUser(username);
@@ -58,7 +63,7 @@ function UserPageContent() {
     );
 }
 
-export default function UserPageClient() {
+export default function UserPageClient({ username }: UserPageProps) {
     return (
         <Suspense fallback={
             <div className="min-h-screen bg-neutral-50 dark:bg-black">
@@ -70,7 +75,7 @@ export default function UserPageClient() {
                 </main>
             </div>
         }>
-            <UserPageContent />
+            <UserPageContent username={username} />
         </Suspense>
     );
 }
