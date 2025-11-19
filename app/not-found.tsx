@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from "next/link";
 import StoryPageClient from './story/[id]/StoryPageClient';
@@ -9,28 +8,17 @@ import { FileQuestion, Home } from "lucide-react";
 
 export default function NotFound() {
   const pathname = usePathname();
-  const [routeType, setRouteType] = useState<'story' | 'user' | 'not-found'>('not-found');
 
-  useEffect(() => {
-    // Check if the path matches a story or user route pattern
-    const storyMatch = pathname?.match(/\/story\/\d+$/);
-    const userMatch = pathname?.match(/\/user\/[^/]+$/);
-
-    if (storyMatch) {
-      setRouteType('story');
-    } else if (userMatch) {
-      setRouteType('user');
-    } else {
-      setRouteType('not-found');
-    }
-  }, [pathname]);
+  // Check if the path matches a story or user route pattern
+  const storyMatch = pathname?.match(/\/story\/\d+$/);
+  const userMatch = pathname?.match(/\/user\/[^/]+$/);
 
   // Render the appropriate client component for dynamic routes
-  if (routeType === 'story') {
+  if (storyMatch) {
     return <StoryPageClient />;
   }
 
-  if (routeType === 'user') {
+  if (userMatch) {
     return <UserPageClient />;
   }
 
