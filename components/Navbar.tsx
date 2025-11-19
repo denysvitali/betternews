@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Newspaper } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Navbar() {
   return (
@@ -18,6 +19,7 @@ export function Navbar() {
           <Link href="/new" className="hover:text-orange-500 transition-colors">
             New
           </Link>
+          <ThemeToggle />
         </div>
       </div>
     </nav>

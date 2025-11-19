@@ -8,10 +8,6 @@ export async function generateStaticParams() {
     return [{ id: '_placeholder' }];
 }
 
-interface PageProps {
-    params: Promise<{ id: string }>;
-}
-
-export default function StoryPage(props: PageProps) {
+export default function StoryPage() {
     return <StoryPageClient />;
 }

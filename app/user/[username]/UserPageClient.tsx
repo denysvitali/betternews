@@ -5,17 +5,17 @@ import { useUser, useUserItems } from "@/lib/hooks";
 import { Navbar } from "@/components/Navbar";
 import { UserProfile } from "@/components/UserProfile";
 import { Loader2 } from "lucide-react";
+import { Suspense } from "react";
 
-export default function UserPageClient() {
+function UserPageContent() {
     const params = useParams();
     const searchParams = useSearchParams();
     const username = params?.username as string || "";
     const tab = searchParams.get("tab") || "submissions";
 
     const { user, loading: userLoading, error: userError } = useUser(username);
+    // If user exists, fetch items
     const { items, loading: itemsLoading } = useUserItems(user?.submitted || [], 30);
-
-    const loading = userLoading || itemsLoading;
 
     if (userLoading) {
         return (
@@ -47,8 +47,30 @@ export default function UserPageClient() {
         <div className="min-h-screen bg-neutral-50 dark:bg-black">
             <Navbar />
             <main className="container mx-auto max-w-4xl px-4 py-8">
-                <UserProfile user={user} items={items} activeTab={tab} loading={itemsLoading} />
+                <UserProfile 
+                    user={user} 
+                    items={items} 
+                    activeTab={tab} 
+                    loading={itemsLoading} 
+                />
             </main>
         </div>
+    );
+}
+
+export default function UserPageClient() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-neutral-50 dark:bg-black">
+                <Navbar />
+                <main className="container mx-auto max-w-4xl px-4 py-8">
+                    <div className="flex items-center justify-center py-12">
+                        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+                    </div>
+                </main>
+            </div>
+        }>
+            <UserPageContent />
+        </Suspense>
     );
 }

@@ -6,12 +6,17 @@ import { cn } from "@/lib/utils";
 interface LinkPreviewProps {
   url: string;
   className?: string;
+  detailed?: boolean;
 }
 
 export function LinkPreview({ url, className }: LinkPreviewProps) {
-  // For static export, show a simple link placeholder
-  // In the future, this could use a third-party preview service
-  const domain = new URL(url).hostname.replace('www.', '');
+  // Just extract domain
+  let domain = "";
+  try {
+    domain = new URL(url).hostname.replace('www.', '');
+  } catch {
+    domain = url;
+  }
 
   return (
     <div className={cn(
@@ -25,4 +30,3 @@ export function LinkPreview({ url, className }: LinkPreviewProps) {
     </div>
   );
 }
-

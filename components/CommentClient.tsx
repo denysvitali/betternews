@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { ChevronDown, ChevronUp, MessageSquare } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { MessageSquare, Triangle, Minus, Plus } from "lucide-react";
 import { Comment } from "@/lib/hooks";
 import Link from "next/link";
 
@@ -24,8 +23,9 @@ export function CommentClient({ comment, children }: CommentClientProps) {
         <button
           className="p-0.5 rounded hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
           onClick={() => setIsCollapsed(!isCollapsed)}
+          title={isCollapsed ? "Expand" : "Collapse"}
         >
-          {isCollapsed ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          {isCollapsed ? <Plus size={14} /> : <Minus size={14} />}
         </button>
 
         {/* Upvote button */}
@@ -33,9 +33,9 @@ export function CommentClient({ comment, children }: CommentClientProps) {
           className="p-0.5 rounded hover:bg-orange-100 dark:hover:bg-orange-950/30 transition-colors group"
           title="Upvote"
         >
-          <ChevronUp
-            size={14}
-            className="text-neutral-400 group-hover:text-orange-600 dark:group-hover:text-orange-500 transition-colors"
+          <Triangle
+            size={10}
+            className="text-neutral-400 fill-neutral-400 group-hover:text-orange-600 group-hover:fill-orange-600 dark:group-hover:text-orange-500 dark:group-hover:fill-orange-500 transition-colors"
           />
         </button>
 

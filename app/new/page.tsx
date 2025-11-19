@@ -2,12 +2,14 @@
 
 import { useSearchParams } from "next/navigation";
 import { useNewStories } from "@/lib/hooks";
+import { HNItem } from "@/lib/hn";
 import { StoryCard } from "@/components/StoryCard";
 import { Navbar } from "@/components/Navbar";
 import { Pagination } from "@/components/Pagination";
 import { Loader2 } from "lucide-react";
+import { Suspense } from "react";
 
-export default function NewStories() {
+function NewStoriesContent() {
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1");
   const { stories, loading, error } = useNewStories(page);
@@ -39,7 +41,7 @@ export default function NewStories() {
               {stories.map((story, index) => (
                 <StoryCard
                   key={story.id}
-                  story={story}
+                  story={story as unknown as HNItem}
                   index={index + ((page - 1) * 30)}
                 />
               ))}
@@ -50,5 +52,22 @@ export default function NewStories() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function NewStories() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-neutral-50 dark:bg-black">
+        <Navbar />
+        <main className="container mx-auto max-w-4xl px-4 py-8">
+           <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+          </div>
+        </main>
+      </div>
+    }>
+      <NewStoriesContent />
+    </Suspense>
   );
 }

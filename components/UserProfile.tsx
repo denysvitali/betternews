@@ -2,9 +2,11 @@
 
 import { User as UserType, Story, Comment } from "@/lib/hooks";
 import { formatDistanceToNow } from "date-fns";
-import { User, Calendar, TrendingUp, LinkIcon, MessageSquare, FileText, Loader2 } from "lucide-react";
+import { User, Calendar, TrendingUp, LinkIcon, MessageSquare, FileText } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { StorySkeleton } from "./StorySkeleton";
+import { CommentSkeleton } from "./CommentSkeleton";
 
 interface UserProfileProps {
     user: UserType;
@@ -93,69 +95,81 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
 
             {/* Content */}
             <div className="space-y-4">
-                {activeTab === "submissions" && (
-                    <>
-                        {posts.length > 0 ? (
-                            posts.map((post) => (
-                                <div
-                                    key={post.id}
-                                    className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm transition-all hover:border-orange-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-orange-900/50"
-                                >
-                                    <Link
-                                        href={`/story/${post.id}`}
-                                        className="text-lg font-semibold text-neutral-900 hover:text-orange-600 dark:text-white dark:hover:text-orange-500"
-                                    >
-                                        {post.title}
-                                    </Link>
-                                    <div className="mt-2 flex items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400">
-                                        <span className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
-                                            <TrendingUp size={12} />
-                                            <span className="font-bold">{post.score || 0} points</span>
-                                        </span>
-                                        <span>•</span>
-                                        <span>{formatDistanceToNow(post.time * 1000, { addSuffix: true })}</span>
-                                        <span>•</span>
-                                        <span>{post.descendants || 0} comments</span>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="rounded-lg border border-neutral-200 bg-white p-8 text-center text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900">
-                                No posts yet
+                {loading ? (
+                    [...Array(10)].map((_, i) => (
+                        activeTab === "submissions" ? 
+                            <StorySkeleton key={i} /> : 
+                            <div key={i} className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+                                <CommentSkeleton />
                             </div>
-                        )}
-                    </>
-                )}
-
-                {activeTab === "comments" && (
+                    ))
+                ) : (
                     <>
-                        {comments.length > 0 ? (
-                            comments.map((comment) => (
-                                <div
-                                    key={comment.id}
-                                    className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
-                                >
-                                    <div className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
-                                        {formatDistanceToNow(comment.time * 1000, { addSuffix: true })}
-                                    </div>
-                                    <div
-                                        className="prose prose-sm dark:prose-invert max-w-none text-neutral-800 dark:text-neutral-200"
-                                        dangerouslySetInnerHTML={{ __html: comment.text || "" }}
-                                    />
-                                    {comment.parent && (
-                                        <Link
-                                            href={`/story/${comment.parent}`}
-                                            className="mt-3 inline-flex items-center gap-1 text-xs text-orange-600 hover:underline dark:text-orange-500"
+                        {activeTab === "submissions" && (
+                            <>
+                                {posts.length > 0 ? (
+                                    posts.map((post) => (
+                                        <div
+                                            key={post.id}
+                                            className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm transition-all hover:border-orange-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-orange-900/50"
                                         >
-                                            View context →
-                                        </Link>
-                                    )}
-                                </div>
-                            ))
-                        ) : (
-                            <div className="rounded-lg border border-neutral-200 bg-white p-8 text-center text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900">
-                                No comments yet
-                            </div>
+                                            <Link
+                                                href={`/story/${post.id}`}
+                                                className="text-lg font-semibold text-neutral-900 hover:text-orange-600 dark:text-white dark:hover:text-orange-500"
+                                            >
+                                                {post.title}
+                                            </Link>
+                                            <div className="mt-2 flex items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400">
+                                                <span className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
+                                                    <TrendingUp size={12} />
+                                                    <span className="font-bold">{post.score || 0} points</span>
+                                                </span>
+                                                <span>•</span>
+                                                <span>{formatDistanceToNow(post.time * 1000, { addSuffix: true })}</span>
+                                                <span>•</span>
+                                                <span>{post.descendants || 0} comments</span>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="rounded-lg border border-neutral-200 bg-white p-8 text-center text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900">
+                                        No posts yet
+                                    </div>
+                                )}
+                            </>
+                        )}
+
+                        {activeTab === "comments" && (
+                            <>
+                                {comments.length > 0 ? (
+                                    comments.map((comment) => (
+                                        <div
+                                            key={comment.id}
+                                            className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+                                        >
+                                            <div className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
+                                                {formatDistanceToNow(comment.time * 1000, { addSuffix: true })}
+                                            </div>
+                                            <div
+                                                className="prose prose-sm dark:prose-invert max-w-none text-neutral-800 dark:text-neutral-200"
+                                                dangerouslySetInnerHTML={{ __html: comment.text || "" }}
+                                            />
+                                            {comment.parent && (
+                                                <Link
+                                                    href={`/story/${comment.parent}`}
+                                                    className="mt-3 inline-flex items-center gap-1 text-xs text-orange-600 hover:underline dark:text-orange-500"
+                                                >
+                                                    View context →
+                                                </Link>
+                                            )}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="rounded-lg border border-neutral-200 bg-white p-8 text-center text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900">
+                                        No comments yet
+                                    </div>
+                                )}
+                            </>
                         )}
                     </>
                 )}

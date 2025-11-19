@@ -8,10 +8,6 @@ export async function generateStaticParams() {
     return [{ username: '_placeholder' }];
 }
 
-interface PageProps {
-    params: Promise<{ username: string }>;
-}
-
-export default function UserPage(props: PageProps) {
+export default function UserPage() {
     return <UserPageClient />;
 }

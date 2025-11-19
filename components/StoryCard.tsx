@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { MessageSquare, ArrowUp, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { Story } from "@/lib/hooks";
+import { HNItem } from "@/lib/hn";
 import { LinkPreview } from "./LinkPreview";
+import { getDomain } from "@/lib/utils";
 
 interface StoryCardProps {
-  story: Story;
+  story: HNItem;
   index: number;
 }
 
 export function StoryCard({ story, index }: StoryCardProps) {
-  const host = story.url ? new URL(story.url).host : "news.ycombinator.com";
+  const host = story.url ? getDomain(story.url) : "news.ycombinator.com";
 
   return (
     <div className="group relative flex flex-col gap-4 overflow-hidden rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-orange-200 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-orange-900/50">
@@ -39,7 +40,14 @@ export function StoryCard({ story, index }: StoryCardProps) {
               <span>{formatDistanceToNow(story.time * 1000, { addSuffix: true })}</span>
             </div>
             <span>•</span>
-            <span className="hover:underline">{host}</span>
+            <a
+              href={`https://news.ycombinator.com/from?site=${host}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              {host}
+            </a>
           </div>
 
           {/* Title */}

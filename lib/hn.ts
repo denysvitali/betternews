@@ -64,7 +64,7 @@ export async function getNewStories(page = 1, limit = 30): Promise<HNItem[]> {
   return getItems(pageIds);
 }
 
-export async function getStoryWithComments(id: number) {
+export async function getStoryWithComments(id: number): Promise<HNItem> {
   const item = await getItem(id);
   return item;
 }
@@ -86,5 +86,35 @@ export async function getUserItems(itemIds: number[], limit = 20): Promise<HNIte
     itemIds.slice(0, limit).map((id) => getItem(id))
   );
   return items.filter((item) => item && !item.deleted && !item.dead);
+}
+
+export interface HNItemRecursive extends Omit<HNItem, 'kids'> {
+  kids?: HNItemRecursive[];
+}
+
+export async function getStoryWithRecursiveComments(
+  id: number,
+  depth = 3,
+  limit = 20
+): Promise<HNItemRecursive | null> {
+  const item = await getItem(id);
+  if (!item || item.deleted || item.dead) return null;
+
+  let kids: HNItemRecursive[] = [];
+
+  if (depth > 0 && item.kids && item.kids.length > 0) {
+    const kidsIds = item.kids.slice(0, limit);
+    const kidsPromises = kidsIds.map((kidId) =>
+      getStoryWithRecursiveComments(kidId, depth - 1, limit)
+    );
+    const results = await Promise.all(kidsPromises);
+    kids = results.filter((k): k is HNItemRecursive => k !== null);
+  }
+
+  // We cast the item to HNItemRecursive because we are replacing kids (number[]) with kids (object[])
+  return {
+    ...item,
+    kids: kids,
+  } as HNItemRecursive;
 }
 

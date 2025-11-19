@@ -12,20 +12,20 @@ export interface Story {
     time: number;
     score: number;
     descendants?: number;
-    kids?: number[];
+    kids?: (number | Comment)[];
     text?: string;
-    type: string;
+    type: "job" | "story" | "comment" | "poll" | "pollopt";
 }
 
 export interface Comment {
     id: number;
     by: string;
-    text: string;
+    text?: string;
     time: number;
-    kids?: number[];
+    kids?: (number | Comment)[];
     deleted?: boolean;
     dead?: boolean;
-    type: string;
+    type: "job" | "story" | "comment" | "poll" | "pollopt";
     parent?: number;
 }
 
@@ -269,11 +269,13 @@ export function useUserItems(itemIds: number[], limit: number = 30) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
+    const idsKey = itemIds?.join(',') || '';
+
     useEffect(() => {
         let isMounted = true;
 
         async function fetchItems() {
-            if (!itemIds || itemIds.length === 0) {
+            if (!idsKey) {
                 setItems([]);
                 setLoading(false);
                 return;
@@ -281,7 +283,8 @@ export function useUserItems(itemIds: number[], limit: number = 30) {
 
             try {
                 setLoading(true);
-                const limitedIds = itemIds.slice(0, limit);
+                const currentIds = itemIds;
+                const limitedIds = currentIds.slice(0, limit);
 
                 const itemPromises = limitedIds.map((id: number) =>
                     fetch(`${HN_API_BASE}/item/${id}.json`).then(r => r.json())
@@ -309,7 +312,7 @@ export function useUserItems(itemIds: number[], limit: number = 30) {
         return () => {
             isMounted = false;
         };
-    }, [itemIds?.join(','), limit]);
+    }, [idsKey, limit]);
 
     return { items, loading, error };
 }
