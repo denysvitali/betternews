@@ -1,8 +1,11 @@
 import UserPageClient from './UserPageClient';
 
-export function generateStaticParams(): { username: string }[] {
-    // Return empty array - all routes handled by 404 page for dynamic content
-    return [];
+export const dynamic = 'force-static';
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+    // Generate a placeholder to satisfy Next.js requirements
+    return [{ username: '_placeholder' }];
 }
 
 interface PageProps {

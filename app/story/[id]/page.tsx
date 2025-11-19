@@ -1,8 +1,11 @@
 import StoryPageClient from './StoryPageClient';
 
-export function generateStaticParams(): { id: string }[] {
-    // Return empty array - all routes handled by 404 page for dynamic content
-    return [];
+export const dynamic = 'force-static';
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+    // Generate a placeholder to satisfy Next.js requirements
+    return [{ id: '_placeholder' }];
 }
 
 interface PageProps {
