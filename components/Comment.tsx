@@ -34,7 +34,7 @@ export function Comment({ id, data, level = 0 }: CommentProps) {
       data-comment-level={level}
       className="transition-all duration-300"
     >
-      <CommentClient comment={comment}>
+      <CommentClient comment={comment} level={level}>
         {comment.kids && comment.kids.length > 0 && (
           <div className="mt-2">
             {comment.kids.map((kid) => {

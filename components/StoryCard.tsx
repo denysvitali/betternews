@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { MessageSquare, ArrowUp, Clock } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { MessageSquare, ArrowUp, Clock, BookOpen } from "lucide-react";
 import { HNItem } from "@/lib/hn";
 import { LinkPreview } from "./LinkPreview";
-import { getDomain } from "@/lib/utils";
+import { getDomain, getReadingTime } from "@/lib/utils";
+import { StoryBadge } from "./StoryBadge";
+import { ShareButton } from "./ShareButton";
+import { TimeAgo } from "./TimeAgo";
 
 interface StoryCardProps {
   story: HNItem;
@@ -12,6 +14,7 @@ interface StoryCardProps {
 
 export function StoryCard({ story, index }: StoryCardProps) {
   const host = story.url ? getDomain(story.url) : "news.ycombinator.com";
+  const storyUrl = story.url || `${typeof window !== 'undefined' ? window.location.origin : ''}/story/${story.id}`;
 
   return (
     <div className="group relative flex flex-col gap-3 sm:gap-4 overflow-hidden rounded-xl border border-neutral-200 bg-white p-3 sm:p-4 transition-all hover:border-orange-200 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-orange-900/50">
@@ -27,19 +30,22 @@ export function StoryCard({ story, index }: StoryCardProps) {
 
         <div className="flex flex-1 flex-col gap-2 min-w-0">
           {/* Header info - Desktop */}
-          <div className="hidden sm:flex items-center gap-3 text-sm text-neutral-600 dark:text-neutral-400 leading-none">
+          <div className="hidden sm:flex items-center gap-3 text-sm text-neutral-600 dark:text-neutral-400 leading-none flex-wrap">
+            {/* Story Type Badge */}
+            <StoryBadge title={story.title} type={story.type} />
+
             <Link
               href={`/user/${story.by}`}
               className="font-medium text-neutral-800 dark:text-neutral-200 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
             >
               {story.by}
             </Link>
-            <span className="text-neutral-400">•</span>
+            <span className="text-neutral-400">|</span>
             <div className="flex items-center gap-1">
               <Clock size={11} />
-              <span>{formatDistanceToNow(story.time * 1000, { addSuffix: true })}</span>
+              <TimeAgo timestamp={story.time} />
             </div>
-            <span className="text-neutral-400">•</span>
+            <span className="text-neutral-400">|</span>
             <a
               href={`https://news.ycombinator.com/from?site=${host}`}
               target="_blank"
@@ -49,22 +55,36 @@ export function StoryCard({ story, index }: StoryCardProps) {
             >
               {host}
             </a>
+            {/* Reading time for text posts */}
+            {story.text && (
+              <>
+                <span className="text-neutral-400">|</span>
+                <div className="flex items-center gap-1 text-neutral-500">
+                  <BookOpen size={11} />
+                  <span>{getReadingTime(story.text)}</span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Header info - Mobile */}
           <div className="flex flex-col gap-1.5 sm:hidden text-sm text-neutral-600 dark:text-neutral-400 leading-none">
-            <Link
-              href={`/user/${story.by}`}
-              className="font-medium text-neutral-800 dark:text-neutral-200 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
-            >
-              {story.by}
-            </Link>
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Story Type Badge */}
+              <StoryBadge title={story.title} type={story.type} />
+              <Link
+                href={`/user/${story.by}`}
+                className="font-medium text-neutral-800 dark:text-neutral-200 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
+              >
+                {story.by}
+              </Link>
+            </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
                 <Clock size={10} />
-                <span>{formatDistanceToNow(story.time * 1000, { addSuffix: false })}</span>
+                <TimeAgo timestamp={story.time} addSuffix={false} />
               </div>
-              <span className="text-neutral-400">•</span>
+              <span className="text-neutral-400">|</span>
               <a
                 href={`https://news.ycombinator.com/from?site=${host}`}
                 target="_blank"
@@ -96,7 +116,7 @@ export function StoryCard({ story, index }: StoryCardProps) {
           )}
 
           {/* Footer actions */}
-          <div className="mt-auto flex items-center gap-3 sm:gap-4 pt-2">
+          <div className="mt-auto flex items-center gap-2 sm:gap-3 pt-2">
             <Link
               href={`/story/${story.id}`}
               className="flex items-center gap-1.5 rounded-md bg-neutral-100 px-2.5 sm:px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
@@ -105,6 +125,7 @@ export function StoryCard({ story, index }: StoryCardProps) {
               <span className="hidden sm:inline">{story.descendants || 0} comments</span>
               <span className="sm:hidden">{story.descendants || 0}</span>
             </Link>
+            <ShareButton title={story.title || "Story"} url={storyUrl} />
           </div>
         </div>
 

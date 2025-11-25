@@ -42,6 +42,11 @@ export function useTopStories(page: number = 1) {
     const [stories, setStories] = useState<Story[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const refetch = async () => {
+        setRefreshKey(prev => prev + 1);
+    };
 
     useEffect(() => {
         let isMounted = true;
@@ -82,9 +87,9 @@ export function useTopStories(page: number = 1) {
         return () => {
             isMounted = false;
         };
-    }, [page]);
+    }, [page, refreshKey]);
 
-    return { stories, loading, error };
+    return { stories, loading, error, refetch };
 }
 
 // Hook for fetching new stories
@@ -92,6 +97,11 @@ export function useNewStories(page: number = 1) {
     const [stories, setStories] = useState<Story[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const refetch = async () => {
+        setRefreshKey(prev => prev + 1);
+    };
 
     useEffect(() => {
         let isMounted = true;
@@ -132,9 +142,9 @@ export function useNewStories(page: number = 1) {
         return () => {
             isMounted = false;
         };
-    }, [page]);
+    }, [page, refreshKey]);
 
-    return { stories, loading, error };
+    return { stories, loading, error, refetch };
 }
 
 // Hook for fetching a single story with comments

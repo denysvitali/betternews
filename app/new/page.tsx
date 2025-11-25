@@ -6,65 +6,77 @@ import { HNItem } from "@/lib/hn";
 import { StoryCard } from "@/components/StoryCard";
 import { Navbar } from "@/components/Navbar";
 import { Pagination } from "@/components/Pagination";
+import { Footer } from "@/components/Footer";
+import { BackToTop } from "@/components/BackToTop";
+import { PullToRefresh } from "@/components/PullToRefresh";
 import { Loader2 } from "lucide-react";
-import { Suspense } from "react";
+import { Suspense, useCallback } from "react";
 
 function NewStoriesContent() {
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1");
-  const { stories, loading, error } = useNewStories(page);
+  const { stories, loading, error, refetch } = useNewStories(page);
+
+  const handleRefresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-black">
-      <Navbar />
-      <main className="container mx-auto max-w-4xl px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">New Stories</h1>
-          <p className="text-neutral-500 dark:text-neutral-400">The latest submissions from the community.</p>
-        </div>
-
-        {loading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="flex min-h-screen flex-col bg-neutral-50 dark:bg-black">
+        <Navbar />
+        <main className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6 py-6 sm:py-8 flex-1">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">New Stories</h1>
+            <p className="text-sm sm:text-base text-neutral-500 dark:text-neutral-400 mt-1">The latest submissions from the community.</p>
           </div>
-        )}
 
-        {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
-            Failed to load stories. Please try again later.
-          </div>
-        )}
-
-        {!loading && !error && (
-          <>
-            <div className="flex flex-col gap-4">
-              {stories.map((story, index) => (
-                <StoryCard
-                  key={story.id}
-                  story={story as unknown as HNItem}
-                  index={index + ((page - 1) * 30)}
-                />
-              ))}
+          {loading && (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
             </div>
+          )}
 
-            <Pagination currentPage={page} baseUrl="/new" />
-          </>
-        )}
-      </main>
-    </div>
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm sm:text-base text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+              Failed to load stories. Please try again later.
+            </div>
+          )}
+
+          {!loading && !error && (
+            <>
+              <div className="flex flex-col gap-4">
+                {stories.map((story, index) => (
+                  <StoryCard
+                    key={story.id}
+                    story={story as unknown as HNItem}
+                    index={index + ((page - 1) * 30)}
+                  />
+                ))}
+              </div>
+
+              <Pagination currentPage={page} baseUrl="/new" />
+            </>
+          )}
+        </main>
+        <Footer />
+        <BackToTop />
+      </div>
+    </PullToRefresh>
   );
 }
 
 export default function NewStories() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-neutral-50 dark:bg-black">
+      <div className="flex min-h-screen flex-col bg-neutral-50 dark:bg-black">
         <Navbar />
-        <main className="container mx-auto max-w-4xl px-4 py-8">
-           <div className="flex items-center justify-center py-12">
+        <main className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6 py-6 sm:py-8 flex-1">
+          <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
           </div>
         </main>
+        <Footer />
       </div>
     }>
       <NewStoriesContent />

@@ -5,14 +5,20 @@ import { useStory, Story } from "@/lib/hooks";
 import { Comment } from "@/components/Comment";
 import { Navbar } from "@/components/Navbar";
 import { LinkPreview } from "@/components/LinkPreview";
-import { ArrowUp, MessageSquare, Clock, ExternalLink } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { Footer } from "@/components/Footer";
+import { BackToTop } from "@/components/BackToTop";
+import { KeyboardNavigation } from "@/components/KeyboardNavigation";
+import { ShareButton } from "@/components/ShareButton";
+import { StoryBadge } from "@/components/StoryBadge";
+import { TimeAgo } from "@/components/TimeAgo";
+import { EmptyState } from "@/components/EmptyState";
+import { ArrowUp, MessageSquare, Clock, ExternalLink, BookOpen } from "lucide-react";
 import { Suspense } from "react";
 import Link from "next/link";
 import { StorySkeleton } from "@/components/StorySkeleton";
 import { CommentSkeleton } from "@/components/CommentSkeleton";
 import { CommentNavigation } from "@/components/CommentNavigation";
-import { getDomain } from "@/lib/utils";
+import { getDomain, getReadingTime } from "@/lib/utils";
 
 interface StoryPageClientProps {
     initialStory?: Story | null;
@@ -31,9 +37,9 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-neutral-50 dark:bg-black">
+            <div className="flex min-h-screen flex-col bg-neutral-50 dark:bg-black">
                 <Navbar />
-                <main className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6 py-6 sm:py-8">
+                <main className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6 py-6 sm:py-8 flex-1">
                     <div className="mb-6 sm:mb-8">
                         <StorySkeleton />
                     </div>
@@ -46,6 +52,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                         </div>
                     </div>
                 </main>
+                <Footer />
             </div>
         );
     }
@@ -53,51 +60,66 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
 
     if (error || !story) {
         return (
-            <div className="min-h-screen bg-neutral-50 dark:bg-black">
+            <div className="flex min-h-screen flex-col bg-neutral-50 dark:bg-black">
                 <Navbar />
-                <main className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6 py-6 sm:py-8">
+                <main className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6 py-6 sm:py-8 flex-1">
                     <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm sm:text-base text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
                         Story not found or failed to load.
                     </div>
                 </main>
+                <Footer />
             </div>
         );
     }
 
     const host = story.url ? getDomain(story.url) : "news.ycombinator.com";
+    const storyUrl = story.url || `${typeof window !== 'undefined' ? window.location.origin : ''}/story/${story.id}`;
 
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-black">
+        <div className="flex min-h-screen flex-col bg-neutral-50 dark:bg-black">
             <Navbar />
-            <main className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6 py-6 sm:py-8">
+            <main className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6 py-6 sm:py-8 flex-1">
                 {/* Story Header */}
                 <div className="mb-6 sm:mb-8 rounded-xl border border-neutral-200 bg-white p-4 sm:p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
                     <div className="flex flex-col gap-3 sm:gap-4">
                         {/* Desktop header info */}
-                        <div className="hidden sm:flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400">
+                        <div className="hidden sm:flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400 flex-wrap">
+                            <StoryBadge title={story.title} type={story.type} />
                             <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
                                 <ArrowUp size={12} />
                                 <span className="font-bold text-sm">{story.score}</span>
                             </div>
-                            <span>•</span>
+                            <span>|</span>
                             <Link
                                 href={`/user/${story.by}`}
                                 className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
                             >
                                 {story.by}
                             </Link>
-                            <span>•</span>
+                            <span>|</span>
                             <div className="flex items-center gap-1">
                                 <Clock size={12} />
-                                <span>{formatDistanceToNow(story.time * 1000, { addSuffix: true })}</span>
+                                <TimeAgo timestamp={story.time} />
                             </div>
+                            {story.text && (
+                                <>
+                                    <span>|</span>
+                                    <div className="flex items-center gap-1 text-neutral-500">
+                                        <BookOpen size={12} />
+                                        <span>{getReadingTime(story.text)}</span>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         {/* Mobile header info */}
                         <div className="flex flex-col gap-2 sm:hidden text-xs text-neutral-500 dark:text-neutral-400">
-                            <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
-                                <ArrowUp size={10} />
-                                <span className="font-bold text-sm">{story.score}</span>
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <StoryBadge title={story.title} type={story.type} />
+                                <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
+                                    <ArrowUp size={10} />
+                                    <span className="font-bold text-sm">{story.score}</span>
+                                </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <Link
@@ -106,10 +128,10 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                                 >
                                     {story.by}
                                 </Link>
-                                <span>•</span>
+                                <span>|</span>
                                 <div className="flex items-center gap-1">
                                     <Clock size={10} />
-                                    <span>{formatDistanceToNow(story.time * 1000, { addSuffix: false })}</span>
+                                    <TimeAgo timestamp={story.time} addSuffix={false} />
                                 </div>
                             </div>
                         </div>
@@ -153,6 +175,11 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                                 dangerouslySetInnerHTML={{ __html: story.text }}
                             />
                         )}
+
+                        {/* Share Button */}
+                        <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
+                            <ShareButton title={story.title} url={storyUrl} />
+                        </div>
                     </div>
                 </div>
 
@@ -178,12 +205,15 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                                     );
                                 })
                             ) : (
-                                <div className="py-8 text-center text-sm sm:text-base text-neutral-500">No comments yet.</div>
+                                <EmptyState type="comments" />
                             )}
                         </div>
                     </div>
                 </>
             </main>
+            <Footer />
+            <BackToTop />
+            <KeyboardNavigation />
         </div>
     );
 }

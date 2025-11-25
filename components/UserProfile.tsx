@@ -1,12 +1,13 @@
 "use client";
 
 import { User as UserType, Story, Comment } from "@/lib/hooks";
-import { formatDistanceToNow } from "date-fns";
 import { User, Calendar, TrendingUp, LinkIcon, MessageSquare, FileText } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { StorySkeleton } from "./StorySkeleton";
 import { CommentSkeleton } from "./CommentSkeleton";
+import { EmptyState } from "./EmptyState";
+import { TimeAgo } from "./TimeAgo";
 
 interface UserProfileProps {
     user: UserType;
@@ -42,9 +43,8 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                             <div className="mt-2 flex items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400">
                                 <div className="flex items-center gap-1">
                                     <Calendar size={14} />
-                                    <span>
-                                        Joined {formatDistanceToNow(user.created * 1000, { addSuffix: true })}
-                                    </span>
+                                    <span>Joined </span>
+                                    <TimeAgo timestamp={user.created} />
                                 </div>
                                 <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
                                     <TrendingUp size={14} />
@@ -124,16 +124,16 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                                                     <TrendingUp size={12} />
                                                     <span className="font-bold">{post.score || 0} points</span>
                                                 </span>
-                                                <span>•</span>
-                                                <span>{formatDistanceToNow(post.time * 1000, { addSuffix: true })}</span>
+                                                <span>|</span>
+                                                <TimeAgo timestamp={post.time} />
                                                 <span>•</span>
                                                 <span>{post.descendants || 0} comments</span>
                                             </div>
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="rounded-lg border border-neutral-200 bg-white p-8 text-center text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900">
-                                        No posts yet
+                                    <div className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+                                        <EmptyState type="posts" />
                                     </div>
                                 )}
                             </>
@@ -148,7 +148,7 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                                             className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
                                         >
                                             <div className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
-                                                {formatDistanceToNow(comment.time * 1000, { addSuffix: true })}
+                                                <TimeAgo timestamp={comment.time} />
                                             </div>
                                             <div
                                                 className="prose prose-sm dark:prose-invert max-w-none text-neutral-800 dark:text-neutral-200"
@@ -165,8 +165,8 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="rounded-lg border border-neutral-200 bg-white p-8 text-center text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900">
-                                        No comments yet
+                                    <div className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+                                        <EmptyState type="comments" />
                                     </div>
                                 )}
                             </>
