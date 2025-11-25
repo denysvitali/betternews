@@ -32,10 +32,9 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
   return (
     <div className="flex flex-col gap-2 py-3 border-t border-neutral-100 dark:border-neutral-900 first:border-0">
       {/* Header / Toggle */}
-      <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400 select-none h-4">
-        {/* Collapse button */}
+      <div className="flex items-center text-xs text-neutral-500 dark:text-neutral-400 select-none">
         <button
-          className="flex items-center justify-center hover:text-orange-500 transition-colors"
+          className="mr-0.5 hover:text-orange-500 transition-colors"
           onClick={() => setIsCollapsed(!isCollapsed)}
           title={isCollapsed ? "Expand" : "Collapse"}
         >
@@ -45,47 +44,33 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
             <Minus size={10} strokeWidth={2.5} className="text-neutral-400" />
           )}
         </button>
-        {/* Upvote button */}
         <button
-          className="flex items-center justify-center hover:text-orange-500 transition-colors"
+          className="mr-1.5 hover:text-orange-500 transition-colors"
           title="Upvote"
         >
           <Triangle
             size={8}
             strokeWidth={2}
-            className="text-neutral-400 fill-neutral-400 hover:text-orange-600 hover:fill-orange-600 dark:hover:text-orange-500 dark:hover:fill-orange-500 transition-colors"
+            className="text-neutral-400 fill-neutral-400 hover:text-orange-600 hover:fill-orange-600"
           />
         </button>
-
-        {/* Username */}
         <Link
           href={`/user/${comment.by}`}
-          className="font-bold text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500 transition-colors whitespace-nowrap flex items-center h-full"
+          className="font-bold text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
         >
           {comment.by}
         </Link>
-
-        <span className="text-neutral-300 dark:text-neutral-600 flex items-center h-full">·</span>
-
-        {/* Comment time with tooltip */}
-        <span className="flex items-center h-full">
-          <TimeAgo timestamp={comment.time} />
-        </span>
-
-        {/* Reply count info - visible for navigation */}
+        <span className="mx-1 text-neutral-300 dark:text-neutral-600">·</span>
+        <TimeAgo timestamp={comment.time} />
         {replyCount > 0 && (
           <>
-            <span className="text-neutral-300 dark:text-neutral-600 flex items-center h-full">·</span>
-            <span
-              data-reply-count={replyCount}
-              className="flex items-center gap-0.5 text-orange-500 whitespace-nowrap h-full"
-            >
+            <span className="mx-1 text-neutral-300 dark:text-neutral-600">·</span>
+            <span className="flex items-center gap-0.5 text-orange-500">
               <MessageSquare size={10} strokeWidth={2} />
               <span>{replyCount}</span>
             </span>
           </>
         )}
-
       </div>
 
       {!isCollapsed && (
