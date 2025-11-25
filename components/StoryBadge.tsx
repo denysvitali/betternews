@@ -56,7 +56,7 @@ export function StoryBadge({ title, type }: StoryBadgeProps) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-1.5 py-px text-[10px] font-medium leading-tight align-middle ${config.className}`}
+      className={`inline-flex items-center gap-0.5 rounded-full px-1.5 h-4 text-[10px] font-medium leading-none ${config.className}`}
     >
       <Icon size={9} strokeWidth={2.5} className="flex-shrink-0" />
       <span>{config.label}</span>
