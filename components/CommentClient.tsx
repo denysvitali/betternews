@@ -31,10 +31,10 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
 
   return (
     <div className="flex flex-col gap-2 py-3 border-t border-neutral-100 dark:border-neutral-900 first:border-0">
-      {/* Header / Toggle */}
-      <div className="flex items-center text-xs text-neutral-500 dark:text-neutral-400 select-none">
+      {/* Header */}
+      <span className="text-xs text-neutral-500 dark:text-neutral-400 select-none">
         <button
-          className="mr-0.5 hover:text-orange-500 transition-colors"
+          className="inline-flex items-center justify-center w-3 h-3 align-middle hover:text-orange-500"
           onClick={() => setIsCollapsed(!isCollapsed)}
           title={isCollapsed ? "Expand" : "Collapse"}
         >
@@ -45,33 +45,26 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
           )}
         </button>
         <button
-          className="mr-1.5 hover:text-orange-500 transition-colors"
+          className="inline-flex items-center justify-center w-3 h-3 align-middle hover:text-orange-500"
           title="Upvote"
         >
-          <Triangle
-            size={8}
-            strokeWidth={2}
-            className="text-neutral-400 fill-neutral-400 hover:text-orange-600 hover:fill-orange-600"
-          />
+          <Triangle size={8} strokeWidth={2} className="text-neutral-400 fill-neutral-400" />
         </button>
+        {" "}
         <Link
           href={`/user/${comment.by}`}
-          className="font-bold text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
-        >
-          {comment.by}
-        </Link>
-        <span className="mx-1 text-neutral-300 dark:text-neutral-600">·</span>
+          className="font-bold text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500"
+        >{comment.by}</Link>
+        <span className="text-neutral-300 dark:text-neutral-600"> · </span>
         <TimeAgo timestamp={comment.time} />
         {replyCount > 0 && (
           <>
-            <span className="mx-1 text-neutral-300 dark:text-neutral-600">·</span>
-            <span className="flex items-center gap-0.5 text-orange-500">
-              <MessageSquare size={10} strokeWidth={2} />
-              <span>{replyCount}</span>
-            </span>
+            <span className="text-neutral-300 dark:text-neutral-600"> · </span>
+            <MessageSquare size={10} strokeWidth={2} className="inline align-middle text-orange-500" />
+            <span className="text-orange-500"> {replyCount}</span>
           </>
         )}
-      </div>
+      </span>
 
       {!isCollapsed && (
         <>
