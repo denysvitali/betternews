@@ -116,7 +116,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <a
-                  href="https://github.com"
+                  href="https://github.com/denysvitali/betternews"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-neutral-600 hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors"
