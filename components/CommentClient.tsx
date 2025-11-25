@@ -32,10 +32,10 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
   return (
     <div className="flex flex-col gap-2 py-3 border-t border-neutral-100 dark:border-neutral-900 first:border-0">
       {/* Header / Toggle */}
-      <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400 select-none leading-none">
+      <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400 select-none h-4">
         {/* Collapse/Expand button */}
         <button
-          className="w-4 h-4 p-0 rounded flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+          className="w-4 h-4 p-0 rounded flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
           onClick={() => setIsCollapsed(!isCollapsed)}
           title={isCollapsed ? "Expand" : "Collapse"}
         >
@@ -48,7 +48,7 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
 
         {/* Upvote button */}
         <button
-          className="w-4 h-4 p-0 rounded flex items-center justify-center hover:bg-orange-100 dark:hover:bg-orange-950/30 transition-colors"
+          className="w-4 h-4 p-0 rounded flex items-center justify-center hover:bg-orange-100 dark:hover:bg-orange-950/30 transition-colors flex-shrink-0"
           title="Upvote"
         >
           <Triangle
@@ -58,28 +58,30 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
           />
         </button>
 
-        <span className="mx-1 text-neutral-400">|</span>
+        <span className="text-neutral-400 flex items-center h-full">|</span>
 
         {/* Username */}
         <Link
           href={`/user/${comment.by}`}
-          className="font-bold text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500 transition-colors whitespace-nowrap leading-none"
+          className="font-bold text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500 transition-colors whitespace-nowrap flex items-center h-full"
         >
           {comment.by}
         </Link>
 
-        <span className="mx-1 text-neutral-400">|</span>
+        <span className="text-neutral-400 flex items-center h-full">|</span>
 
         {/* Comment time with tooltip */}
-        <TimeAgo timestamp={comment.time} className="leading-none" />
+        <span className="flex items-center h-full">
+          <TimeAgo timestamp={comment.time} />
+        </span>
 
         {/* Reply count info - visible for navigation */}
         {replyCount > 0 && (
           <>
-            <span className="mx-1 text-neutral-400">|</span>
+            <span className="text-neutral-400 flex items-center h-full">|</span>
             <span
               data-reply-count={replyCount}
-              className="flex items-center gap-0.5 text-orange-500 whitespace-nowrap leading-none"
+              className="flex items-center gap-0.5 text-orange-500 whitespace-nowrap h-full"
             >
               <MessageSquare size={10} strokeWidth={2} />
               <span>{replyCount}</span>
@@ -89,7 +91,7 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
 
         {/* Collapsed state indicator */}
         {isCollapsed && (
-          <span className="ml-2 flex items-center gap-0.5 text-orange-500 bg-orange-50 dark:bg-orange-950/30 px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap leading-none">
+          <span className="ml-2 flex items-center gap-0.5 text-orange-500 bg-orange-50 dark:bg-orange-950/30 px-1.5 rounded text-[10px] font-medium whitespace-nowrap h-full">
             {replyCount > 0 ? (
               <>
                 <MessageSquare size={8} strokeWidth={2} />
