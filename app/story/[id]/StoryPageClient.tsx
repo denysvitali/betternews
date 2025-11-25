@@ -114,25 +114,24 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
 
                         {/* Mobile header info */}
                         <div className="flex flex-col gap-2 sm:hidden text-xs text-neutral-500 dark:text-neutral-400">
-                            <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex items-center gap-2 h-4">
                                 <StoryBadge title={story.title} type={story.type} />
-                                <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
+                                <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500 h-full">
                                     <ArrowUp size={10} />
-                                    <span className="font-bold text-sm">{story.score}</span>
+                                    <span className="font-bold text-xs">{story.score}</span>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-1.5 h-4">
                                 <Link
                                     href={`/user/${story.by}`}
-                                    className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
+                                    className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors flex items-center h-full"
                                 >
                                     {story.by}
                                 </Link>
-                                <span>|</span>
-                                <div className="flex items-center gap-1">
-                                    <Clock size={10} />
+                                <span className="text-neutral-300 dark:text-neutral-600 flex items-center h-full">·</span>
+                                <span className="flex items-center h-full">
                                     <TimeAgo timestamp={story.time} addSuffix={false} />
-                                </div>
+                                </span>
                             </div>
                         </div>
 
