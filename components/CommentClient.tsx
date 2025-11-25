@@ -19,31 +19,29 @@ export function CommentClient({ comment, children }: CommentClientProps) {
     <div className="flex flex-col gap-2 py-3 border-t border-neutral-100 dark:border-neutral-900 first:border-0">
       {/* Header / Toggle */}
       <div
-        className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 select-none"
+        className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 select-none"
       >
         {/* Collapse/Expand button */}
-        <div className="flex items-center justify-center w-5 h-5 shrink-0">
-          <button
-            className="p-0.5 rounded hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors flex items-center justify-center"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            title={isCollapsed ? "Expand" : "Collapse"}
-          >
-            {isCollapsed ? <Plus size={12} /> : <Minus size={12} />}
-          </button>
-        </div>
+        <button
+          className="p-0.5 rounded hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors flex items-center justify-center"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          title={isCollapsed ? "Expand" : "Collapse"}
+        >
+          {isCollapsed ? <Plus size={12} /> : <Minus size={12} />}
+        </button>
 
         {/* Upvote button */}
-        <div className="flex items-center justify-center w-5 h-5 shrink-0">
-          <button
-            className="p-0.5 rounded hover:bg-orange-100 dark:hover:bg-orange-950/30 transition-colors group flex items-center justify-center"
-            title="Upvote"
-          >
-            <Triangle
-              size={8}
-              className="text-neutral-400 fill-neutral-400 group-hover:text-orange-600 group-hover:fill-orange-600 dark:group-hover:text-orange-500 dark:group-hover:fill-orange-500 transition-colors"
-            />
-          </button>
-        </div>
+        <button
+          className="p-0.5 rounded hover:bg-orange-100 dark:hover:bg-orange-950/30 transition-colors group flex items-center justify-center"
+          title="Upvote"
+        >
+          <Triangle
+            size={8}
+            className="text-neutral-400 fill-neutral-400 group-hover:text-orange-600 group-hover:fill-orange-600 dark:group-hover:text-orange-500 dark:group-hover:fill-orange-500 transition-colors"
+          />
+        </button>
+
+        <span className="w-1 text-neutral-400">•</span>
 
         {/* Username */}
         <Link
