@@ -11,6 +11,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { StorySkeleton } from "@/components/StorySkeleton";
 import { CommentSkeleton } from "@/components/CommentSkeleton";
+import { CommentNavigation } from "@/components/CommentNavigation";
 import { getDomain } from "@/lib/utils";
 
 interface StoryPageClientProps {
@@ -32,11 +33,11 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
         return (
             <div className="min-h-screen bg-neutral-50 dark:bg-black">
                 <Navbar />
-                <main className="container mx-auto max-w-4xl px-4 py-8">
-                    <div className="mb-8">
+                <main className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6 py-6 sm:py-8">
+                    <div className="mb-6 sm:mb-8">
                         <StorySkeleton />
                     </div>
-                    <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+                    <div className="rounded-xl border border-neutral-200 bg-white p-4 sm:p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
                         <div className="mb-6 h-6 w-32 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
                         <div className="flex flex-col">
                             {[...Array(5)].map((_, i) => (
@@ -54,8 +55,8 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
         return (
             <div className="min-h-screen bg-neutral-50 dark:bg-black">
                 <Navbar />
-                <main className="container mx-auto max-w-4xl px-4 py-8">
-                    <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+                <main className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6 py-6 sm:py-8">
+                    <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm sm:text-base text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
                         Story not found or failed to load.
                     </div>
                 </main>
@@ -68,48 +69,50 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
     return (
         <div className="min-h-screen bg-neutral-50 dark:bg-black">
             <Navbar />
-            <main className="container mx-auto max-w-4xl px-4 py-8">
+            <main className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6 py-6 sm:py-8">
                 {/* Story Header */}
-                <div className="mb-8 rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-                    <div className="flex flex-col gap-4">
-                        <div className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400">
+                <div className="mb-6 sm:mb-8 rounded-xl border border-neutral-200 bg-white p-4 sm:p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+                    <div className="flex flex-col gap-3 sm:gap-4">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
                             <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
-                                <ArrowUp size={14} />
-                                <span className="font-bold">{story.score}</span>
+                                <ArrowUp size={12} />
+                                <span className="font-bold text-sm">{story.score}</span>
                             </div>
-                            <span>•</span>
+                            <span className="hidden sm:inline">•</span>
                             <Link
                                 href={`/user/${story.by}`}
                                 className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
                             >
                                 {story.by}
                             </Link>
-                            <span>•</span>
+                            <span className="hidden sm:inline">•</span>
                             <div className="flex items-center gap-1">
-                                <Clock size={14} />
-                                <span>{formatDistanceToNow(story.time * 1000, { addSuffix: true })}</span>
+                                <Clock size={12} />
+                                <span className="hidden sm:inline">{formatDistanceToNow(story.time * 1000, { addSuffix: true })}</span>
+                                <span className="sm:hidden">{formatDistanceToNow(story.time * 1000, { addSuffix: false })}</span>
                             </div>
                         </div>
 
-                        <h1 className="text-2xl font-bold leading-tight text-neutral-900 dark:text-white sm:text-3xl">
+                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight text-neutral-900 dark:text-white">
                             {story.title}
                         </h1>
 
                         {story.url && (
-                            <div className="flex items-center gap-2 text-neutral-500">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-neutral-500">
                                 <a
                                     href={story.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
+                                    className="flex items-center gap-2 hover:text-orange-600 dark:hover:text-orange-500 transition-colors text-xs sm:text-sm"
                                 >
-                                    <ExternalLink size={16} />
+                                    <ExternalLink size={14} />
+                                    <span className="truncate max-w-[200px] sm:max-w-none">{story.url}</span>
                                 </a>
                                 <a
                                     href={`https://news.ycombinator.com/from?site=${host}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="font-mono text-sm hover:underline hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
+                                    className="font-mono text-xs sm:text-sm hover:underline hover:text-orange-600 dark:hover:text-orange-500 transition-colors truncate max-w-[150px] sm:max-w-none"
                                 >
                                     {host}
                                 </a>
@@ -118,14 +121,14 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
 
                         {/* Large Preview for the Story Page */}
                         {story.url && (
-                            <div className="mt-4 aspect-video w-full max-w-2xl overflow-hidden rounded-lg border border-neutral-100 dark:border-neutral-800">
+                            <div className="mt-3 sm:mt-4 aspect-video w-full max-w-2xl overflow-hidden rounded-lg border border-neutral-100 dark:border-neutral-800">
                                 <LinkPreview url={story.url} detailed />
                             </div>
                         )}
 
                         {story.text && (
                             <div
-                                className="mt-4 prose prose-sm dark:prose-invert max-w-none"
+                                className="mt-3 sm:mt-4 prose prose-sm sm:prose-base dark:prose-invert max-w-none prose-headings:text-lg sm:prose-headings:text-xl"
                                 dangerouslySetInnerHTML={{ __html: story.text }}
                             />
                         )}
@@ -133,28 +136,32 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                 </div>
 
                 {/* Comments Section */}
-                <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-                    <h2 className="mb-6 flex items-center gap-2 text-xl font-bold">
-                        <MessageSquare className="text-orange-500" />
-                        <span>{story.descendants || 0} Comments</span>
-                    </h2>
+                <>
+                    <CommentNavigation totalComments={story.descendants || 0} storyId={story.id} />
 
-                    <div className="flex flex-col">
-                        {story.kids && story.kids.length > 0 ? (
-                            story.kids.map((kid) => {
-                                const kidId = typeof kid === 'number' ? kid : kid.id;
-                                const kidData = typeof kid === 'object' ? kid : undefined;
-                                return (
-                                    <Suspense key={kidId} fallback={<CommentSkeleton />}>
-                                        <Comment id={kidId} data={kidData} />
-                                    </Suspense>
-                                );
-                            })
-                        ) : (
-                            <div className="py-8 text-center text-neutral-500">No comments yet.</div>
-                        )}
+                    <div className="rounded-xl border border-neutral-200 bg-white p-4 sm:p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+                        <h2 className="mb-4 sm:mb-6 flex items-center gap-2 text-lg sm:text-xl font-bold">
+                            <MessageSquare className="text-orange-500" size={20} />
+                            <span>{story.descendants || 0} Comments</span>
+                        </h2>
+
+                        <div id="comments-container" className="flex flex-col gap-3 sm:gap-4">
+                            {story.kids && story.kids.length > 0 ? (
+                                story.kids.map((kid) => {
+                                    const kidId = typeof kid === 'number' ? kid : kid.id;
+                                    const kidData = typeof kid === 'object' ? kid : undefined;
+                                    return (
+                                        <Suspense key={kidId} fallback={<CommentSkeleton />}>
+                                            <Comment id={kidId} data={kidData} />
+                                        </Suspense>
+                                    );
+                                })
+                            ) : (
+                                <div className="py-8 text-center text-sm sm:text-base text-neutral-500">No comments yet.</div>
+                            )}
+                        </div>
                     </div>
-                </div>
+                </>
             </main>
         </div>
     );

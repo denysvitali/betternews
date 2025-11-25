@@ -14,39 +14,41 @@ export function StoryCard({ story, index }: StoryCardProps) {
   const host = story.url ? getDomain(story.url) : "news.ycombinator.com";
 
   return (
-    <div className="group relative flex flex-col gap-4 overflow-hidden rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-orange-200 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-orange-900/50">
-      <div className="flex gap-4">
+    <div className="group relative flex flex-col gap-3 sm:gap-4 overflow-hidden rounded-xl border border-neutral-200 bg-white p-3 sm:p-4 transition-all hover:border-orange-200 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-orange-900/50">
+      <div className="flex gap-3 sm:gap-4">
         {/* Rank & Score */}
-        <div className="flex flex-col items-center gap-1 text-neutral-500">
-          <span className="text-lg font-bold text-neutral-300 dark:text-neutral-700">{index + 1}</span>
-          <div className="flex flex-col items-center gap-0.5 rounded-full bg-orange-50 px-2 py-1 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
-            <ArrowUp size={14} strokeWidth={3} />
+        <div className="flex flex-col items-center gap-1 text-neutral-500 min-w-fit">
+          <span className="text-base sm:text-lg font-bold text-neutral-300 dark:text-neutral-700">{index + 1}</span>
+          <div className="flex flex-col items-center gap-0.5 rounded-full bg-orange-50 px-1.5 sm:px-2 py-1 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
+            <ArrowUp size={12} strokeWidth={3} />
             <span className="text-xs font-bold">{story.score || 0}</span>
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col gap-2">
+        <div className="flex flex-1 flex-col gap-2 min-w-0">
           {/* Header info */}
-          <div className="flex items-center gap-2 text-xs text-neutral-500">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs text-neutral-500">
             <Link
               href={`/user/${story.by}`}
               className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
             >
               {story.by}
             </Link>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <div className="flex items-center gap-1">
-              <Clock size={12} />
-              <span>{formatDistanceToNow(story.time * 1000, { addSuffix: true })}</span>
+              <Clock size={10} />
+              <span className="hidden sm:inline">{formatDistanceToNow(story.time * 1000, { addSuffix: true })}</span>
+              <span className="sm:hidden">{formatDistanceToNow(story.time * 1000, { addSuffix: false })}</span>
             </div>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <a
               href={`https://news.ycombinator.com/from?site=${host}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline"
+              className="hover:underline truncate max-w-[120px] sm:max-w-none"
             >
-              {host}
+              <span className="hidden sm:inline">{host}</span>
+              <span className="sm:hidden font-mono text-xs">{host.substring(0, 15)}...</span>
             </a>
           </div>
 
@@ -55,7 +57,7 @@ export function StoryCard({ story, index }: StoryCardProps) {
             href={story.url || `/story/${story.id}`}
             target={story.url ? "_blank" : undefined}
             rel="noreferrer"
-            className="font-bold text-lg leading-tight text-neutral-900 hover:text-orange-600 dark:text-neutral-100 dark:hover:text-orange-500"
+            className="font-bold text-base sm:text-lg leading-tight text-neutral-900 hover:text-orange-600 dark:text-neutral-100 dark:hover:text-orange-500 line-clamp-2 sm:line-clamp-none"
           >
             {story.title}
           </a>
@@ -63,26 +65,27 @@ export function StoryCard({ story, index }: StoryCardProps) {
           {/* Story Text Preview */}
           {story.text && (
             <div
-              className="line-clamp-3 text-sm text-neutral-600 dark:text-neutral-400 prose prose-sm dark:prose-invert max-w-none [&>p]:mb-1"
+              className="line-clamp-2 sm:line-clamp-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 prose prose-sm dark:prose-invert max-w-none [&>p]:mb-1"
               dangerouslySetInnerHTML={{ __html: story.text }}
             />
           )}
 
           {/* Footer actions */}
-          <div className="mt-auto flex items-center gap-4 pt-2">
+          <div className="mt-auto flex items-center gap-3 sm:gap-4 pt-2">
             <Link
               href={`/story/${story.id}`}
-              className="flex items-center gap-1.5 rounded-md bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
+              className="flex items-center gap-1.5 rounded-md bg-neutral-100 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
             >
-              <MessageSquare size={14} />
-              {story.descendants || 0} comments
+              <MessageSquare size={12} />
+              <span className="hidden sm:inline">{story.descendants || 0} comments</span>
+              <span className="sm:hidden">{story.descendants || 0}</span>
             </Link>
           </div>
         </div>
 
         {/* Preview Image (Desktop) */}
         {story.url && (
-          <div className="hidden sm:block w-32 h-24 shrink-0">
+          <div className="hidden sm:block w-24 sm:w-32 h-16 sm:h-24 shrink-0">
             <LinkPreview url={story.url} />
           </div>
         )}
@@ -90,7 +93,7 @@ export function StoryCard({ story, index }: StoryCardProps) {
 
       {/* Mobile Preview */}
       {story.url && (
-        <div className="block sm:hidden w-full h-32 mt-2">
+        <div className="block sm:hidden w-full h-24 sm:h-32 mt-2">
           <LinkPreview url={story.url} />
         </div>
       )}

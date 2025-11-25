@@ -13,6 +13,7 @@ interface CommentClientProps {
 
 export function CommentClient({ comment, children }: CommentClientProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const replyCount = comment.kids?.length || 0;
 
   return (
     <div className="flex flex-col gap-2 py-3 border-t border-neutral-100 dark:border-neutral-900 first:border-0">
@@ -49,10 +50,23 @@ export function CommentClient({ comment, children }: CommentClientProps) {
         <span className="cursor-pointer hover:text-neutral-800 dark:hover:text-neutral-200" onClick={() => setIsCollapsed(!isCollapsed)}>
           {formatDistanceToNow(comment.time * 1000, { addSuffix: true })}
         </span>
-        {isCollapsed && comment.kids && (
+
+        {/* Reply count info - visible for navigation */}
+        {replyCount > 0 && (
+          <>
+            <span>•</span>
+            <span data-reply-count={replyCount} className="flex items-center gap-1 text-orange-500">
+              <MessageSquare size={10} />
+              {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
+            </span>
+          </>
+        )}
+
+        {/* Collapsed state indicator */}
+        {isCollapsed && replyCount > 0 && (
           <span className="ml-2 flex items-center gap-1 text-orange-500 bg-orange-50 dark:bg-orange-950/30 px-1.5 py-0.5 rounded text-[10px] font-medium">
             <MessageSquare size={10} />
-            {comment.kids.length} replies hidden
+            {replyCount} {replyCount === 1 ? 'reply' : 'replies'} hidden
           </span>
         )}
       </div>
