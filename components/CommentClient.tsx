@@ -34,20 +34,20 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
       {/* Header / Toggle */}
       <div className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 select-none h-4">
         {/* Action buttons grouped together */}
-        <div className="flex items-center">
+        <div className="flex items-center gap-0.5">
           <button
-            className="w-4 h-4 p-0 rounded flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
+            className="p-0.5 rounded flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
             onClick={() => setIsCollapsed(!isCollapsed)}
             title={isCollapsed ? "Expand" : "Collapse"}
           >
             {isCollapsed ? (
-              <Plus size={12} strokeWidth={2.5} className="text-orange-500" />
+              <Plus size={10} strokeWidth={2.5} className="text-orange-500" />
             ) : (
-              <Minus size={12} strokeWidth={2.5} className="text-neutral-400" />
+              <Minus size={10} strokeWidth={2.5} className="text-neutral-400" />
             )}
           </button>
           <button
-            className="w-4 h-4 p-0 rounded flex items-center justify-center hover:bg-orange-100 dark:hover:bg-orange-950/30 transition-colors flex-shrink-0"
+            className="p-0.5 rounded flex items-center justify-center hover:bg-orange-100 dark:hover:bg-orange-950/30 transition-colors"
             title="Upvote"
           >
             <Triangle
