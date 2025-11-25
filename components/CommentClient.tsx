@@ -33,10 +33,10 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
     <div className="flex flex-col gap-2 py-3 border-t border-neutral-100 dark:border-neutral-900 first:border-0">
       {/* Header / Toggle */}
       <div className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 select-none h-4">
-        {/* Action buttons grouped together */}
-        <div className="flex items-center gap-0.5">
+        {/* Action buttons grouped together - no gap */}
+        <div className="flex items-center">
           <button
-            className="p-0.5 rounded flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+            className="p-0.5 -mr-0.5 rounded flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
             onClick={() => setIsCollapsed(!isCollapsed)}
             title={isCollapsed ? "Expand" : "Collapse"}
           >
