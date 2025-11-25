@@ -67,31 +67,17 @@ export function StoryCard({ story, index }: StoryCardProps) {
             )}
           </div>
 
-          {/* Header info - Mobile */}
-          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 sm:hidden text-xs text-neutral-600 dark:text-neutral-400">
-            {/* Story Type Badge */}
+          {/* Header info - Mobile: Simple single line with badge, user, time */}
+          <div className="flex items-center gap-1.5 sm:hidden text-xs text-neutral-500 dark:text-neutral-400">
             <StoryBadge title={story.title} type={story.type} />
             <Link
               href={`/user/${story.by}`}
-              className="font-medium text-neutral-800 dark:text-neutral-200 hover:text-orange-600 dark:hover:text-orange-500 transition-colors leading-none"
+              className="font-medium text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
             >
               {story.by}
             </Link>
-            <span className="text-neutral-400 leading-none">|</span>
-            <span className="inline-flex items-baseline gap-1 leading-none">
-              <Clock size={10} className="self-center" />
-              <TimeAgo timestamp={story.time} addSuffix={false} />
-            </span>
-            <span className="text-neutral-400 leading-none">|</span>
-            <a
-              href={`https://news.ycombinator.com/from?site=${host}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline hover:text-orange-600 dark:hover:text-orange-500 font-mono text-neutral-600 dark:text-neutral-400 truncate transition-colors leading-none"
-              title={host}
-            >
-              {host}
-            </a>
+            <span className="text-neutral-300 dark:text-neutral-600">·</span>
+            <TimeAgo timestamp={story.time} addSuffix={false} />
           </div>
 
           {/* Title */}
@@ -123,6 +109,18 @@ export function StoryCard({ story, index }: StoryCardProps) {
               <span className="sm:hidden">{story.descendants || 0}</span>
             </Link>
             <ShareButton title={story.title || "Story"} url={storyUrl} />
+            {/* Domain - mobile only, shown in footer */}
+            {story.url && (
+              <a
+                href={`https://news.ycombinator.com/from?site=${host}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-auto sm:hidden text-xs font-mono text-neutral-400 dark:text-neutral-500 hover:text-orange-500 dark:hover:text-orange-500 truncate max-w-[120px] transition-colors"
+                title={host}
+              >
+                {host}
+              </a>
+            )}
           </div>
         </div>
 
