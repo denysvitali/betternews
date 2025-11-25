@@ -89,19 +89,6 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
           </>
         )}
 
-        {/* Collapsed state indicator */}
-        {isCollapsed && (
-          <span className="ml-2 flex items-center gap-0.5 text-orange-500 bg-orange-50 dark:bg-orange-950/30 px-1.5 rounded text-[10px] font-medium whitespace-nowrap h-full">
-            {replyCount > 0 ? (
-              <>
-                <MessageSquare size={8} strokeWidth={2} />
-                <span>{replyCount} hidden</span>
-              </>
-            ) : (
-              <span>collapsed</span>
-            )}
-          </span>
-        )}
       </div>
 
       {!isCollapsed && (
