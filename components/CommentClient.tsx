@@ -32,31 +32,30 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
   return (
     <div className="flex flex-col gap-2 py-3 border-t border-neutral-100 dark:border-neutral-900 first:border-0">
       {/* Header / Toggle */}
-      <div className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 select-none h-4">
-        {/* Action buttons grouped together - no gap */}
-        <div className="flex items-center">
-          <button
-            className="p-0.5 -mr-0.5 rounded flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            title={isCollapsed ? "Expand" : "Collapse"}
-          >
-            {isCollapsed ? (
-              <Plus size={10} strokeWidth={2.5} className="text-orange-500" />
-            ) : (
-              <Minus size={10} strokeWidth={2.5} className="text-neutral-400" />
-            )}
-          </button>
-          <button
-            className="p-0.5 rounded flex items-center justify-center hover:bg-orange-100 dark:hover:bg-orange-950/30 transition-colors"
-            title="Upvote"
-          >
-            <Triangle
-              size={8}
-              strokeWidth={2}
-              className="text-neutral-400 fill-neutral-400 hover:text-orange-600 hover:fill-orange-600 dark:hover:text-orange-500 dark:hover:fill-orange-500 transition-colors"
-            />
-          </button>
-        </div>
+      <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400 select-none h-4">
+        {/* Collapse button */}
+        <button
+          className="flex items-center justify-center hover:text-orange-500 transition-colors"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          title={isCollapsed ? "Expand" : "Collapse"}
+        >
+          {isCollapsed ? (
+            <Plus size={10} strokeWidth={2.5} className="text-orange-500" />
+          ) : (
+            <Minus size={10} strokeWidth={2.5} className="text-neutral-400" />
+          )}
+        </button>
+        {/* Upvote button */}
+        <button
+          className="flex items-center justify-center hover:text-orange-500 transition-colors"
+          title="Upvote"
+        >
+          <Triangle
+            size={8}
+            strokeWidth={2}
+            className="text-neutral-400 fill-neutral-400 hover:text-orange-600 hover:fill-orange-600 dark:hover:text-orange-500 dark:hover:fill-orange-500 transition-colors"
+          />
+        </button>
 
         {/* Username */}
         <Link
