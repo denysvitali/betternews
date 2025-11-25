@@ -32,33 +32,31 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
   return (
     <div className="flex flex-col gap-2 py-3 border-t border-neutral-100 dark:border-neutral-900 first:border-0">
       {/* Header / Toggle */}
-      <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400 select-none h-4">
-        {/* Collapse/Expand button */}
-        <button
-          className="w-4 h-4 p-0 rounded flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          title={isCollapsed ? "Expand" : "Collapse"}
-        >
-          {isCollapsed ? (
-            <Plus size={12} strokeWidth={2.5} className="text-orange-500" />
-          ) : (
-            <Minus size={12} strokeWidth={2.5} className="text-neutral-400" />
-          )}
-        </button>
-
-        {/* Upvote button */}
-        <button
-          className="w-4 h-4 p-0 rounded flex items-center justify-center hover:bg-orange-100 dark:hover:bg-orange-950/30 transition-colors flex-shrink-0"
-          title="Upvote"
-        >
-          <Triangle
-            size={8}
-            strokeWidth={2}
-            className="text-neutral-400 fill-neutral-400 hover:text-orange-600 hover:fill-orange-600 dark:hover:text-orange-500 dark:hover:fill-orange-500 transition-colors"
-          />
-        </button>
-
-        <span className="text-neutral-400 flex items-center h-full">|</span>
+      <div className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 select-none h-4">
+        {/* Action buttons grouped together */}
+        <div className="flex items-center">
+          <button
+            className="w-4 h-4 p-0 rounded flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            title={isCollapsed ? "Expand" : "Collapse"}
+          >
+            {isCollapsed ? (
+              <Plus size={12} strokeWidth={2.5} className="text-orange-500" />
+            ) : (
+              <Minus size={12} strokeWidth={2.5} className="text-neutral-400" />
+            )}
+          </button>
+          <button
+            className="w-4 h-4 p-0 rounded flex items-center justify-center hover:bg-orange-100 dark:hover:bg-orange-950/30 transition-colors flex-shrink-0"
+            title="Upvote"
+          >
+            <Triangle
+              size={8}
+              strokeWidth={2}
+              className="text-neutral-400 fill-neutral-400 hover:text-orange-600 hover:fill-orange-600 dark:hover:text-orange-500 dark:hover:fill-orange-500 transition-colors"
+            />
+          </button>
+        </div>
 
         {/* Username */}
         <Link
@@ -68,7 +66,7 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
           {comment.by}
         </Link>
 
-        <span className="text-neutral-400 flex items-center h-full">|</span>
+        <span className="text-neutral-300 dark:text-neutral-600 flex items-center h-full">·</span>
 
         {/* Comment time with tooltip */}
         <span className="flex items-center h-full">
@@ -78,7 +76,7 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
         {/* Reply count info - visible for navigation */}
         {replyCount > 0 && (
           <>
-            <span className="text-neutral-400 flex items-center h-full">|</span>
+            <span className="text-neutral-300 dark:text-neutral-600 flex items-center h-full">·</span>
             <span
               data-reply-count={replyCount}
               className="flex items-center gap-0.5 text-orange-500 whitespace-nowrap h-full"
