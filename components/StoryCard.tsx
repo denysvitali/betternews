@@ -68,16 +68,18 @@ export function StoryCard({ story, index }: StoryCardProps) {
           </div>
 
           {/* Header info - Mobile: Simple single line with badge, user, time */}
-          <div className="flex items-center gap-1.5 sm:hidden text-xs leading-none text-neutral-500 dark:text-neutral-400">
+          <div className="flex items-center gap-1.5 sm:hidden text-xs text-neutral-500 dark:text-neutral-400 h-4">
             <StoryBadge title={story.title} type={story.type} />
             <Link
               href={`/user/${story.by}`}
-              className="font-medium leading-none text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
+              className="font-medium text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500 transition-colors flex items-center h-full"
             >
               {story.by}
             </Link>
-            <span className="text-neutral-300 dark:text-neutral-600 leading-none">·</span>
-            <TimeAgo timestamp={story.time} addSuffix={false} />
+            <span className="text-neutral-300 dark:text-neutral-600 flex items-center h-full">·</span>
+            <span className="flex items-center h-full">
+              <TimeAgo timestamp={story.time} addSuffix={false} />
+            </span>
           </div>
 
           {/* Title */}
