@@ -17,13 +17,13 @@ export function TimeAgo({ timestamp, addSuffix = true, className = "" }: TimeAgo
 
   return (
     <span
-      className={`relative cursor-help ${className}`}
+      className={`relative cursor-help inline leading-none ${className}`}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
       onTouchStart={() => setShowTooltip(true)}
       onTouchEnd={() => setShowTooltip(false)}
     >
-      <span className="border-b border-dotted border-neutral-400 dark:border-neutral-600">
+      <span className="border-b border-dotted border-neutral-400 dark:border-neutral-600 leading-none">
         {relativeTime}
       </span>
 
