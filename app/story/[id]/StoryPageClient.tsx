@@ -73,23 +73,44 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                 {/* Story Header */}
                 <div className="mb-6 sm:mb-8 rounded-xl border border-neutral-200 bg-white p-4 sm:p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
                     <div className="flex flex-col gap-3 sm:gap-4">
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+                        {/* Desktop header info */}
+                        <div className="hidden sm:flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400">
                             <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
                                 <ArrowUp size={12} />
                                 <span className="font-bold text-sm">{story.score}</span>
                             </div>
-                            <span className="hidden sm:inline">•</span>
+                            <span>•</span>
                             <Link
                                 href={`/user/${story.by}`}
                                 className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
                             >
                                 {story.by}
                             </Link>
-                            <span className="hidden sm:inline">•</span>
+                            <span>•</span>
                             <div className="flex items-center gap-1">
                                 <Clock size={12} />
-                                <span className="hidden sm:inline">{formatDistanceToNow(story.time * 1000, { addSuffix: true })}</span>
-                                <span className="sm:hidden">{formatDistanceToNow(story.time * 1000, { addSuffix: false })}</span>
+                                <span>{formatDistanceToNow(story.time * 1000, { addSuffix: true })}</span>
+                            </div>
+                        </div>
+
+                        {/* Mobile header info */}
+                        <div className="flex flex-col gap-2 sm:hidden text-xs text-neutral-500 dark:text-neutral-400">
+                            <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
+                                <ArrowUp size={10} />
+                                <span className="font-bold text-sm">{story.score}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <Link
+                                    href={`/user/${story.by}`}
+                                    className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
+                                >
+                                    {story.by}
+                                </Link>
+                                <span>•</span>
+                                <div className="flex items-center gap-1">
+                                    <Clock size={10} />
+                                    <span>{formatDistanceToNow(story.time * 1000, { addSuffix: false })}</span>
+                                </div>
                             </div>
                         </div>
 

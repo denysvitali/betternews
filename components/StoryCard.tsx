@@ -26,30 +26,53 @@ export function StoryCard({ story, index }: StoryCardProps) {
         </div>
 
         <div className="flex flex-1 flex-col gap-2 min-w-0">
-          {/* Header info */}
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs text-neutral-500">
+          {/* Header info - Desktop */}
+          <div className="hidden sm:flex items-center gap-2 text-xs text-neutral-500">
             <Link
               href={`/user/${story.by}`}
               className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
             >
               {story.by}
             </Link>
-            <span className="hidden sm:inline">•</span>
+            <span>•</span>
             <div className="flex items-center gap-1">
               <Clock size={10} />
-              <span className="hidden sm:inline">{formatDistanceToNow(story.time * 1000, { addSuffix: true })}</span>
-              <span className="sm:hidden">{formatDistanceToNow(story.time * 1000, { addSuffix: false })}</span>
+              <span>{formatDistanceToNow(story.time * 1000, { addSuffix: true })}</span>
             </div>
-            <span className="hidden sm:inline">•</span>
+            <span>•</span>
             <a
               href={`https://news.ycombinator.com/from?site=${host}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline truncate max-w-[120px] sm:max-w-none"
+              className="hover:underline font-mono"
             >
-              <span className="hidden sm:inline">{host}</span>
-              <span className="sm:hidden font-mono text-xs">{host.substring(0, 15)}...</span>
+              {host}
             </a>
+          </div>
+
+          {/* Header info - Mobile */}
+          <div className="flex flex-col gap-1 sm:hidden text-xs text-neutral-500">
+            <Link
+              href={`/user/${story.by}`}
+              className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
+            >
+              {story.by}
+            </Link>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <Clock size={10} />
+                <span>{formatDistanceToNow(story.time * 1000, { addSuffix: false })}</span>
+              </div>
+              <span>•</span>
+              <a
+                href={`https://news.ycombinator.com/from?site=${host}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline font-mono truncate max-w-[150px]"
+              >
+                {host.length > 20 ? `${host.substring(0, 20)}...` : host}
+              </a>
+            </div>
           </div>
 
           {/* Title */}
