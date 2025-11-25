@@ -37,7 +37,7 @@ function HomeContent() {
 
         {!loading && !error && (
           <>
-            <div className="flex flex-col gap-3 sm:gap-4">
+            <div className="flex flex-col gap-4">
               {stories.map((story, index) => (
                 <StoryCard
                   key={story.id}
