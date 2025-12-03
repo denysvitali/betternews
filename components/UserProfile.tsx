@@ -3,11 +3,12 @@
 import { HNItem, HNUser } from "@/lib/types";
 import { User, Calendar, TrendingUp, LinkIcon, MessageSquare, FileText } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { StorySkeleton } from "./StorySkeleton";
 import { CommentSkeleton } from "./CommentSkeleton";
 import { EmptyState } from "./EmptyState";
 import { TimeAgo } from "./TimeAgo";
+import { Card, Badge } from "@/components/ui";
 
 interface UserProfileProps {
     user: HNUser;
@@ -19,17 +20,14 @@ interface UserProfileProps {
 export function UserProfile({ user, items, activeTab: initialTab, loading }: UserProfileProps) {
     const [activeTab, setActiveTab] = useState(initialTab);
 
-    // Type guards
-    const isStory = (item: HNItem): boolean => item.type === "story";
-    const isComment = (item: HNItem): boolean => item.type === "comment";
-
-    const comments = items.filter(isComment);
-    const posts = items.filter(isStory);
+    // Memoize filtered lists for performance
+    const posts = useMemo(() => items.filter(item => item.type === "story"), [items]);
+    const comments = useMemo(() => items.filter(item => item.type === "comment"), [items]);
 
     return (
         <div className="space-y-6">
             {/* User Header Card */}
-            <div className="rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+            <Card variant="default" padding="lg">
                 <div className="flex flex-col gap-6">
                     {/* Profile Icon & Username */}
                     <div className="flex items-center gap-4">
@@ -46,10 +44,9 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                                     <span>Joined </span>
                                     <TimeAgo timestamp={user.created} />
                                 </div>
-                                <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
-                                    <TrendingUp size={14} />
-                                    <span className="font-bold">{user.karma} karma</span>
-                                </div>
+                                <Badge variant="orange" size="md" icon={<TrendingUp size={14} />}>
+                                    {user.karma} karma
+                                </Badge>
                             </div>
                         </div>
                     </div>
@@ -67,7 +64,7 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                         </div>
                     )}
                 </div>
-            </div>
+            </Card>
 
             {/* Tabs */}
             <div className="flex gap-2 border-b border-neutral-200 dark:border-neutral-800">
@@ -97,11 +94,11 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
             <div className="space-y-4">
                 {loading ? (
                     [...Array(10)].map((_, i) => (
-                        activeTab === "submissions" ? 
-                            <StorySkeleton key={i} /> : 
-                            <div key={i} className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+                        activeTab === "submissions" ?
+                            <StorySkeleton key={i} /> :
+                            <Card key={i} variant="default" padding="md">
                                 <CommentSkeleton />
-                            </div>
+                            </Card>
                     ))
                 ) : (
                     <>
@@ -109,10 +106,7 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                             <>
                                 {posts.length > 0 ? (
                                     posts.map((post) => (
-                                        <div
-                                            key={post.id}
-                                            className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm transition-all hover:border-orange-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-orange-900/50"
-                                        >
+                                        <Card key={post.id} variant="interactive" padding="md">
                                             <Link
                                                 href={`/story/${post.id}`}
                                                 className="text-lg font-semibold text-neutral-900 hover:text-orange-600 dark:text-white dark:hover:text-orange-500"
@@ -120,21 +114,20 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                                                 {post.title}
                                             </Link>
                                             <div className="mt-2 flex items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400">
-                                                <span className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
-                                                    <TrendingUp size={12} />
-                                                    <span className="font-bold">{post.score || 0} points</span>
-                                                </span>
+                                                <Badge variant="orange" size="sm" icon={<TrendingUp size={12} />}>
+                                                    {post.score || 0} points
+                                                </Badge>
                                                 <span>|</span>
                                                 <TimeAgo timestamp={post.time} />
                                                 <span>•</span>
                                                 <span>{post.descendants || 0} comments</span>
                                             </div>
-                                        </div>
+                                        </Card>
                                     ))
                                 ) : (
-                                    <div className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+                                    <Card variant="default" padding="none">
                                         <EmptyState type="posts" />
-                                    </div>
+                                    </Card>
                                 )}
                             </>
                         )}
@@ -143,10 +136,7 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                             <>
                                 {comments.length > 0 ? (
                                     comments.map((comment) => (
-                                        <div
-                                            key={comment.id}
-                                            className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
-                                        >
+                                        <Card key={comment.id} variant="default" padding="md">
                                             <div className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
                                                 <TimeAgo timestamp={comment.time} />
                                             </div>
@@ -162,12 +152,12 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                                                     View context →
                                                 </Link>
                                             )}
-                                        </div>
+                                        </Card>
                                     ))
                                 ) : (
-                                    <div className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+                                    <Card variant="default" padding="none">
                                         <EmptyState type="comments" />
-                                    </div>
+                                    </Card>
                                 )}
                             </>
                         )}

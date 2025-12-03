@@ -2,10 +2,9 @@
 
 import { useParams, useSearchParams } from "next/navigation";
 import { useUser, useUserItems } from "@/lib/hooks";
-import { Navbar } from "@/components/Navbar";
 import { UserProfile } from "@/components/UserProfile";
-import { Loader2 } from "lucide-react";
 import { Suspense } from "react";
+import { PageLayout, PageLoading, PageError } from "@/components/ui";
 
 interface UserPageProps {
     username?: string;
@@ -23,58 +22,32 @@ function UserPageContent({ username: propUsername }: UserPageProps) {
     const { items, loading: itemsLoading } = useUserItems(user?.submitted || [], 30);
 
     if (userLoading) {
-        return (
-            <div className="min-h-screen bg-neutral-50 dark:bg-black">
-                <Navbar />
-                <main className="container mx-auto max-w-4xl px-4 py-8">
-                    <div className="flex items-center justify-center py-12">
-                        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
-                    </div>
-                </main>
-            </div>
-        );
+        return <PageLoading />;
     }
 
     if (userError || !user) {
         return (
-            <div className="min-h-screen bg-neutral-50 dark:bg-black">
-                <Navbar />
-                <main className="container mx-auto max-w-4xl px-4 py-8">
-                    <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
-                        User not found.
-                    </div>
-                </main>
-            </div>
+            <PageLayout>
+                <PageError message="User not found." />
+            </PageLayout>
         );
     }
 
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-black">
-            <Navbar />
-            <main className="container mx-auto max-w-4xl px-4 py-8">
-                <UserProfile 
-                    user={user} 
-                    items={items} 
-                    activeTab={tab} 
-                    loading={itemsLoading} 
-                />
-            </main>
-        </div>
+        <PageLayout>
+            <UserProfile
+                user={user}
+                items={items}
+                activeTab={tab}
+                loading={itemsLoading}
+            />
+        </PageLayout>
     );
 }
 
 export default function UserPageClient({ username }: UserPageProps) {
     return (
-        <Suspense fallback={
-            <div className="min-h-screen bg-neutral-50 dark:bg-black">
-                <Navbar />
-                <main className="container mx-auto max-w-4xl px-4 py-8">
-                    <div className="flex items-center justify-center py-12">
-                        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
-                    </div>
-                </main>
-            </div>
-        }>
+        <Suspense fallback={<PageLoading />}>
             <UserPageContent username={username} />
         </Suspense>
     );

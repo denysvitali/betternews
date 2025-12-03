@@ -9,6 +9,7 @@ import { StoryBadge } from "./StoryBadge";
 import { ShareButton } from "./ShareButton";
 import { TimeAgo } from "./TimeAgo";
 import { BookmarkButton } from "./BookmarkButton";
+import { Card, Badge, Button } from "@/components/ui";
 
 interface StoryCardProps {
   story: HNItem;
@@ -20,15 +21,14 @@ export function StoryCard({ story, index }: StoryCardProps) {
   const storyUrl = story.url || `${typeof window !== 'undefined' ? window.location.origin : ''}/story/${story.id}`;
 
   return (
-    <div className="group relative flex flex-col gap-3 sm:gap-4 overflow-hidden rounded-xl border border-neutral-200 bg-white p-3 sm:p-4 transition-all hover:border-orange-200 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-orange-900/50">
+    <Card variant="hover" padding="sm" className="flex flex-col gap-3 sm:gap-4 overflow-hidden sm:p-4">
       <div className="flex gap-3 sm:gap-4">
         {/* Rank & Score */}
         <div className="flex flex-col items-center gap-1 min-w-fit">
           <span className="text-base sm:text-lg font-bold text-neutral-300 dark:text-neutral-700">{index + 1}</span>
-          <div className="flex flex-row items-center gap-1 rounded-full bg-orange-50 px-2 py-1 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500">
-            <ArrowUp size={10} strokeWidth={2} />
-            <span className="text-xs font-bold leading-none">{story.score || 0}</span>
-          </div>
+          <Badge variant="orange" size="md" icon={<ArrowUp size={10} strokeWidth={2} />}>
+            {story.score || 0}
+          </Badge>
         </div>
 
         <div className="flex flex-1 flex-col gap-2 min-w-0">
@@ -105,14 +105,15 @@ export function StoryCard({ story, index }: StoryCardProps) {
 
           {/* Footer actions */}
           <div className="mt-auto flex items-center gap-2 sm:gap-3 pt-2">
-            <Link
+            <Button
               href={`/story/${story.id}`}
-              className="flex items-center gap-1.5 rounded-md bg-neutral-100 px-2.5 sm:px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+              variant="action"
+              size="sm"
             >
               <MessageSquare size={11} />
               <span className="hidden sm:inline">{story.descendants || 0} comments</span>
               <span className="sm:hidden">{story.descendants || 0}</span>
-            </Link>
+            </Button>
             <ShareButton title={story.title || "Story"} url={storyUrl} />
             <BookmarkButton
               story={{
@@ -153,6 +154,6 @@ export function StoryCard({ story, index }: StoryCardProps) {
           <LinkPreview url={story.url} />
         </div>
       )}
-    </div>
+    </Card>
   );
 }
