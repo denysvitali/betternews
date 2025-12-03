@@ -19,6 +19,7 @@ import { CommentSkeleton } from "@/components/CommentSkeleton";
 import { CommentNavigation } from "@/components/CommentNavigation";
 import { getDomain, getReadingTime } from "@/lib/utils";
 import { PageLayout, PageError, Card, Badge, Skeleton } from "@/components/ui";
+import { ReadingProgress } from "@/components/ReadingProgress";
 
 interface StoryPageClientProps {
     initialStory?: HNItem | null;
@@ -66,6 +67,9 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
 
     return (
         <PageLayout>
+            {/* Reading progress indicator */}
+            <ReadingProgress />
+
             {/* Story Header */}
             <Card variant="default" padding="md" className="mb-6 sm:mb-8 sm:p-6">
                 <div className="flex flex-col gap-3 sm:gap-4">
@@ -149,7 +153,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                     {/* Large Preview for the Story Page */}
                     {story.url && (
                         <div className="mt-3 sm:mt-4 aspect-video w-full max-w-2xl overflow-hidden rounded-lg border border-neutral-100 dark:border-neutral-800">
-                            <LinkPreview url={story.url} detailed />
+                            <LinkPreview url={story.url} />
                         </div>
                     )}
 

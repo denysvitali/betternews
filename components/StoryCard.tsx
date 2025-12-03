@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import Link from "next/link";
 import { MessageSquare, ArrowUp, Clock, BookOpen } from "lucide-react";
 import { HNItem } from "@/lib/hn";
@@ -16,9 +17,22 @@ interface StoryCardProps {
   index: number;
 }
 
-export function StoryCard({ story, index }: StoryCardProps) {
-  const host = story.url ? getDomain(story.url) : "news.ycombinator.com";
-  const storyUrl = story.url || `${typeof window !== 'undefined' ? window.location.origin : ''}/story/${story.id}`;
+export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProps) {
+  // Memoize expensive computations
+  const host = useMemo(
+    () => (story.url ? getDomain(story.url) : "news.ycombinator.com"),
+    [story.url]
+  );
+
+  const readingTime = useMemo(
+    () => (story.text ? getReadingTime(story.text) : null),
+    [story.text]
+  );
+
+  const storyUrl = useMemo(
+    () => story.url || `${typeof window !== "undefined" ? window.location.origin : ""}/story/${story.id}`,
+    [story.url, story.id]
+  );
 
   return (
     <Card variant="hover" padding="sm" className="flex flex-col gap-3 sm:gap-4 overflow-hidden sm:p-4">
@@ -59,12 +73,12 @@ export function StoryCard({ story, index }: StoryCardProps) {
               {host}
             </a>
             {/* Reading time for text posts */}
-            {story.text && (
+            {readingTime && (
               <>
                 <span className="text-neutral-400">|</span>
                 <div className="flex items-center gap-1 text-neutral-500">
                   <BookOpen size={11} />
-                  <span>{getReadingTime(story.text)}</span>
+                  <span>{readingTime}</span>
                 </div>
               </>
             )}
@@ -156,4 +170,4 @@ export function StoryCard({ story, index }: StoryCardProps) {
       )}
     </Card>
   );
-}
+});

@@ -26,18 +26,6 @@ body {
   /* Mobile optimization */
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-/* Allow text selection for specific elements */
-body [data-selectable="true"],
-body input,
-body textarea,
-body [contenteditable="true"] {
-  -webkit-user-select: text;
-  user-select: text;
 }
 
 /* Improved mobile scrolling */

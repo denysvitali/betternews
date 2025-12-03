@@ -4,7 +4,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Search, X, Loader2, ExternalLink, Clock } from "lucide-react";
 import Link from "next/link";
 import { HNItem, HN_API_BASE } from "@/lib/types";
+import { useDebounce } from "@/lib/hooks";
 import { TimeAgo } from "./TimeAgo";
+import { Card, Button } from "./ui";
 
 interface SearchResult {
   id: number;
@@ -19,23 +21,6 @@ interface SearchResult {
 interface SearchBarProps {
   onClose?: () => void;
   isOpen?: boolean;
-}
-
-// Debounce hook
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
 }
 
 export function SearchBar({ onClose, isOpen }: SearchBarProps) {
@@ -159,7 +144,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
 
       {/* Search Results */}
       {showResults && results.length > 0 && (
-        <div className="mt-2 max-h-80 overflow-y-auto rounded-lg border border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
+        <Card className="mt-2 max-h-80 overflow-y-auto shadow-lg" padding="none">
           {results.map((result) => (
             <Link
               key={result.id}
@@ -189,12 +174,12 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
             <ExternalLink size={14} />
             <span>Search more on HN Algolia</span>
           </button>
-        </div>
+        </Card>
       )}
 
       {/* No results */}
       {showResults && query.length >= 2 && results.length === 0 && !isLoading && (
-        <div className="mt-2 rounded-lg border border-neutral-200 bg-white p-4 text-center dark:border-neutral-700 dark:bg-neutral-800">
+        <Card className="mt-2 text-center" padding="md">
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
             No stories found for &quot;{query}&quot;
           </p>
@@ -205,7 +190,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
             <ExternalLink size={14} />
             <span>Try searching on HN Algolia</span>
           </button>
-        </div>
+        </Card>
       )}
 
       {/* Search hints */}
@@ -223,14 +208,10 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
 // Search button for navbar
 export function SearchButton({ onClick }: { onClick: () => void }) {
   return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-orange-500 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-orange-500"
-      aria-label="Search"
-    >
+    <Button onClick={onClick} variant="ghost" aria-label="Search">
       <Search size={18} />
       <span className="hidden md:inline">Search</span>
-    </button>
+    </Button>
   );
 }
 
@@ -265,9 +246,9 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       />
 
       {/* Modal */}
-      <div className="relative mx-4 w-full max-w-lg rounded-xl bg-white p-4 shadow-2xl dark:bg-neutral-900 animate-in fade-in slide-in-from-top-4 duration-200">
+      <Card className="relative mx-4 w-full max-w-lg shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200" padding="md">
         <SearchBar onClose={onClose} isOpen={isOpen} />
-      </div>
+      </Card>
     </div>
   );
 }

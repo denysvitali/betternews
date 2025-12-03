@@ -3,6 +3,105 @@
 import { useState, useEffect, useCallback } from "react";
 import { HNItem, HNUser, HN_API_BASE, PAGINATION } from "./types";
 
+// ============================================
+// Utility Hooks
+// ============================================
+
+/**
+ * Debounce a value by a specified delay
+ */
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+/**
+ * Track scroll position and visibility threshold
+ * Uses requestAnimationFrame for performance optimization
+ */
+export function useScrollVisibility(threshold: number = 400): boolean {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    let rafId: number;
+    let ticking = false;
+
+    const toggleVisibility = () => {
+      if (!ticking) {
+        rafId = requestAnimationFrame(() => {
+          setIsVisible(window.scrollY > threshold);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", toggleVisibility, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", toggleVisibility);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [threshold]);
+
+  return isVisible;
+}
+
+/**
+ * Track reading progress as percentage (0-100)
+ * Uses requestAnimationFrame for performance
+ */
+export function useReadingProgress(): number {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    let rafId: number;
+    let ticking = false;
+
+    const updateProgress = () => {
+      if (!ticking) {
+        rafId = requestAnimationFrame(() => {
+          const windowHeight = window.innerHeight;
+          const documentHeight = document.documentElement.scrollHeight;
+          const scrollTop = window.scrollY;
+          const scrollable = documentHeight - windowHeight;
+
+          if (scrollable > 0) {
+            setProgress(Math.min(100, Math.round((scrollTop / scrollable) * 100)));
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    // Initial calculation
+    updateProgress();
+
+    return () => {
+      window.removeEventListener("scroll", updateProgress);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  return progress;
+}
+
+// ============================================
+// Data Fetching Hooks
+// ============================================
+
 // Re-export types for backward compatibility
 export type { HNItem as Story, HNItem as Comment, HNUser as User } from "./types";
 

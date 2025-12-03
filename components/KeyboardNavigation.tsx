@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useState } from "react";
+import { Card, Button } from "./ui";
 
 interface KeyboardNavigationProps {
   enabled?: boolean;
@@ -174,8 +175,9 @@ export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) 
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
           onClick={() => setShowHelp(false)}
         >
-          <div
-            className="mx-4 max-w-sm rounded-xl bg-white p-6 shadow-2xl dark:bg-neutral-900"
+          <Card
+            className="mx-4 max-w-sm shadow-2xl"
+            padding="lg"
             onClick={e => e.stopPropagation()}
           >
             <h3 className="mb-4 text-lg font-bold text-neutral-900 dark:text-white">
@@ -207,13 +209,14 @@ export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) 
                 <kbd className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs dark:bg-neutral-800">esc</kbd>
               </div>
             </div>
-            <button
+            <Button
+              variant="primary"
               onClick={() => setShowHelp(false)}
-              className="mt-6 w-full rounded-lg bg-orange-500 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600"
+              className="mt-6 w-full"
             >
               Got it
-            </button>
-          </div>
+            </Button>
+          </Card>
         </div>
       )}
     </>

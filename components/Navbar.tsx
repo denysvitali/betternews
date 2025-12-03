@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Newspaper, Menu, X, Search, Bookmark } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SearchModal } from "@/components/SearchBar";
+import { IconButton } from "./ui";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -66,27 +67,27 @@ export function Navbar() {
           {/* Mobile Menu Button */}
           <div className="sm:hidden flex items-center gap-1">
             {/* Mobile Search Button */}
-            <button
+            <IconButton
+              variant="ghost"
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
               aria-label="Search"
-            >
-              <Search size={20} className="text-neutral-600 dark:text-neutral-400" />
-            </button>
+              icon={<Search size={20} className="text-neutral-600 dark:text-neutral-400" />}
+            />
 
             <ThemeToggle />
 
-            <button
+            <IconButton
+              variant="ghost"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
               aria-label="Toggle mobile menu"
-            >
-              {isMobileMenuOpen ? (
-                <X size={24} className="text-neutral-600 dark:text-neutral-400" />
-              ) : (
-                <Menu size={24} className="text-neutral-600 dark:text-neutral-400" />
-              )}
-            </button>
+              icon={
+                isMobileMenuOpen ? (
+                  <X size={24} className="text-neutral-600 dark:text-neutral-400" />
+                ) : (
+                  <Menu size={24} className="text-neutral-600 dark:text-neutral-400" />
+                )
+              }
+            />
           </div>
         </div>
 

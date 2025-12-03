@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { ChevronUp, ChevronDown, MessageCircle, List } from "lucide-react";
+import { ChevronUp, ChevronDown, MessageCircle } from "lucide-react";
+import { useScrollVisibility } from "@/lib/hooks";
+import { Card, Button } from "./ui";
 
 interface CommentNavProps {
   totalComments: number;
@@ -18,7 +20,8 @@ interface RootComment {
 export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
   const [rootComments, setRootComments] = useState<RootComment[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
+  const isScrolledDown = useScrollVisibility(200);
+  const isVisible = !isScrolledDown; // Show when near top
 
   // Scroll to a specific comment by ID
   const scrollToComment = useCallback((commentId: number) => {
@@ -94,17 +97,8 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
       });
     }
 
-    // Check scroll position for visibility
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setIsVisible(scrollY < 200); // Show when near top
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
     return () => {
       observer.disconnect();
-      window.removeEventListener('scroll', handleScroll);
     };
   }, [totalComments]);
 
@@ -116,7 +110,7 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
   return (
     <div className="sticky top-20 z-40 mb-4">
       <div className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6">
-        <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-md border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4">
+        <Card variant="default" padding="md" className="shadow-md">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             {/* Comment count and position info */}
             <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
@@ -158,25 +152,27 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
 
               {/* Previous/Next buttons */}
               <div className="hidden sm:flex items-center gap-1">
-                <button
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={navigatePrevious}
                   disabled={currentIndex === 0}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   aria-label="Previous root comment"
                 >
                   <ChevronUp size={16} />
                   <span className="hidden md:inline">Prev</span>
-                </button>
+                </Button>
 
-                <button
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={navigateNext}
                   disabled={currentIndex === rootComments.length - 1}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   aria-label="Next root comment"
                 >
                   <span className="hidden md:inline">Next</span>
                   <ChevronDown size={16} />
-                </button>
+                </Button>
               </div>
 
               {/* Quick jump buttons for desktop */}
@@ -205,7 +201,7 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

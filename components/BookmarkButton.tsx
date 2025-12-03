@@ -2,6 +2,7 @@
 
 import { Bookmark } from "lucide-react";
 import { useBookmarks } from "@/lib/bookmarks";
+import { Button } from "./ui";
 import { cn } from "@/lib/utils";
 
 interface BookmarkButtonProps {
@@ -22,13 +23,12 @@ export function BookmarkButton({ story, className, showLabel = false }: Bookmark
   const bookmarked = isBookmarked(story.id);
 
   return (
-    <button
+    <Button
       onClick={() => toggleBookmark(story)}
+      variant="action"
+      size="sm"
       className={cn(
-        "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors",
-        bookmarked
-          ? "bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-950/30 dark:text-orange-500 dark:hover:bg-orange-950/50"
-          : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700",
+        bookmarked && "bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-950/30 dark:text-orange-500 dark:hover:bg-orange-950/50",
         className
       )}
       title={bookmarked ? "Remove from reading list" : "Add to reading list"}
@@ -43,6 +43,6 @@ export function BookmarkButton({ story, className, showLabel = false }: Bookmark
           {bookmarked ? "Saved" : "Save"}
         </span>
       )}
-    </button>
+    </Button>
   );
 }

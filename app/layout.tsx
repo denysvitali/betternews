@@ -36,6 +36,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
+        {/* Skip to content link for accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-orange-500 focus:text-white focus:rounded-lg focus:shadow-lg"
+        >
+          Skip to content
+        </a>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -43,7 +50,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <BookmarksProvider>
-            {children}
+            <div id="main-content">
+              {children}
+            </div>
           </BookmarksProvider>
         </ThemeProvider>
       </body>

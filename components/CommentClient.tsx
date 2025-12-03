@@ -5,6 +5,7 @@ import { MessageSquare, Triangle, Plus, Minus } from "lucide-react";
 import { HNItem } from "@/lib/types";
 import Link from "next/link";
 import { TimeAgo } from "./TimeAgo";
+import { IconButton } from "./ui";
 
 interface CommentClientProps {
   comment: HNItem;
@@ -33,23 +34,25 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
     <div className="flex flex-col gap-2 py-3 border-t border-neutral-100 dark:border-neutral-900 first:border-0">
       {/* Header */}
       <span className="text-xs text-neutral-500 dark:text-neutral-400 select-none">
-        <button
-          className="inline-flex items-center justify-center w-3 h-3 align-middle hover:text-orange-500"
+        <IconButton
+          variant="ghost"
+          className="inline-flex w-3 h-3 p-0 align-middle"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          title={isCollapsed ? "Expand" : "Collapse"}
-        >
-          {isCollapsed ? (
-            <Plus size={10} strokeWidth={2.5} className="text-orange-500" />
-          ) : (
-            <Minus size={10} strokeWidth={2.5} className="text-neutral-400" />
-          )}
-        </button>
-        <button
-          className="inline-flex items-center justify-center w-3 h-3 align-middle hover:text-orange-500"
-          title="Upvote"
-        >
-          <Triangle size={8} strokeWidth={2} className="text-neutral-400 fill-neutral-400" />
-        </button>
+          aria-label={isCollapsed ? "Expand" : "Collapse"}
+          icon={
+            isCollapsed ? (
+              <Plus size={10} strokeWidth={2.5} className="text-orange-500" />
+            ) : (
+              <Minus size={10} strokeWidth={2.5} className="text-neutral-400" />
+            )
+          }
+        />
+        <IconButton
+          variant="ghost"
+          className="inline-flex w-3 h-3 p-0 align-middle"
+          aria-label="Upvote"
+          icon={<Triangle size={8} strokeWidth={2} className="text-neutral-400 fill-neutral-400" />}
+        />
         {" "}
         <Link
           href={`/user/${comment.by}`}

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
+import { ReactNode, MouseEventHandler } from "react";
 
 export interface CardProps {
   children: ReactNode;
@@ -7,6 +7,7 @@ export interface CardProps {
   variant?: "default" | "hover" | "interactive";
   padding?: "none" | "sm" | "md" | "lg";
   as?: "div" | "article" | "section";
+  onClick?: MouseEventHandler<HTMLElement>;
 }
 
 const paddingStyles = {
@@ -28,6 +29,7 @@ export function Card({
   variant = "default",
   padding = "md",
   as: Component = "div",
+  onClick,
 }: CardProps) {
   return (
     <Component
@@ -37,6 +39,7 @@ export function Card({
         paddingStyles[padding],
         className
       )}
+      onClick={onClick}
     >
       {children}
     </Component>

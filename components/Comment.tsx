@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { useComment } from "@/lib/hooks";
 import { CommentClient } from "./CommentClient";
 import { Suspense } from "react";
@@ -10,7 +11,7 @@ interface CommentProps {
   level?: number;
 }
 
-export function Comment({ id, level = 0 }: CommentProps) {
+export const Comment = memo(function Comment({ id, level = 0 }: CommentProps) {
   const { comment, loading, error } = useComment(id);
 
   if (loading) {
@@ -42,4 +43,4 @@ export function Comment({ id, level = 0 }: CommentProps) {
       </CommentClient>
     </div>
   );
-}
+});

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
 import { AlertTriangle, RefreshCcw, Home } from "lucide-react";
+import { Button } from "@/components/ui";
 
 export default function Error({
   error,
@@ -29,20 +29,14 @@ export default function Error({
         </p>
       </div>
       <div className="flex flex-wrap justify-center gap-4">
-        <button
-          onClick={() => reset()}
-          className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-950"
-        >
+        <Button onClick={() => reset()} variant="primary">
           <RefreshCcw size={16} />
           Try again
-        </button>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 rounded-md border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 hover:text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-800 dark:focus:ring-offset-neutral-950"
-        >
+        </Button>
+        <Button href="/" variant="secondary">
           <Home size={16} />
           Go Home
-        </Link>
+        </Button>
       </div>
     </div>
   );
