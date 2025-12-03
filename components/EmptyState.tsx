@@ -1,8 +1,8 @@
 "use client";
 
-import { MessageSquare, FileText, Search, Inbox } from "lucide-react";
+import { MessageSquare, FileText, Search, Inbox, Bookmark } from "lucide-react";
 
-type EmptyStateType = "comments" | "posts" | "search" | "default";
+type EmptyStateType = "comments" | "posts" | "search" | "bookmarks" | "default";
 
 interface EmptyStateProps {
   type?: EmptyStateType;
@@ -31,6 +31,13 @@ const emptyStateConfig = {
     description: "Try adjusting your search terms or filters.",
     iconBg: "bg-purple-100 dark:bg-purple-950/30",
     iconColor: "text-purple-500",
+  },
+  bookmarks: {
+    icon: Bookmark,
+    title: "No saved stories",
+    description: "Save stories to read later by clicking the bookmark icon.",
+    iconBg: "bg-orange-100 dark:bg-orange-950/30",
+    iconColor: "text-orange-500",
   },
   default: {
     icon: Inbox,

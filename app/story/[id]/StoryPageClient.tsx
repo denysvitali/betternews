@@ -177,7 +177,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
 
                         {/* Share Button */}
                         <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
-                            <ShareButton title={story.title} url={storyUrl} />
+                            <ShareButton title={story.title || "Story"} url={storyUrl} />
                         </div>
                     </div>
                 </div>
@@ -194,15 +194,11 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
 
                         <div id="comments-container" className="flex flex-col gap-3 sm:gap-4">
                             {story.kids && story.kids.length > 0 ? (
-                                story.kids.map((kid) => {
-                                    const kidId = typeof kid === 'number' ? kid : kid.id;
-                                    const kidData = typeof kid === 'object' ? kid : undefined;
-                                    return (
-                                        <Suspense key={kidId} fallback={<CommentSkeleton />}>
-                                            <Comment id={kidId} data={kidData} />
-                                        </Suspense>
-                                    );
-                                })
+                                story.kids.map((kidId) => (
+                                    <Suspense key={kidId} fallback={<CommentSkeleton />}>
+                                        <Comment id={kidId} />
+                                    </Suspense>
+                                ))
                             ) : (
                                 <EmptyState type="comments" />
                             )}

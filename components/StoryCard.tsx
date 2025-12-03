@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { MessageSquare, ArrowUp, Clock, BookOpen } from "lucide-react";
 import { HNItem } from "@/lib/hn";
@@ -6,6 +8,7 @@ import { getDomain, getReadingTime } from "@/lib/utils";
 import { StoryBadge } from "./StoryBadge";
 import { ShareButton } from "./ShareButton";
 import { TimeAgo } from "./TimeAgo";
+import { BookmarkButton } from "./BookmarkButton";
 
 interface StoryCardProps {
   story: HNItem;
@@ -111,6 +114,16 @@ export function StoryCard({ story, index }: StoryCardProps) {
               <span className="sm:hidden">{story.descendants || 0}</span>
             </Link>
             <ShareButton title={story.title || "Story"} url={storyUrl} />
+            <BookmarkButton
+              story={{
+                id: story.id,
+                title: story.title || "",
+                url: story.url,
+                by: story.by,
+                time: story.time,
+                score: story.score,
+              }}
+            />
             {/* Domain - mobile only, shown in footer */}
             {story.url && (
               <a

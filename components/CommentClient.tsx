@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { MessageSquare, Triangle, Plus, Minus } from "lucide-react";
-import { Comment } from "@/lib/hooks";
+import { HNItem } from "@/lib/types";
 import Link from "next/link";
 import { TimeAgo } from "./TimeAgo";
 
 interface CommentClientProps {
-  comment: Comment;
+  comment: HNItem;
   children?: React.ReactNode;
   level?: number;
 }

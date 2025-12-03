@@ -1,8 +1,7 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useTopStories } from "@/lib/hooks";
-import { HNItem } from "@/lib/hn";
 import { StoryCard } from "@/components/StoryCard";
 import { Navbar } from "@/components/Navbar";
 import { Pagination } from "@/components/Pagination";
@@ -14,7 +13,6 @@ import { Suspense, useCallback } from "react";
 
 function HomeContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const page = parseInt(searchParams.get("page") || "1");
   const { stories, loading, error, refetch } = useTopStories(page);
 
@@ -50,7 +48,7 @@ function HomeContent() {
                 {stories.map((story, index) => (
                   <StoryCard
                     key={story.id}
-                    story={story as unknown as HNItem}
+                    story={story}
                     index={index + ((page - 1) * 30)}
                   />
                 ))}

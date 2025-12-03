@@ -1,6 +1,6 @@
 "use client";
 
-import { User as UserType, Story, Comment } from "@/lib/hooks";
+import { HNItem, HNUser } from "@/lib/types";
 import { User, Calendar, TrendingUp, LinkIcon, MessageSquare, FileText } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -10,8 +10,8 @@ import { EmptyState } from "./EmptyState";
 import { TimeAgo } from "./TimeAgo";
 
 interface UserProfileProps {
-    user: UserType;
-    items: (Story | Comment)[];
+    user: HNUser;
+    items: HNItem[];
     activeTab: string;
     loading?: boolean;
 }
@@ -20,8 +20,8 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
     const [activeTab, setActiveTab] = useState(initialTab);
 
     // Type guards
-    const isStory = (item: Story | Comment): item is Story => item.type === "story";
-    const isComment = (item: Story | Comment): item is Comment => item.type === "comment";
+    const isStory = (item: HNItem): boolean => item.type === "story";
+    const isComment = (item: HNItem): boolean => item.type === "comment";
 
     const comments = items.filter(isComment);
     const posts = items.filter(isStory);

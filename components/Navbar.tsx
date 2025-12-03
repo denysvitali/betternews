@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Newspaper, Menu, X, Search } from "lucide-react";
+import { Newspaper, Menu, X, Search, Bookmark } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SearchModal } from "@/components/SearchBar";
 
@@ -42,6 +42,10 @@ export function Navbar() {
             </Link>
             <Link href="/new" className="px-2 py-1 hover:text-orange-500 transition-colors">
               New
+            </Link>
+            <Link href="/saved" className="flex items-center gap-1 px-2 py-1 hover:text-orange-500 transition-colors">
+              <Bookmark size={14} />
+              Saved
             </Link>
 
             {/* Search Button */}
@@ -103,6 +107,14 @@ export function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 New Stories
+              </Link>
+              <Link
+                href="/saved"
+                className="flex items-center gap-2 px-4 py-3 text-base font-medium text-neutral-600 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Bookmark size={16} />
+                Saved Stories
               </Link>
             </div>
           </div>
