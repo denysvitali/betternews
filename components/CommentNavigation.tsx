@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { ChevronUp, ChevronDown, MessageCircle } from "lucide-react";
-import { useScrollVisibility } from "@/lib/hooks";
 import { Card, Button } from "./ui";
 
 interface CommentNavProps {
@@ -20,8 +19,6 @@ interface RootComment {
 export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
   const [rootComments, setRootComments] = useState<RootComment[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const isScrolledDown = useScrollVisibility(200);
-  const isVisible = !isScrolledDown; // Show when near top
 
   // Scroll to a specific comment by ID
   const scrollToComment = useCallback((commentId: number) => {
@@ -103,7 +100,7 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
   }, [totalComments]);
 
   // Hide navigation when no root comments or only one comment
-  if (rootComments.length <= 1 || !isVisible) {
+  if (rootComments.length <= 1) {
     return null;
   }
 
