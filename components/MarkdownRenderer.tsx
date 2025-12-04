@@ -141,13 +141,14 @@ export function MarkdownRenderer({
   // Clean the content first
   let cleanedContent = content.trim();
 
-  // Handle HN-specific formatting
+  // Decode HTML entities that HN API returns
   cleanedContent = cleanedContent
-    .replace(/</g, "<")
-    .replace(/>/g, ">")
-    .replace(/&/g, "&")
-    .replace(/"/g, '"')
-    .replace(/&#x27;/g, "'");
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'")
+    .replace(/&#x2F;/g, "/");  // HN uses this for forward slashes
 
   // If we allow HTML, sanitize it first
   if (allowHtml) {
