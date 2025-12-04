@@ -44,6 +44,12 @@ export function Navbar() {
             <Link href="/new" className="px-2 py-1 hover:text-orange-500 transition-colors">
               New
             </Link>
+            <Link href="/best" className="px-2 py-1 hover:text-orange-500 transition-colors">
+              Best
+            </Link>
+            <Link href="/show" className="px-2 py-1 hover:text-orange-500 transition-colors">
+              Show
+            </Link>
             <Link href="/saved" className="flex items-center gap-1 px-2 py-1 hover:text-orange-500 transition-colors">
               <Bookmark size={14} />
               Saved
@@ -108,6 +114,20 @@ export function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 New Stories
+              </Link>
+              <Link
+                href="/best"
+                className="block px-4 py-3 text-base font-medium text-neutral-600 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Best Stories
+              </Link>
+              <Link
+                href="/show"
+                className="block px-4 py-3 text-base font-medium text-neutral-600 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Show Stories
               </Link>
               <Link
                 href="/saved"
