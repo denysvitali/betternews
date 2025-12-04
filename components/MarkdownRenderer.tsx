@@ -182,9 +182,22 @@ export function MarkdownRenderer({
       .trim();
   }
 
-  // If we allow HTML, sanitize it first
+  // If we allow HTML, check if this is pure HTML content (like from HN stories)
   if (allowHtml) {
-    cleanedContent = DOMPurify.sanitize(cleanedContent, sanitizeOptions);
+    // Check if content looks like HTML (starts with a tag)
+    if (cleanedContent.trim().startsWith('<')) {
+      // This is HTML content, sanitize and render as HTML
+      const sanitizedHtml = DOMPurify.sanitize(cleanedContent, sanitizeOptions);
+      return (
+        <div
+          className={`prose dark:prose-invert max-w-none ${className}`}
+          dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+        />
+      );
+    } else {
+      // This is markdown with HTML mixed in, sanitize for ReactMarkdown
+      cleanedContent = DOMPurify.sanitize(cleanedContent, sanitizeOptions);
+    }
   }
 
   return (
