@@ -182,11 +182,11 @@ export function MarkdownRenderer({
       .trim();
   }
 
-  // If we allow HTML, check if this is pure HTML content (like from HN stories)
+  // If we allow HTML, check if this is HTML content (like from HN stories)
   if (allowHtml) {
-    // Check if content looks like HTML (starts with a tag)
-    if (cleanedContent.trim().startsWith('<')) {
-      // This is HTML content, sanitize and render as HTML
+    // Check if content contains HTML tags (pure HTML or mixed content from HN)
+    if (/<[^>]+>/.test(cleanedContent)) {
+      // This is HTML content (pure or mixed), sanitize and render as HTML
       const sanitizedHtml = DOMPurify.sanitize(cleanedContent, sanitizeOptions);
       return (
         <div
@@ -194,9 +194,6 @@ export function MarkdownRenderer({
           dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
         />
       );
-    } else {
-      // This is markdown with HTML mixed in, sanitize for ReactMarkdown
-      cleanedContent = DOMPurify.sanitize(cleanedContent, sanitizeOptions);
     }
   }
 
