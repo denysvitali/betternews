@@ -9,7 +9,7 @@ import remarkBreaks from "remark-breaks";
 import { visit } from "unist-util-visit";
 import { Node } from "unist";
 import { Root } from "hast";
-import { sanitize } from "isomorphic-dompurify";
+import DOMPurify from "isomorphic-dompurify";
 
 // Custom sanitization and processing for HN content
 const sanitizeOptions = {
@@ -25,7 +25,7 @@ const sanitizeOptions = {
 // Custom remark plugin to process HN-specific markdown
 function hnRemarkPlugin() {
   return (tree: Root) => {
-    visit(tree, "text", (node: Node) => {
+    visit(tree, "text", (node: any) => {
       // Convert HN-style links [text](url) to proper markdown links
       if (typeof node.value === "string") {
         node.value = node.value
@@ -151,7 +151,7 @@ export function MarkdownRenderer({
 
   // If we allow HTML, sanitize it first
   if (allowHtml) {
-    cleanedContent = sanitize(cleanedContent, sanitizeOptions);
+    cleanedContent = DOMPurify.sanitize(cleanedContent, sanitizeOptions);
   }
 
   return (

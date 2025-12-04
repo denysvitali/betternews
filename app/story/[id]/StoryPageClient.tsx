@@ -10,6 +10,7 @@ import { ShareButton } from "@/components/ShareButton";
 import { StoryBadge } from "@/components/StoryBadge";
 import { TimeAgo } from "@/components/TimeAgo";
 import { EmptyState } from "@/components/EmptyState";
+import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { ArrowUp, MessageSquare, Clock, ExternalLink, BookOpen } from "lucide-react";
 import { Suspense } from "react";

@@ -6,6 +6,7 @@ import { HNItem } from "@/lib/types";
 import Link from "next/link";
 import { TimeAgo } from "./TimeAgo";
 import { IconButton } from "./ui";
+import { MarkdownRenderer } from "./MarkdownRenderer";
 
 interface CommentClientProps {
   comment: HNItem;
