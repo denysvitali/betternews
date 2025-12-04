@@ -164,7 +164,7 @@ function useFetch<T>(
  * Fetch a paginated list of stories
  */
 async function fetchPaginatedStories(
-  endpoint: "topstories" | "newstories",
+  endpoint: "topstories" | "newstories" | "beststories" | "showstories",
   page: number,
   pageSize: number = PAGINATION.DEFAULT_PAGE_SIZE
 ): Promise<HNItem[]> {
@@ -201,6 +201,30 @@ export function useTopStories(page: number = 1) {
 export function useNewStories(page: number = 1) {
   const { data, loading, error, refetch } = useFetch(
     () => fetchPaginatedStories("newstories", page),
+    [page]
+  );
+
+  return { stories: data ?? [], loading, error, refetch };
+}
+
+/**
+ * Hook for fetching best stories
+ */
+export function useBestStories(page: number = 1) {
+  const { data, loading, error, refetch } = useFetch(
+    () => fetchPaginatedStories("beststories", page),
+    [page]
+  );
+
+  return { stories: data ?? [], loading, error, refetch };
+}
+
+/**
+ * Hook for fetching show stories
+ */
+export function useShowStories(page: number = 1) {
+  const { data, loading, error, refetch } = useFetch(
+    () => fetchPaginatedStories("showstories", page),
     [page]
   );
 

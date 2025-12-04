@@ -95,6 +95,62 @@ export async function getNewStories(
 }
 
 /**
+ * Fetch paginated best stories
+ */
+export async function getBestStories(
+  page = 1,
+  limit = PAGINATION.DEFAULT_PAGE_SIZE
+): Promise<HNItem[]> {
+  try {
+    const res = await fetch(`${HN_API_BASE}/beststories.json`, {
+      next: { revalidate: CACHE_TIMES.STORIES },
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch best stories: ${res.status}`);
+    }
+
+    const ids: number[] = await res.json();
+    const start = (page - 1) * limit;
+    const end = start + limit;
+    const pageIds = ids.slice(start, end);
+
+    return getItems(pageIds);
+  } catch (error) {
+    console.error("Failed to fetch best stories:", error);
+    return [];
+  }
+}
+
+/**
+ * Fetch paginated show stories
+ */
+export async function getShowStories(
+  page = 1,
+  limit = PAGINATION.DEFAULT_PAGE_SIZE
+): Promise<HNItem[]> {
+  try {
+    const res = await fetch(`${HN_API_BASE}/showstories.json`, {
+      next: { revalidate: CACHE_TIMES.STORIES },
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch show stories: ${res.status}`);
+    }
+
+    const ids: number[] = await res.json();
+    const start = (page - 1) * limit;
+    const end = start + limit;
+    const pageIds = ids.slice(start, end);
+
+    return getItems(pageIds);
+  } catch (error) {
+    console.error("Failed to fetch show stories:", error);
+    return [];
+  }
+}
+
+/**
  * Fetch a story with its comments
  * @deprecated Use getItem instead
  */
