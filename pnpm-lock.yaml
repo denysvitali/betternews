@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@types/hast':
+        specifier: ^3.0.4
+        version: 3.0.4
       cheerio:
         specifier: ^1.1.2
         version: 1.1.2
