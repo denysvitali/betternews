@@ -71,10 +71,12 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
 
       {!isCollapsed && (
         <>
-          <div
-            className="text-sm leading-relaxed text-neutral-800 dark:text-neutral-200 break-words pl-6 [&>p]:mb-2 [&>pre]:overflow-x-auto [&>pre]:bg-neutral-100 [&>pre]:p-2 [&>pre]:rounded dark:[&>pre]:bg-neutral-900 [&>a]:text-orange-600 [&>a]:underline"
-            dangerouslySetInnerHTML={{ __html: comment.text || "" }}
-          />
+          <div className="text-sm leading-relaxed text-neutral-800 dark:text-neutral-200 break-words pl-6">
+            <MarkdownRenderer
+              content={comment.text || ""}
+              className="[&>p]:mb-2 [&>pre]:overflow-x-auto [&>pre]:bg-neutral-100 [&>pre]:p-2 [&>pre]:rounded dark:[&>pre]:bg-neutral-900"
+            />
+          </div>
 
           {children && (
             <div className={`pl-3 sm:pl-4 ml-1 sm:ml-2 border-l-2 ${indentColor} transition-colors`}>

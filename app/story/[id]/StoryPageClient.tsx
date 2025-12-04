@@ -158,10 +158,13 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                     )}
 
                     {story.text && (
-                        <div
-                            className="mt-3 sm:mt-4 prose prose-sm sm:prose-base dark:prose-invert max-w-none prose-headings:text-lg sm:prose-headings:text-xl"
-                            dangerouslySetInnerHTML={{ __html: story.text }}
+                      <div className="mt-3 sm:mt-4">
+                        <MarkdownRenderer
+                          content={story.text}
+                          className="prose-sm sm:prose-base dark:prose-invert max-w-none prose-headings:text-lg sm:prose-headings:text-xl"
+                          allowHtml={true}
                         />
+                      </div>
                     )}
 
                     {/* Actions */}
