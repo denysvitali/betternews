@@ -20,11 +20,17 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
   const [rootComments, setRootComments] = useState<RootComment[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Scroll to a specific comment by ID
+  // Scroll to a specific comment by ID with offset for sticky header
   const scrollToComment = useCallback((commentId: number) => {
     const element = document.getElementById(`comment-${commentId}`);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Calculate offset: sticky nav (top-20 = 80px) + nav height (~60px) + padding
+      const offset = 160;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementPosition - offset,
+        behavior: 'smooth'
+      });
       // Add highlight effect
       element.classList.add('ring-2', 'ring-orange-400', 'ring-opacity-75', 'dark:ring-orange-500');
       setTimeout(() => {
@@ -170,31 +176,6 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
                   <span className="hidden md:inline">Next</span>
                   <ChevronDown size={16} />
                 </Button>
-              </div>
-
-              {/* Quick jump buttons for desktop */}
-              <div className="hidden md:flex items-center gap-1 ml-2">
-                <div className="text-xs text-neutral-500 dark:text-neutral-400">Jump to:</div>
-                <div className="flex gap-1">
-                  {rootComments.slice(0, 5).map((comment, index) => (
-                    <button
-                      key={comment.id}
-                      onClick={() => {
-                        setCurrentIndex(index);
-                        scrollToComment(comment.id);
-                      }}
-                      className={`w-6 h-6 text-xs rounded-full border transition-colors ${
-                        currentIndex === index
-                          ? 'bg-orange-500 text-white border-orange-500'
-                          : 'bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border-neutral-300 dark:border-neutral-700 hover:border-orange-300 dark:hover:border-orange-700'
-                      }`}
-                      title={`Jump to comment by ${comment.author}`}
-                      aria-label={`Jump to comment ${index + 1}`}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                </div>
               </div>
             </div>
           </div>
