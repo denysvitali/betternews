@@ -10,6 +10,7 @@ import { visit } from "unist-util-visit";
 import { Node } from "unist";
 import { Root } from "hast";
 import DOMPurify from "isomorphic-dompurify";
+import { convertHNUrlToRelative } from "@/lib/utils";
 
 // Custom sanitization and processing for HN content
 const sanitizeOptions = {
@@ -39,16 +40,35 @@ function hnRemarkPlugin() {
 const markdownComponents = {
   a: ({ node, ...props }: any) => {
     const href = props.href || "";
-    const isExternal = href.startsWith("http");
+
+    // Try to convert HN URLs to relative paths
+    const relativePath = convertHNUrlToRelative(href);
+    const finalHref = relativePath || href;
+    const isExternal = finalHref.startsWith("http");
+    const isHNConverted = relativePath !== null;
+
+    // Extract HN ID if it's a converted link for display
+    const hnIdMatch = relativePath?.match(/\/story\/(\d+)/);
+    const hnId = hnIdMatch ? hnIdMatch[1] : null;
 
     return (
-      <a
-        {...props}
-        href={href}
-        target={isExternal ? "_blank" : undefined}
-        rel={isExternal ? "noopener noreferrer" : undefined}
-        className="text-orange-600 dark:text-orange-500 hover:underline"
-      />
+      <span className="inline-flex items-center gap-1">
+        <a
+          {...props}
+          href={finalHref}
+          target={isExternal ? "_blank" : undefined}
+          rel={isExternal ? "noopener noreferrer" : undefined}
+          className={`${isHNConverted
+            ? "text-blue-600 dark:text-blue-400 font-medium"
+            : "text-orange-600 dark:text-orange-500"
+          } hover:underline`}
+        />
+        {isHNConverted && hnId && (
+          <span className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded font-mono">
+            HN#{hnId}
+          </span>
+        )}
+      </span>
     );
   },
   code: ({ node, inline, className, children, ...props }: any) => {
@@ -127,12 +147,14 @@ interface MarkdownRendererProps {
   content: string;
   className?: string;
   allowHtml?: boolean;
+  stripHtml?: boolean;
 }
 
 export function MarkdownRenderer({
   content,
   className = "",
-  allowHtml = false
+  allowHtml = false,
+  stripHtml = false
 }: MarkdownRendererProps) {
   if (!content) {
     return null;
@@ -149,6 +171,16 @@ export function MarkdownRenderer({
     .replace(/&quot;/g, '"')
     .replace(/&#x27;/g, "'")
     .replace(/&#x2F;/g, "/");  // HN uses this for forward slashes
+
+  // If stripHtml is enabled, remove HTML tags completely
+  if (stripHtml) {
+    cleanedContent = cleanedContent
+      .replace(/<\/?p>/g, '\n\n')  // Convert p tags to line breaks
+      .replace(/<a[^>]*>(.*?)<\/a>/g, '$1')  // Extract link text, remove tags
+      .replace(/<[^>]*>/g, '')  // Remove any remaining HTML tags
+      .replace(/\n{3,}/g, '\n\n')  // Normalize excessive line breaks
+      .trim();
+  }
 
   // If we allow HTML, sanitize it first
   if (allowHtml) {

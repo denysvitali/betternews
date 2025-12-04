@@ -5,7 +5,7 @@ import Link from "next/link";
 import { MessageSquare, ArrowUp, Clock, BookOpen } from "lucide-react";
 import { HNItem } from "@/lib/hn";
 import { LinkPreview } from "./LinkPreview";
-import { getDomain, getReadingTime } from "@/lib/utils";
+import { getDomain, getReadingTime, convertHNUrlToRelative } from "@/lib/utils";
 import { StoryBadge } from "./StoryBadge";
 import { ShareButton } from "./ShareButton";
 import { TimeAgo } from "./TimeAgo";
@@ -30,9 +30,37 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
     [story.text]
   );
 
+  // Convert HN URLs to relative paths and determine final URL
+  const { finalStoryUrl, isHNConverted, hnId } = useMemo(() => {
+    if (story.url) {
+      const relativePath = convertHNUrlToRelative(story.url);
+      if (relativePath) {
+        // Extract HN ID for display
+        const hnIdMatch = relativePath.match(/\/story\/(\d+)/);
+        return {
+          finalStoryUrl: relativePath,
+          isHNConverted: true,
+          hnId: hnIdMatch ? hnIdMatch[1] : null
+        };
+      }
+      return {
+        finalStoryUrl: story.url,
+        isHNConverted: false,
+        hnId: null
+      };
+    }
+
+    // No external URL, use internal story link
+    return {
+      finalStoryUrl: `/story/${story.id}`,
+      isHNConverted: false,
+      hnId: null
+    };
+  }, [story.url, story.id]);
+
   const storyUrl = useMemo(
-    () => story.url || `${typeof window !== "undefined" ? window.location.origin : ""}/story/${story.id}`,
-    [story.url, story.id]
+    () => finalStoryUrl || `${typeof window !== "undefined" ? window.location.origin : ""}/story/${story.id}`,
+    [finalStoryUrl, story.id]
   );
 
   return (
@@ -101,19 +129,30 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
           </div>
 
           {/* Title */}
-          <a
-            href={story.url || `/story/${story.id}`}
-            target={story.url ? "_blank" : undefined}
-            rel="noreferrer"
-            className="font-bold text-base sm:text-lg leading-tight text-neutral-900 hover:text-orange-600 dark:text-neutral-100 dark:hover:text-orange-500 line-clamp-2 sm:line-clamp-none"
-          >
-            {story.title}
-          </a>
+          <div className="flex items-center gap-2 flex-wrap">
+            <a
+              href={finalStoryUrl}
+              target={!isHNConverted && finalStoryUrl.startsWith("http") ? "_blank" : undefined}
+              rel={!isHNConverted && finalStoryUrl.startsWith("http") ? "noreferrer" : undefined}
+              className={`font-bold text-base sm:text-lg leading-tight line-clamp-2 sm:line-clamp-none ${
+                isHNConverted
+                  ? "text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                  : "text-neutral-900 hover:text-orange-600 dark:text-neutral-100 dark:hover:text-orange-500"
+              }`}
+            >
+              {story.title}
+            </a>
+            {isHNConverted && hnId && (
+              <span className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded font-mono whitespace-nowrap">
+                HN#{hnId}
+              </span>
+            )}
+          </div>
 
           {/* Story Text Preview */}
           {story.text && (
             <div className="line-clamp-2 sm:line-clamp-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 prose prose-sm dark:prose-invert max-w-none [&>p]:mb-1">
-              <MarkdownRenderer content={story.text} />
+              <MarkdownRenderer content={story.text} allowHtml={true} />
             </div>
           )}
 
@@ -154,18 +193,18 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
           </div>
         </div>
 
-        {/* Preview Image (Desktop) */}
-        {story.url && (
+        {/* Preview Image (Desktop) - Only show for non-HN URLs */}
+        {story.url && !isHNConverted && (
           <div className="hidden sm:block w-24 sm:w-32 h-16 sm:h-24 shrink-0">
-            <LinkPreview url={story.url} />
+            <LinkPreview url={finalStoryUrl} />
           </div>
         )}
       </div>
 
-      {/* Mobile Preview */}
-      {story.url && (
+      {/* Mobile Preview - Only show for non-HN URLs */}
+      {story.url && !isHNConverted && (
         <div className="block sm:hidden w-full h-24 sm:h-32 mt-2">
-          <LinkPreview url={story.url} />
+          <LinkPreview url={finalStoryUrl} />
         </div>
       )}
     </Card>

@@ -76,6 +76,7 @@ export function CommentClient({ comment, children, level = 0 }: CommentClientPro
             <MarkdownRenderer
               content={comment.text || ""}
               className="[&>p]:mb-2 [&>pre]:overflow-x-auto [&>pre]:bg-neutral-100 [&>pre]:p-2 [&>pre]:rounded dark:[&>pre]:bg-neutral-900"
+              stripHtml={true}
             />
           </div>
 
