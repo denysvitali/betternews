@@ -30,12 +30,12 @@ export function TimeAgo({ timestamp, addSuffix = true, className = "" }: TimeAgo
       {/* Tooltip */}
       {showTooltip && (
         <span
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap rounded-lg bg-neutral-900 dark:bg-neutral-100 px-3 py-1.5 text-xs font-medium text-white dark:text-neutral-900 shadow-lg z-50 pointer-events-none"
+          className="absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap rounded-lg bg-neutral-900 dark:bg-neutral-100 px-3 py-1.5 text-xs font-medium text-white dark:text-neutral-900 shadow-lg z-50 pointer-events-none"
           role="tooltip"
         >
           {fullDate}
           {/* Tooltip arrow */}
-          <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-neutral-900 dark:border-t-neutral-100" />
+          <span className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-neutral-900 dark:border-b-neutral-100" />
         </span>
       )}
     </span>
