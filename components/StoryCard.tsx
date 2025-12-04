@@ -11,6 +11,7 @@ import { ShareButton } from "./ShareButton";
 import { TimeAgo } from "./TimeAgo";
 import { BookmarkButton } from "./BookmarkButton";
 import { Card, Badge, Button } from "@/components/ui";
+import { MarkdownRenderer } from "./MarkdownRenderer";
 
 interface StoryCardProps {
   story: HNItem;
@@ -111,10 +112,9 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
 
           {/* Story Text Preview */}
           {story.text && (
-            <div
-              className="line-clamp-2 sm:line-clamp-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 prose prose-sm dark:prose-invert max-w-none [&>p]:mb-1"
-              dangerouslySetInnerHTML={{ __html: story.text }}
-            />
+            <div className="line-clamp-2 sm:line-clamp-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 prose prose-sm dark:prose-invert max-w-none [&>p]:mb-1">
+              <MarkdownRenderer content={story.text} />
+            </div>
           )}
 
           {/* Footer actions */}

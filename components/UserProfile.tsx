@@ -9,6 +9,7 @@ import { CommentSkeleton } from "./CommentSkeleton";
 import { EmptyState } from "./EmptyState";
 import { TimeAgo } from "./TimeAgo";
 import { Card, Badge } from "@/components/ui";
+import { MarkdownRenderer } from "./MarkdownRenderer";
 
 interface UserProfileProps {
     user: HNUser;
@@ -56,10 +57,9 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                         <div className="rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800/50">
                             <div className="flex items-start gap-2">
                                 <LinkIcon size={16} className="mt-1 text-neutral-400" />
-                                <div
-                                    className="prose prose-sm dark:prose-invert max-w-none text-neutral-700 dark:text-neutral-300"
-                                    dangerouslySetInnerHTML={{ __html: user.about }}
-                                />
+                                <div className="prose prose-sm dark:prose-invert max-w-none text-neutral-700 dark:text-neutral-300">
+                                    <MarkdownRenderer content={user.about} />
+                                </div>
                             </div>
                         </div>
                     )}
@@ -140,10 +140,9 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                                             <div className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
                                                 <TimeAgo timestamp={comment.time} />
                                             </div>
-                                            <div
-                                                className="prose prose-sm dark:prose-invert max-w-none text-neutral-800 dark:text-neutral-200"
-                                                dangerouslySetInnerHTML={{ __html: comment.text || "" }}
-                                            />
+                                            <div className="prose prose-sm dark:prose-invert max-w-none text-neutral-800 dark:text-neutral-200">
+                                                <MarkdownRenderer content={comment.text || ""} />
+                                            </div>
                                             {comment.parent && (
                                                 <Link
                                                     href={`/story/${comment.parent}`}
