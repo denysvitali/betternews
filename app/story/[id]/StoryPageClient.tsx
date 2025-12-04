@@ -18,7 +18,7 @@ import Link from "next/link";
 import { StorySkeleton } from "@/components/StorySkeleton";
 import { CommentSkeleton } from "@/components/CommentSkeleton";
 import { CommentNavigation } from "@/components/CommentNavigation";
-import { getDomain, getReadingTime } from "@/lib/utils";
+import { getDomain, getReadingTime, convertHNUrlToRelative } from "@/lib/utils";
 import { PageLayout, PageError, Card, Badge, Skeleton } from "@/components/ui";
 import { ReadingProgress } from "@/components/ReadingProgress";
 
@@ -64,7 +64,12 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
     }
 
     const host = story.url ? getDomain(story.url) : "news.ycombinator.com";
-    const storyUrl = story.url || `${typeof window !== 'undefined' ? window.location.origin : ''}/story/${story.id}`;
+
+    // Convert HN URLs to relative paths
+    const relativePath = story.url ? convertHNUrlToRelative(story.url) : null;
+    const finalStoryUrl = relativePath || story.url || `${typeof window !== 'undefined' ? window.location.origin : ''}/story/${story.id}`;
+    const isHNConverted = relativePath !== null;
+    const hnId = relativePath ? relativePath.match(/\/story\/(\d+)/)?.[1] : null;
 
     return (
         <PageLayout>
@@ -125,36 +130,51 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                         </div>
                     </div>
 
-                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight text-neutral-900 dark:text-white">
-                        {story.title}
-                    </h1>
+                    <div className="flex items-start gap-2 flex-wrap">
+                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight text-neutral-900 dark:text-white">
+                            {story.title}
+                        </h1>
+                        {isHNConverted && hnId && (
+                            <span className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded font-mono whitespace-nowrap mt-2 sm:mt-3">
+                                HN#{hnId}
+                            </span>
+                        )}
+                    </div>
 
                     {story.url && (
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-neutral-500">
                             <a
-                                href={story.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-2 hover:text-orange-600 dark:hover:text-orange-500 transition-colors text-xs sm:text-sm"
+                                href={finalStoryUrl}
+                                target={!isHNConverted && finalStoryUrl.startsWith("http") ? "_blank" : undefined}
+                                rel={!isHNConverted && finalStoryUrl.startsWith("http") ? "noopener noreferrer" : undefined}
+                                className={`flex items-center gap-2 transition-colors text-xs sm:text-sm ${
+                                    isHNConverted
+                                        ? "text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                        : "hover:text-orange-600 dark:hover:text-orange-500"
+                                }`}
                             >
-                                <ExternalLink size={14} />
-                                <span className="truncate max-w-[200px] sm:max-w-none">{story.url}</span>
+                                {!isHNConverted && <ExternalLink size={14} />}
+                                <span className="truncate max-w-[200px] sm:max-w-none">
+                                    {isHNConverted ? `Internal link to HN story #${hnId}` : story.url}
+                                </span>
                             </a>
-                            <a
-                                href={`https://news.ycombinator.com/from?site=${host}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="font-mono text-xs sm:text-sm hover:underline hover:text-orange-600 dark:hover:text-orange-500 transition-colors truncate max-w-[150px] sm:max-w-none"
-                            >
-                                {host}
-                            </a>
+                            {!isHNConverted && (
+                                <a
+                                    href={`https://news.ycombinator.com/from?site=${host}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-mono text-xs sm:text-sm hover:underline hover:text-orange-600 dark:hover:text-orange-500 transition-colors truncate max-w-[150px] sm:max-w-none"
+                                >
+                                    {host}
+                                </a>
+                            )}
                         </div>
                     )}
 
-                    {/* Large Preview for the Story Page */}
-                    {story.url && (
+                    {/* Large Preview for the Story Page - Only show for non-HN URLs */}
+                    {story.url && !isHNConverted && (
                         <div className="mt-3 sm:mt-4 aspect-video w-full max-w-2xl overflow-hidden rounded-lg border border-neutral-100 dark:border-neutral-800">
-                            <LinkPreview url={story.url} />
+                            <LinkPreview url={finalStoryUrl} />
                         </div>
                     )}
 
@@ -170,7 +190,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
 
                     {/* Actions */}
                     <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center gap-3">
-                        <ShareButton title={story.title || "Story"} url={storyUrl} />
+                        <ShareButton title={story.title || "Story"} url={finalStoryUrl} />
                         <BookmarkButton
                             story={{
                                 id: story.id,
