@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   title: "BetterNews",
   description: "BetterNews - The best news aggregator",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
