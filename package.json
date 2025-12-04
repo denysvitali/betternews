@@ -10,6 +10,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@types/hast": "^3.0.4",
     "cheerio": "^1.1.2",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
