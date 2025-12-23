@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { ButtonHTMLAttributes, ReactNode } from "react";
+import { ButtonHTMLAttributes, ReactNode, useState } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "action";
 type ButtonSize = "sm" | "md" | "lg";
@@ -34,10 +34,10 @@ const sizeStyles = {
 };
 
 const variantStyles = {
-  primary: "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-500 shadow-sm",
-  secondary: "bg-white text-neutral-700 ring-1 ring-inset ring-neutral-300 hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200 dark:ring-neutral-700 dark:hover:bg-neutral-800 shadow-sm",
-  ghost: "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-100 dark:hover:bg-neutral-800",
-  action: "bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700",
+  primary: "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-500 shadow-sm hover:shadow-md active:scale-95",
+  secondary: "bg-white text-neutral-700 ring-1 ring-inset ring-neutral-300 hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200 dark:ring-neutral-700 dark:hover:bg-neutral-800 shadow-sm hover:shadow-md active:scale-95",
+  ghost: "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 active:scale-95",
+  action: "bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 active:scale-95",
 };
 
 const disabledStyles = "opacity-50 cursor-not-allowed pointer-events-none";
@@ -51,7 +51,8 @@ export function Button({
   ...props
 }: ButtonProps) {
   const baseStyles = cn(
-    "inline-flex items-center justify-center font-medium rounded-lg transition-colors",
+    "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150",
+    "hover:-translate-y-0.5",
     sizeStyles[size],
     variantStyles[variant],
     disabled && disabledStyles,
@@ -97,7 +98,8 @@ export function IconButton({
     <button
       type="button"
       className={cn(
-        "inline-flex items-center justify-center rounded-lg p-2 transition-colors",
+        "inline-flex items-center justify-center rounded-lg p-2 transition-all duration-150",
+        "hover:scale-110 active:scale-90",
         variantStyles[variant],
         props.disabled && disabledStyles,
         className

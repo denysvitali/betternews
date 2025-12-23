@@ -19,8 +19,8 @@ const paddingStyles = {
 
 const variantStyles = {
   default: "border-neutral-200 dark:border-neutral-800 shadow-sm",
-  hover: "border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-orange-200 hover:shadow-lg dark:hover:border-orange-900/50 transition-all",
-  interactive: "border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-orange-200 hover:shadow-md dark:hover:border-orange-900/50 transition-all",
+  hover: "border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-orange-200 hover:shadow-lg hover:-translate-y-0.5 dark:hover:border-orange-900/50 transition-all duration-200",
+  interactive: "border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-orange-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] dark:hover:border-orange-900/50 transition-all duration-200 cursor-pointer",
 };
 
 export function Card({
