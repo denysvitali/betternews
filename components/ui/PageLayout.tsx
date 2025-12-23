@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Navbar } from "@/components/Navbar";
+import { BottomNav } from "@/components/BottomNav";
 import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,8 @@ export function PageLayout({
       </main>
       <Footer />
       {showBackToTop && <BackToTop />}
+      {/* Mobile bottom navigation - only visible on small screens */}
+      <BottomNav />
     </div>
   );
 }

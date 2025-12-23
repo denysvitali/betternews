@@ -12,8 +12,10 @@ import { TimeAgo } from "@/components/TimeAgo";
 import { EmptyState } from "@/components/EmptyState";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { CommentSortControl, CommentSortType } from "@/components/CommentSortControl";
+import { CollapseDepthControl } from "@/components/CollapseDepthControl";
 import { ArrowUp, MessageSquare, Clock, ExternalLink, BookOpen } from "lucide-react";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { StorySkeleton } from "@/components/StorySkeleton";
 import { CommentSkeleton } from "@/components/CommentSkeleton";
@@ -32,6 +34,11 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
     const paramId = params?.id ? (Array.isArray(params.id) ? params.id[0] : params.id) : undefined;
     const storyId = propStoryId || (paramId ? parseInt(paramId) : 0);
     const { story: fetchedStory, loading: fetching, error: fetchError } = useStory(initialStory ? 0 : storyId);
+
+    // Comment display settings
+    const [commentSort, setCommentSort] = useState<CommentSortType>("default");
+    const [collapseDepth, setCollapseDepth] = useState<number>(2);
+    const [showCommentScores, setShowCommentScores] = useState<boolean>(false);
 
     const story = initialStory || fetchedStory;
     const loading = initialStory ? false : fetching;
@@ -210,16 +217,40 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
             <CommentNavigation totalComments={story.descendants || 0} storyId={story.id} />
 
             <Card variant="default" padding="md" className="sm:p-6">
-                <h2 className="mb-4 sm:mb-6 flex items-center gap-2 text-lg sm:text-xl font-bold">
-                    <MessageSquare className="text-orange-500" size={20} />
-                    <span>{story.descendants || 0} Comments</span>
-                </h2>
+                {/* Comments Header with Controls */}
+                <div className="mb-4 sm:mb-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                        <h2 className="flex items-center gap-2 text-lg sm:text-xl font-bold">
+                            <MessageSquare className="text-orange-500" size={20} />
+                            <span>{story.descendants || 0} Comments</span>
+                        </h2>
+                    </div>
+
+                    {/* Comment Display Controls */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 px-3 sm:px-4 bg-neutral-50 dark:bg-neutral-900/50 rounded-lg border border-neutral-200 dark:border-neutral-800">
+                        <CommentSortControl
+                            currentSort={commentSort}
+                            onSortChange={setCommentSort}
+                            commentCount={story.descendants || 0}
+                        />
+                        <div className="hidden sm:block w-px h-6 bg-neutral-200 dark:bg-neutral-700"></div>
+                        <CollapseDepthControl
+                            currentDepth={collapseDepth}
+                            onDepthChange={setCollapseDepth}
+                        />
+                    </div>
+                </div>
 
                 <div id="comments-container" className="flex flex-col gap-3 sm:gap-4">
                     {story.kids && story.kids.length > 0 ? (
                         story.kids.map((kidId) => (
                             <Suspense key={kidId} fallback={<CommentSkeleton />}>
-                                <Comment id={kidId} />
+                                <Comment
+                                    id={kidId}
+                                    maxInitialDepth={collapseDepth}
+                                    sortBy={commentSort}
+                                    showScore={showCommentScores}
+                                />
                             </Suspense>
                         ))
                     ) : (

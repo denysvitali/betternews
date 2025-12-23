@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, X, Loader2, ExternalLink, Clock } from "lucide-react";
+import { Search, X, Loader2, ExternalLink, Clock, MessageSquare, Bookmark, Share2 } from "lucide-react";
 import Link from "next/link";
 import { HNItem, HN_API_BASE } from "@/lib/types";
 import { useDebounce } from "@/lib/hooks";
+import { useBookmarks } from "@/lib/bookmarks";
 import { TimeAgo } from "./TimeAgo";
 import { Card, Button } from "./ui";
+import { getDomain } from "@/lib/utils";
 
 interface SearchResult {
   id: number;
@@ -16,6 +18,8 @@ interface SearchResult {
   time: number;
   score?: number;
   type: string;
+  text?: string;
+  descendants?: number;
 }
 
 interface SearchBarProps {
@@ -30,6 +34,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
   const [showResults, setShowResults] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedQuery = useDebounce(query, 300);
+  const { isBookmarked, toggleBookmark } = useBookmarks();
 
   // Focus input when opened
   useEffect(() => {
@@ -77,6 +82,8 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
           time: story.time,
           score: story.score,
           type: story.type,
+          text: story.text,
+          descendants: story.descendants,
         }));
 
       setResults(matchingStories);
@@ -144,27 +151,121 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
 
       {/* Search Results */}
       {showResults && results.length > 0 && (
-        <Card className="mt-2 max-h-80 overflow-y-auto shadow-lg" padding="none">
-          {results.map((result) => (
-            <Link
-              key={result.id}
-              href={`/story/${result.id}`}
-              onClick={handleResultClick}
-              className="flex flex-col gap-1 border-b border-neutral-100 p-3 transition-colors hover:bg-neutral-50 last:border-0 dark:border-neutral-700 dark:hover:bg-neutral-700"
-            >
-              <span className="text-sm font-medium text-neutral-900 dark:text-white line-clamp-1">
-                {result.title}
-              </span>
-              <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
-                {result.score && <span>{result.score} points</span>}
-                {result.by && <span>by {result.by}</span>}
-                <span className="flex items-center gap-1">
-                  <Clock size={10} />
-                  <TimeAgo timestamp={result.time} />
-                </span>
+        <Card className="mt-2 max-h-96 overflow-y-auto shadow-lg" padding="none">
+          {results.map((result) => {
+            const domain = result.url ? getDomain(result.url) : null;
+            const bookmarked = isBookmarked(result.id);
+            // Strip HTML from text preview
+            const textPreview = result.text
+              ? result.text.replace(/<[^>]*>/g, "").substring(0, 120) + (result.text.length > 120 ? "..." : "")
+              : null;
+
+            return (
+              <div
+                key={result.id}
+                className="flex flex-col gap-2 border-b border-neutral-100 p-3 transition-colors hover:bg-neutral-50 last:border-0 dark:border-neutral-700 dark:hover:bg-neutral-700"
+              >
+                <div className="flex items-start gap-2">
+                  <Link
+                    href={`/story/${result.id}`}
+                    onClick={handleResultClick}
+                    className="flex-1 min-w-0"
+                  >
+                    <span className="text-sm font-medium text-neutral-900 dark:text-white line-clamp-2 leading-snug">
+                      {result.title}
+                    </span>
+                  </Link>
+                </div>
+
+                {/* Metadata row */}
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
+                  {result.score && <span>{result.score} points</span>}
+                  <span className="text-neutral-300 dark:text-neutral-600">·</span>
+                  {result.by && <span>by {result.by}</span>}
+                  <span className="text-neutral-300 dark:text-neutral-600">·</span>
+                  <span className="flex items-center gap-1">
+                    <Clock size={10} />
+                    <TimeAgo timestamp={result.time} />
+                  </span>
+                  {result.descendants && (
+                    <>
+                      <span className="text-neutral-300 dark:text-neutral-600">·</span>
+                      <span className="flex items-center gap-1">
+                        <MessageSquare size={10} />
+                        {result.descendants}
+                      </span>
+                    </>
+                  )}
+                  {domain && (
+                    <>
+                      <span className="text-neutral-300 dark:text-neutral-600">·</span>
+                      <span className="font-mono text-neutral-600 dark:text-neutral-500 truncate max-w-[120px]">{domain}</span>
+                    </>
+                  )}
+                </div>
+
+                {/* Text preview for stories with text content */}
+                {textPreview && (
+                  <p className="text-xs text-neutral-600 dark:text-neutral-400 line-clamp-2 leading-relaxed">
+                    {textPreview}
+                  </p>
+                )}
+
+                {/* Quick actions */}
+                <div className="flex items-center gap-2 mt-1">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleBookmark({
+                        id: result.id,
+                        title: result.title,
+                        url: result.url,
+                        by: result.by,
+                        time: result.time,
+                        score: result.score,
+                      });
+                    }}
+                    className={`flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors ${
+                      bookmarked
+                        ? "bg-orange-100 text-orange-600 dark:bg-orange-950/30 dark:text-orange-500"
+                        : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
+                    }`}
+                    aria-label={bookmarked ? "Remove bookmark" : "Add bookmark"}
+                  >
+                    <Bookmark size={12} className={bookmarked ? "fill-current" : ""} />
+                    {bookmarked ? "Saved" : "Save"}
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (navigator.share && result.url) {
+                        navigator.share({
+                          title: result.title,
+                          url: result.url,
+                        }).catch(() => {});
+                      }
+                    }}
+                    className="flex items-center gap-1 text-xs px-2 py-1 rounded bg-neutral-100 text-neutral-500 hover:bg-neutral-200 transition-colors dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
+                    aria-label="Share"
+                  >
+                    <Share2 size={12} />
+                    Share
+                  </button>
+
+                  <Link
+                    href={`/story/${result.id}`}
+                    onClick={handleResultClick}
+                    className="ml-auto text-xs text-orange-600 hover:text-orange-700 dark:text-orange-500 dark:hover:text-orange-400 font-medium"
+                  >
+                    View →
+                  </Link>
+                </div>
               </div>
-            </Link>
-          ))}
+            );
+          })}
 
           {/* Algolia fallback */}
           <button

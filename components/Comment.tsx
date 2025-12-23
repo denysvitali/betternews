@@ -1,16 +1,20 @@
 "use client";
 
-import { memo, useState } from "react";
+import { memo, useState, useMemo } from "react";
 import { useComment } from "@/lib/hooks";
 import { CommentClient } from "./CommentClient";
 import { Suspense } from "react";
 import { CommentSkeleton } from "./CommentSkeleton";
 import { MessageSquare, ChevronDown } from "lucide-react";
+import { CommentSortType } from "./CommentSortControl";
 
 interface CommentProps {
   id: number;
   level?: number;
   maxInitialDepth?: number;
+  sortBy?: CommentSortType;
+  showScore?: boolean;
+  parentId?: number;
 }
 
 // Default depth after which replies are collapsed
@@ -19,7 +23,10 @@ const DEFAULT_MAX_INITIAL_DEPTH = 2;
 export const Comment = memo(function Comment({
   id,
   level = 0,
-  maxInitialDepth = DEFAULT_MAX_INITIAL_DEPTH
+  maxInitialDepth = DEFAULT_MAX_INITIAL_DEPTH,
+  sortBy = "default",
+  showScore = false,
+  parentId
 }: CommentProps) {
   const { comment, loading, error } = useComment(id);
   const [showReplies, setShowReplies] = useState(false);
@@ -28,6 +35,17 @@ export const Comment = memo(function Comment({
   const shouldCollapseReplies = level >= maxInitialDepth;
   const hasReplies = comment?.kids && comment.kids.length > 0;
   const replyCount = comment?.kids?.length || 0;
+
+  // Sort replies based on the selected sort option
+  const sortedKids = useMemo(() => {
+    if (!comment?.kids) return [];
+    const kids = [...comment.kids];
+
+    // For now, we only sort by default (HN order) since we don't have
+    // the full comment data with timestamps. When sortBy changes,
+    // the parent component would need to fetch and pass pre-sorted data.
+    return kids;
+  }, [comment?.kids]);
 
   if (loading) {
     return <CommentSkeleton level={level} />;
@@ -61,12 +79,15 @@ export const Comment = memo(function Comment({
     // Show replies when expanded
     return (
       <div className="mt-2">
-        {comment.kids!.map((kidId) => (
+        {sortedKids.map((kidId) => (
           <Suspense key={kidId} fallback={<CommentSkeleton level={level + 1} />}>
             <Comment
               id={kidId}
               level={level + 1}
               maxInitialDepth={maxInitialDepth}
+              sortBy={sortBy}
+              showScore={showScore}
+              parentId={comment.id}
             />
           </Suspense>
         ))}
@@ -80,12 +101,15 @@ export const Comment = memo(function Comment({
 
     return (
       <div className="mt-2">
-        {comment.kids!.map((kidId) => (
+        {sortedKids.map((kidId) => (
           <Suspense key={kidId} fallback={<CommentSkeleton level={level + 1} />}>
             <Comment
               id={kidId}
               level={level + 1}
               maxInitialDepth={maxInitialDepth}
+              sortBy={sortBy}
+              showScore={showScore}
+              parentId={comment.id}
             />
           </Suspense>
         ))}
@@ -101,7 +125,7 @@ export const Comment = memo(function Comment({
       data-comment-level={level}
       className="transition-all duration-300"
     >
-      <CommentClient comment={comment} level={level}>
+      <CommentClient comment={comment} level={level} showScore={showScore} parentId={parentId}>
         {shouldCollapseReplies ? renderCollapsedReplies() : renderReplies()}
       </CommentClient>
     </div>
