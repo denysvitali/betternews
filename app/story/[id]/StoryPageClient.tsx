@@ -41,10 +41,10 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
     const [showCommentScores, setShowCommentScores] = useState<boolean>(false);
 
     const story = initialStory || fetchedStory;
-    const loading = initialStory ? false : fetching;
-    const error = initialStory ? null : fetchError;
+    const loading = !initialStory && fetching;
+    const error = !initialStory && fetchError;
 
-    if (loading) {
+    if (loading || (!initialStory && !fetchedStory && !fetchError)) {
         return (
             <PageLayout showBackToTop={false}>
                 <div className="mb-6 sm:mb-8">

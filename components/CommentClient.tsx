@@ -82,7 +82,7 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
         {" "}
         <Link
           href={`/user/${comment.by}`}
-          className="font-bold text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500"
+          className="font-bold text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500 flex items-center"
         >{comment.by}</Link>
         {showScore && comment.score && (
           <>
