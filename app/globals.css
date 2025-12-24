@@ -34,14 +34,13 @@ body {
   overscroll-behavior-y: contain;
 }
 
-/* Mobile-friendly touch targets */
+/* Mobile-friendly touch targets - scoped to primary interactive elements */
 @media (pointer: coarse) {
-  button,
-  a,
+  /* Only apply large touch targets to standalone buttons and form elements */
+  button:not(.touch-target-auto),
   input[type="button"],
   input[type="submit"] {
     min-height: 44px;
-    min-width: 44px;
   }
 }
 
