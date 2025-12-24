@@ -61,17 +61,17 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
   const hasExternalUrl = story.url && !isHNConverted;
 
   return (
-    <Card variant="hover" padding="md" className="overflow-hidden">
-      <div className="flex gap-3">
+    <Card variant="hover" padding="sm" className="overflow-hidden">
+      <div className="flex gap-2">
         {/* Rank number - fixed width, top aligned */}
-        <div className="flex-shrink-0 w-6 pt-0.5 text-center">
+        <div className="flex-shrink-0 w-6 pt-0 text-center">
           <span className="text-sm font-bold text-neutral-300 dark:text-neutral-600 tabular-nums">
             {index + 1}
           </span>
         </div>
 
         {/* Main content area */}
-        <div className="flex-1 min-w-0 space-y-2">
+        <div className="flex-1 min-w-0 space-y-1">
           {/* Title */}
           <div>
             <a
@@ -153,7 +153,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
           )}
 
           {/* Actions row */}
-          <div className="flex items-center gap-2 pt-1">
+          <div className="flex items-center gap-2">
             <Link
               href={`/story/${story.id}`}
               className="inline-flex items-center gap-1.5 text-xs text-neutral-500 hover:text-orange-600 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors"
@@ -201,7 +201,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
 
       {/* Mobile thumbnail - full width below content */}
       {hasExternalUrl && (
-        <div className="sm:hidden mt-3 w-full h-32 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700">
+        <div className="sm:hidden mt-2 w-full h-32 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700">
           <LinkPreview url={finalStoryUrl} />
         </div>
       )}
