@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Github, ExternalLink, Heart } from "lucide-react";
+import { Github, ExternalLink, Heart, GitCommit } from "lucide-react";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const commitHash = process.env.NEXT_PUBLIC_GIT_COMMIT || 'dev';
+  const commitUrl = `https://github.com/denysvitali/betternews/commit/${commitHash}`;
 
   return (
     <footer className="mt-auto border-t border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
@@ -134,9 +136,22 @@ export function Footer() {
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
             {currentYear} BetterNews. Not affiliated with Y Combinator.
           </p>
-          <p className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
-            Made with <Heart size={12} className="text-red-500 fill-red-500" /> for the HN community
-          </p>
+          <div className="flex items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400">
+            <a
+              href={commitUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-mono hover:text-orange-500 transition-colors"
+              title={`Build: ${commitHash}`}
+            >
+              <GitCommit size={12} />
+              {commitHash}
+            </a>
+            <span className="text-neutral-300 dark:text-neutral-600">|</span>
+            <p className="inline-flex items-center gap-1">
+              Made with <Heart size={12} className="text-red-500 fill-red-500" /> for the HN community
+            </p>
+          </div>
         </div>
       </div>
     </footer>
