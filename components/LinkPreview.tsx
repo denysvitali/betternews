@@ -35,13 +35,13 @@ export function LinkPreview({ url, className }: LinkPreviewProps) {
   const Placeholder = () => (
     <div
       className={cn(
-        "flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50 dark:from-neutral-800 dark:to-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700",
+        "flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-50 dark:from-neutral-800 dark:to-neutral-900",
         className
       )}
     >
-      <div className="flex flex-col items-center gap-2 text-neutral-600 dark:text-neutral-400">
-        <ExternalLink size={24} />
-        <span className="text-xs font-medium truncate max-w-full px-2">
+      <div className="flex flex-col items-center gap-1.5 text-neutral-400 dark:text-neutral-500">
+        <ExternalLink size={18} />
+        <span className="text-[10px] font-medium truncate max-w-full px-2">
           {domain}
         </span>
       </div>
@@ -55,13 +55,13 @@ export function LinkPreview({ url, className }: LinkPreviewProps) {
   return (
     <div
       className={cn(
-        "relative h-full w-full overflow-hidden rounded-md border border-neutral-200 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800",
+        "relative h-full w-full overflow-hidden bg-neutral-100 dark:bg-neutral-800",
         className
       )}
     >
       {/* Loading skeleton */}
       {!imageLoaded && !imageError && (
-        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-700 dark:to-neutral-800" />
+        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-700 dark:to-neutral-800" />
       )}
 
       {/* Actual image */}
@@ -81,7 +81,7 @@ export function LinkPreview({ url, className }: LinkPreviewProps) {
 
       {/* Domain overlay on hover */}
       <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity">
-        <span className="text-xs text-white font-medium pb-2 truncate max-w-full px-2">
+        <span className="text-[10px] text-white font-medium pb-1.5 truncate max-w-full px-2">
           {domain}
         </span>
       </div>
