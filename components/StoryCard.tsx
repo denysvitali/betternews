@@ -93,38 +93,40 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
             )}
           </div>
 
-          {/* Metadata row - flex wrap with consistent height items */}
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400 leading-tight">
+          {/* Metadata row - all items have h-5 for consistent vertical alignment */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
             <StoryBadge title={story.title} type={story.type} />
 
             <Link
               href={`/user/${story.by}`}
-              className="font-medium hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
+              className="inline-flex items-center h-5 font-medium hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
             >
               {story.by}
             </Link>
 
-            <span className="text-neutral-300 dark:text-neutral-600">·</span>
+            <span className="inline-flex items-center h-5 text-neutral-300 dark:text-neutral-600">·</span>
 
-            <span className="inline-flex items-center gap-1">
-              <Clock size={12} className="flex-shrink-0 opacity-70" />
+            <span className="inline-flex items-center h-5 gap-1">
+              <Clock size={12} className="flex-shrink-0" />
               <TimeAgo timestamp={story.time} />
             </span>
 
-            <span className="text-neutral-300 dark:text-neutral-600">·</span>
+            <span className="inline-flex items-center h-5 text-neutral-300 dark:text-neutral-600">·</span>
 
-            <Badge variant="orange" size="sm" icon={<ArrowUp size={10} className="flex-shrink-0" />}>
-              {story.score || 0}
-            </Badge>
+            <span className="inline-flex items-center h-5">
+              <Badge variant="orange" size="sm" icon={<ArrowUp size={10} className="flex-shrink-0" />}>
+                {story.score || 0}
+              </Badge>
+            </span>
 
             {hasExternalUrl && (
               <>
-                <span className="text-neutral-300 dark:text-neutral-600">·</span>
+                <span className="inline-flex items-center h-5 text-neutral-300 dark:text-neutral-600">·</span>
                 <a
                   href={`https://news.ycombinator.com/from?site=${host}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-mono text-[11px] text-neutral-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors truncate max-w-[120px]"
+                  className="inline-flex items-center h-5 font-mono text-[11px] text-neutral-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors truncate max-w-[120px]"
                   title={host}
                 >
                   {host}
@@ -134,9 +136,9 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
 
             {readingTime && (
               <>
-                <span className="text-neutral-300 dark:text-neutral-600">·</span>
-                <span className="inline-flex items-center gap-1">
-                  <BookOpen size={12} className="flex-shrink-0 opacity-70" />
+                <span className="inline-flex items-center h-5 text-neutral-300 dark:text-neutral-600">·</span>
+                <span className="inline-flex items-center h-5 gap-1">
+                  <BookOpen size={12} className="flex-shrink-0" />
                   <span>{readingTime}</span>
                 </span>
               </>
