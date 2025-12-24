@@ -71,7 +71,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
         </div>
 
         {/* Main content area */}
-        <div className="flex-1 min-w-0 space-y-1">
+        <div className="flex-1 min-w-0 space-y-0.5">
           {/* Title */}
           <div>
             <a
