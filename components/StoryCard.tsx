@@ -91,17 +91,21 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
           </div>
 
           {/* Metadata row - single line, clean */}
-          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-            <StoryBadge title={story.title} type={story.type} />
-            <Link
-              href={`/user/${story.by}`}
-              className="font-medium hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
-            >
-              {story.by}
-            </Link>
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-neutral-500 dark:text-neutral-400 leading-none">
+            <span className="flex items-center">
+              <StoryBadge title={story.title} type={story.type} />
+            </span>
+            <span className="flex items-center h-full">
+              <Link
+                href={`/user/${story.by}`}
+                className="font-medium hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
+              >
+                {story.by}
+              </Link>
+            </span>
             <span className="text-neutral-300 dark:text-neutral-600">·</span>
             <span className="flex items-center gap-0.5">
-              <Clock size={10} strokeWidth={2} />
+              <Clock size={11} strokeWidth={2} />
               <TimeAgo timestamp={story.time} />
             </span>
             <span className="text-neutral-300 dark:text-neutral-600">·</span>
@@ -115,7 +119,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
                   href={`https://news.ycombinator.com/from?site=${host}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-mono text-[11px] hover:text-orange-500 dark:hover:text-orange-400 transition-colors truncate max-w-[100px]"
+                  className="inline-flex items-center font-mono text-[11px] hover:text-orange-500 dark:hover:text-orange-400 transition-colors truncate max-w-[100px]"
                   title={host}
                 >
                   {host}
@@ -125,8 +129,8 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
             {readingTime && (
               <>
                 <span className="text-neutral-300 dark:text-neutral-600">·</span>
-                <span className="flex items-center gap-0.5 text-neutral-500">
-                  <BookOpen size={10} strokeWidth={2} />
+                <span className="inline-flex items-center gap-0.5">
+                  <BookOpen size={11} strokeWidth={2} />
                   <span>{readingTime}</span>
                 </span>
               </>
@@ -144,25 +148,29 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
           <div className="flex items-center gap-2 pt-1">
             <Link
               href={`/story/${story.id}`}
-              className="inline-flex items-center gap-1.5 text-xs text-neutral-500 hover:text-orange-600 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs text-neutral-500 hover:text-orange-600 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors h-5"
             >
               <MessageSquare size={12} strokeWidth={2} />
               <span>{story.descendants || 0}</span>
             </Link>
-            <span className="text-neutral-200 dark:text-neutral-700">·</span>
-            <ShareButton title={story.title || "Story"} url={storyUrl} />
-            <BookmarkButton
-              story={{
-                id: story.id,
-                title: story.title || "",
-                url: story.url,
-                by: story.by,
-                time: story.time,
-                score: story.score,
-              }}
-            />
+            <span className="text-neutral-200 dark:text-neutral-700 h-5 flex items-center">·</span>
+            <div className="inline-flex items-center h-5">
+              <ShareButton title={story.title || "Story"} url={storyUrl} />
+            </div>
+            <div className="inline-flex items-center h-5">
+              <BookmarkButton
+                story={{
+                  id: story.id,
+                  title: story.title || "",
+                  url: story.url,
+                  by: story.by,
+                  time: story.time,
+                  score: story.score,
+                }}
+              />
+            </div>
             {hasExternalUrl && (
-              <span className="ml-auto">
+              <span className="ml-auto inline-flex items-center h-5">
                 <a
                   href={finalStoryUrl}
                   target="_blank"
