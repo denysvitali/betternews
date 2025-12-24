@@ -62,56 +62,69 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
 
   return (
     <Card variant="hover" padding="md" className="overflow-hidden">
-      <div className="flex gap-3">
-        {/* Rank - subtle, minimal */}
-        <div className="flex flex-col items-center justify-start pt-0.5 min-w-[24px]">
-          <span className="text-sm font-bold text-neutral-200 dark:text-neutral-700">{index + 1}</span>
+      {/* Main grid: rank | content | thumbnail */}
+      <div
+        className="grid gap-3"
+        style={{
+          gridTemplateColumns: hasExternalUrl
+            ? "24px 1fr 112px"
+            : "24px 1fr",
+        }}
+      >
+        {/* Rank column */}
+        <div className="flex items-start justify-center pt-1">
+          <span className="text-sm font-bold text-neutral-300 dark:text-neutral-600 tabular-nums">
+            {index + 1}
+          </span>
         </div>
 
-        <div className="flex flex-1 flex-col gap-1.5 min-w-0">
-          {/* Title - most prominent, no line clamp on desktop */}
-          <div className="flex items-start gap-2 flex-wrap">
+        {/* Content column - uses internal grid for alignment */}
+        <div className="grid gap-2 min-w-0">
+          {/* Title row */}
+          <div className="flex items-baseline gap-2 flex-wrap">
             <a
               href={finalStoryUrl}
               target={!isHNConverted && finalStoryUrl.startsWith("http") ? "_blank" : undefined}
               rel={!isHNConverted && finalStoryUrl.startsWith("http") ? "noreferrer" : undefined}
-              className={`font-semibold text-base sm:text-lg leading-snug line-clamp-2 sm:line-clamp-1 ${
+              className={`font-semibold text-base leading-snug ${
                 isHNConverted
                   ? "text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                   : "text-neutral-900 hover:text-orange-600 dark:text-neutral-100 dark:hover:text-orange-500"
-              }`}
+              } transition-colors`}
             >
               {story.title}
             </a>
             {isHNConverted && hnId && (
-              <span className="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded font-mono whitespace-nowrap mt-0.5">
+              <span className="text-[10px] text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded font-mono whitespace-nowrap">
                 HN#{hnId}
               </span>
             )}
           </div>
 
-          {/* Metadata row - single line, clean */}
-          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-neutral-500 dark:text-neutral-400 leading-none">
-            <span className="flex items-center">
-              <StoryBadge title={story.title} type={story.type} />
-            </span>
-            <span className="flex items-center h-full">
-              <Link
-                href={`/user/${story.by}`}
-                className="font-medium hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
-              >
-                {story.by}
-              </Link>
-            </span>
+          {/* Metadata row - consistent baseline alignment */}
+          <div className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+            <StoryBadge title={story.title} type={story.type} />
+
+            <Link
+              href={`/user/${story.by}`}
+              className="font-medium hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
+            >
+              {story.by}
+            </Link>
+
             <span className="text-neutral-300 dark:text-neutral-600">·</span>
-            <span className="flex items-center gap-0.5">
-              <Clock size={11} strokeWidth={2} />
+
+            <span className="inline-flex items-center gap-1">
+              <Clock size={11} className="opacity-60" />
               <TimeAgo timestamp={story.time} />
             </span>
+
             <span className="text-neutral-300 dark:text-neutral-600">·</span>
-            <Badge variant="orange" size="sm" icon={<ArrowUp size={8} strokeWidth={2} />}>
+
+            <Badge variant="orange" size="sm" icon={<ArrowUp size={10} />}>
               {story.score || 0}
             </Badge>
+
             {hasExternalUrl && (
               <>
                 <span className="text-neutral-300 dark:text-neutral-600">·</span>
@@ -119,19 +132,20 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
                   href={`https://news.ycombinator.com/from?site=${host}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center font-mono text-[11px] hover:text-orange-500 dark:hover:text-orange-400 transition-colors truncate max-w-[100px]"
+                  className="font-mono text-[11px] text-neutral-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors truncate max-w-[120px]"
                   title={host}
                 >
                   {host}
                 </a>
               </>
             )}
+
             {readingTime && (
               <>
                 <span className="text-neutral-300 dark:text-neutral-600">·</span>
-                <span className="inline-flex items-center gap-0.5">
-                  <BookOpen size={11} strokeWidth={2} />
-                  <span>{readingTime}</span>
+                <span className="inline-flex items-center gap-1">
+                  <BookOpen size={11} className="opacity-60" />
+                  {readingTime}
                 </span>
               </>
             )}
@@ -139,63 +153,61 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
 
           {/* Text preview for text posts */}
           {story.text && (
-            <div className="line-clamp-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 prose prose-sm dark:prose-invert max-w-none [&>p]:mb-1 [&>p]:leading-relaxed">
+            <div className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2 prose prose-sm dark:prose-invert max-w-none [&>p]:mb-0 [&>p]:leading-relaxed">
               <MarkdownRenderer content={story.text} allowHtml={true} />
             </div>
           )}
 
-          {/* Footer - actions row */}
-          <div className="flex items-center gap-2 pt-1">
+          {/* Actions row */}
+          <div className="flex items-center gap-3 pt-0.5">
             <Link
               href={`/story/${story.id}`}
-              className="inline-flex items-center gap-1.5 text-xs text-neutral-500 hover:text-orange-600 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors h-5"
+              className="inline-flex items-center gap-1.5 text-xs text-neutral-500 hover:text-orange-600 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors"
             >
-              <MessageSquare size={12} strokeWidth={2} />
+              <MessageSquare size={13} />
               <span>{story.descendants || 0}</span>
             </Link>
-            <span className="text-neutral-200 dark:text-neutral-700 h-5 flex items-center">·</span>
-            <div className="inline-flex items-center h-5">
-              <ShareButton title={story.title || "Story"} url={storyUrl} />
-            </div>
-            <div className="inline-flex items-center h-5">
-              <BookmarkButton
-                story={{
-                  id: story.id,
-                  title: story.title || "",
-                  url: story.url,
-                  by: story.by,
-                  time: story.time,
-                  score: story.score,
-                }}
-              />
-            </div>
+
+            <ShareButton title={story.title || "Story"} url={storyUrl} />
+
+            <BookmarkButton
+              story={{
+                id: story.id,
+                title: story.title || "",
+                url: story.url,
+                by: story.by,
+                time: story.time,
+                score: story.score,
+              }}
+            />
+
             {hasExternalUrl && (
-              <span className="ml-auto inline-flex items-center h-5">
-                <a
-                  href={finalStoryUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-neutral-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
-                  title="Open external link"
-                >
-                  <ExternalLink size={12} strokeWidth={2} />
-                </a>
-              </span>
+              <a
+                href={finalStoryUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-auto inline-flex items-center gap-1 text-xs text-neutral-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+                title="Open external link"
+              >
+                <ExternalLink size={13} />
+              </a>
             )}
           </div>
         </div>
 
-        {/* Thumbnail - desktop only */}
+        {/* Thumbnail column - desktop only */}
         {hasExternalUrl && (
-          <div className="hidden sm:block w-28 h-20 shrink-0 rounded-md overflow-hidden border border-neutral-100 dark:border-neutral-800">
-            <LinkPreview url={finalStoryUrl} />
+          <div className="hidden sm:block">
+            <div className="w-28 h-20 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800">
+              <LinkPreview url={finalStoryUrl} />
+            </div>
           </div>
         )}
       </div>
 
-      {/* Thumbnail - mobile only, below content */}
+      {/* Mobile thumbnail - full width below content */}
       {hasExternalUrl && (
-        <div className="sm:hidden mt-2 w-full h-28 rounded-md overflow-hidden border border-neutral-100 dark:border-neutral-800">
+        <div className="sm:hidden mt-3 w-full h-32 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800">
           <LinkPreview url={finalStoryUrl} />
         </div>
       )}
