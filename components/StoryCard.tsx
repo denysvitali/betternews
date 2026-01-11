@@ -7,7 +7,7 @@ import { HNItem } from "@/lib/hn";
 import { LinkPreview } from "./LinkPreview";
 import { getDomain, getReadingTime, convertHNUrlToRelative } from "@/lib/utils";
 import { StoryBadge } from "./StoryBadge";
-import { ShareButton } from "./ShareButton";
+
 import { TimeAgo } from "./TimeAgo";
 import { BookmarkButton } from "./BookmarkButton";
 import { Card, Badge } from "@/components/ui";
@@ -161,8 +161,6 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
               <MessageSquare size={14} className="flex-shrink-0" />
               <span>{story.descendants || 0}</span>
             </Link>
-
-            <ShareButton title={story.title || "Story"} url={storyUrl} />
 
             <BookmarkButton
               story={{
