@@ -18,9 +18,9 @@ const paddingStyles = {
 };
 
 const variantStyles = {
-  default: "border-neutral-200 dark:border-neutral-800 shadow-sm",
-  hover: "border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-orange-200 hover:shadow-lg hover:-translate-y-0.5 dark:hover:border-orange-900/50 transition-all duration-200",
-  interactive: "border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-orange-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] dark:hover:border-orange-900/50 transition-all duration-200 cursor-pointer",
+  default: "border-neutral-200 dark:border-neutral-800 shadow-sm focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2",
+  hover: "border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-orange-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] dark:hover:border-orange-900/50 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2",
+  interactive: "border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-orange-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] dark:hover:border-orange-900/50 transition-all duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2",
 };
 
 export function Card({
@@ -34,7 +34,7 @@ export function Card({
   return (
     <Component
       className={cn(
-        "rounded-xl border bg-white dark:bg-neutral-900",
+        "rounded-xl border bg-white dark:bg-neutral-900 transition-colors duration-200",
         variantStyles[variant],
         paddingStyles[padding],
         className

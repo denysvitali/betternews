@@ -1,6 +1,7 @@
 "use client";
 
 import { MessageSquare, FileText, Search, Inbox, Bookmark } from "lucide-react";
+import { Button } from "./ui";
 
 type EmptyStateType = "comments" | "posts" | "search" | "bookmarks" | "default";
 
@@ -8,6 +9,9 @@ interface EmptyStateProps {
   type?: EmptyStateType;
   title?: string;
   description?: string;
+  actionLabel?: string;
+  actionHref?: string;
+  onAction?: () => void;
 }
 
 const emptyStateConfig = {
@@ -48,34 +52,32 @@ const emptyStateConfig = {
   },
 };
 
-export function EmptyState({ type = "default", title, description }: EmptyStateProps) {
+export function EmptyState({ type = "default", title, description, actionLabel, actionHref, onAction }: EmptyStateProps) {
   const config = emptyStateConfig[type];
   const Icon = config.icon;
 
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
-      {/* Animated icon container */}
       <div className={`relative mb-4 rounded-full ${config.iconBg} p-6`}>
-        {/* Pulsing ring */}
-        <div className={`absolute inset-0 rounded-full ${config.iconBg} animate-ping opacity-20`} />
-        {/* Icon */}
         <Icon size={32} className={config.iconColor} strokeWidth={1.5} />
       </div>
 
-      {/* Text content */}
-      <h3 className="mb-1 text-lg font-semibold text-neutral-900 dark:text-white">
+      <h3 className="mb-1 text-lg font-semibold text-neutral-900 dark:text-white text-center">
         {title || config.title}
       </h3>
-      <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center max-w-xs">
+      <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center max-w-xs mb-4">
         {description || config.description}
       </p>
 
-      {/* Decorative dots */}
-      <div className="flex items-center gap-1 mt-6">
-        <span className="h-1.5 w-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700 animate-bounce" style={{ animationDelay: "0ms" }} />
-        <span className="h-1.5 w-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700 animate-bounce" style={{ animationDelay: "150ms" }} />
-        <span className="h-1.5 w-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700 animate-bounce" style={{ animationDelay: "300ms" }} />
-      </div>
+      {(actionLabel && (actionHref || onAction)) && (
+        <Button
+          variant="primary"
+          size="sm"
+          {...(actionHref ? { href: actionHref } : { onClick: onAction })}
+        >
+          {actionLabel}
+        </Button>
+      )}
     </div>
   );
 }

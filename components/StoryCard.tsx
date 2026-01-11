@@ -65,7 +65,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
       <div className="flex gap-2">
         {/* Rank number - fixed width, top aligned */}
         <div className="flex-shrink-0 w-6 pt-0 text-center">
-          <span className="text-sm font-bold text-neutral-300 dark:text-neutral-600 tabular-nums">
+          <span className="text-sm font-bold text-neutral-500 dark:text-neutral-500 tabular-nums">
             {index + 1}
           </span>
         </div>

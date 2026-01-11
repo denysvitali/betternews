@@ -17,23 +17,10 @@ interface CommentClientProps {
   parentId?: number;
 }
 
-// Colors for nested comment indentation (like Reddit)
-const INDENT_COLORS = [
-  "border-l-orange-400",
-  "border-l-blue-400",
-  "border-l-green-400",
-  "border-l-purple-400",
-  "border-l-pink-400",
-  "border-l-yellow-400",
-  "border-l-cyan-400",
-  "border-l-red-400",
-];
-
 export function CommentClient({ comment, children, level = 0, showScore = false, parentId }: CommentClientProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const replyCount = comment.kids?.length || 0;
   const descendantCount = comment.descendants || 0;
-  const indentColor = INDENT_COLORS[level % INDENT_COLORS.length];
 
   // Scroll to top of comments or parent comment
   const scrollToParent = () => {
@@ -135,7 +122,7 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
           </div>
 
           {children && (
-            <div className={`pl-3 sm:pl-4 ml-1 sm:ml-2 border-l-2 ${indentColor} transition-colors`}>
+            <div className="pl-3 sm:pl-4 ml-1 sm:ml-2 border-l-2 border-orange-400/50 dark:border-orange-500/30 transition-colors">
               {children}
             </div>
           )}

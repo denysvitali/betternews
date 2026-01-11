@@ -34,10 +34,10 @@ const sizeStyles = {
 };
 
 const variantStyles = {
-  primary: "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-500 shadow-sm hover:shadow-md active:scale-95",
-  secondary: "bg-white text-neutral-700 ring-1 ring-inset ring-neutral-300 hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200 dark:ring-neutral-700 dark:hover:bg-neutral-800 shadow-sm hover:shadow-md active:scale-95",
-  ghost: "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 active:scale-95",
-  action: "bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 active:scale-95",
+  primary: "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-500 shadow-sm hover:shadow-md active:scale-95 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2",
+  secondary: "bg-white text-neutral-700 ring-1 ring-inset ring-neutral-300 hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200 dark:ring-neutral-700 dark:hover:bg-neutral-800 shadow-sm hover:shadow-md active:scale-95 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2",
+  ghost: "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 active:scale-95 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2",
+  action: "bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 active:scale-95 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2",
 };
 
 const disabledStyles = "opacity-50 cursor-not-allowed pointer-events-none";
@@ -102,7 +102,8 @@ export function IconButton({
         "hover:scale-110 active:scale-90",
         variantStyles[variant],
         props.disabled && disabledStyles,
-        className
+        className,
+        "focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
       )}
       {...props}
     >
