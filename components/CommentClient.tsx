@@ -49,14 +49,14 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
       <span className="text-xs text-neutral-500 dark:text-neutral-400 select-none flex items-center flex-wrap gap-1">
         <IconButton
           variant="ghost"
-          className="inline-flex w-3 h-3 p-0 align-middle"
+          className="inline-flex w-5 h-5 p-0.5 align-middle rounded"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          aria-label={isCollapsed ? "Expand" : "Collapse"}
+          aria-label={isCollapsed ? "Expand comment" : "Collapse comment"}
           icon={
             isCollapsed ? (
-              <Plus size={10} strokeWidth={2.5} className="text-orange-500" />
+              <Plus size={12} strokeWidth={2.5} className="text-orange-500" />
             ) : (
-              <Minus size={10} strokeWidth={2.5} className="text-neutral-400" />
+              <Minus size={12} strokeWidth={2.5} className="text-neutral-400" />
             )
           }
         />

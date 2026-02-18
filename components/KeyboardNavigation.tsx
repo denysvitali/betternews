@@ -7,6 +7,15 @@ interface KeyboardNavigationProps {
   enabled?: boolean;
 }
 
+const SHORTCUTS = [
+  { key: "j", label: "Next comment" },
+  { key: "k", label: "Previous comment" },
+  { key: "n", label: "Next root comment" },
+  { key: "p", label: "Previous root comment" },
+  { key: "space", label: "Collapse / Expand" },
+  { key: "esc", label: "Close / Clear" },
+] as const;
+
 export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) {
   const [currentCommentIndex, setCurrentCommentIndex] = useState(-1);
   const [showHelp, setShowHelp] = useState(false);
@@ -184,30 +193,12 @@ export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) 
               Keyboard Shortcuts
             </h3>
             <div className="space-y-3 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-neutral-600 dark:text-neutral-400">Next comment</span>
-                <kbd className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs dark:bg-neutral-800">j</kbd>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-neutral-600 dark:text-neutral-400">Previous comment</span>
-                <kbd className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs dark:bg-neutral-800">k</kbd>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-neutral-600 dark:text-neutral-400">Next root comment</span>
-                <kbd className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs dark:bg-neutral-800">n</kbd>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-neutral-600 dark:text-neutral-400">Previous root comment</span>
-                <kbd className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs dark:bg-neutral-800">p</kbd>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-neutral-600 dark:text-neutral-400">Collapse/Expand</span>
-                <kbd className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs dark:bg-neutral-800">space</kbd>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-neutral-600 dark:text-neutral-400">Close/Clear</span>
-                <kbd className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs dark:bg-neutral-800">esc</kbd>
-              </div>
+              {SHORTCUTS.map(({ key, label }) => (
+                <div key={key} className="flex items-center justify-between">
+                  <span className="text-neutral-600 dark:text-neutral-400">{label}</span>
+                  <kbd className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs dark:bg-neutral-800">{key}</kbd>
+                </div>
+              ))}
             </div>
             <Button
               variant="primary"

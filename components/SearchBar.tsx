@@ -346,18 +346,40 @@ export function SearchButton({ onClick }: { onClick: () => void }) {
 
 // Full search modal
 export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
+    if (!isOpen) return;
+
+    document.body.style.overflow = "hidden";
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
+        return;
+      }
+      // Focus trap: keep Tab/Shift+Tab inside the modal
+      if (e.key === "Tab" && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])'
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last?.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first?.focus();
+          }
+        }
       }
     };
 
-    if (isOpen) {
-      document.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
-    }
-
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
@@ -367,7 +389,12 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-[15vh]">
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-[15vh]"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Search"
+    >
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -375,9 +402,11 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       />
 
       {/* Modal */}
-      <Card className="relative mx-4 w-full max-w-lg shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200" padding="md">
-        <SearchBar onClose={onClose} isOpen={isOpen} />
-      </Card>
+      <div ref={modalRef} className="relative mx-4 w-full max-w-lg">
+        <Card className="shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200" padding="md">
+          <SearchBar onClose={onClose} isOpen={isOpen} />
+        </Card>
+      </div>
     </div>
   );
 }

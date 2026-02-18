@@ -1,5 +1,8 @@
+"use client";
+
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui";
+import { useRouter } from "next/navigation";
 
 interface PaginationProps {
   currentPage: number;
@@ -7,11 +10,18 @@ interface PaginationProps {
 }
 
 export function Pagination({ currentPage, baseUrl }: PaginationProps) {
+  const router = useRouter();
+
+  const navigate = (page: number) => {
+    router.push(`${baseUrl}?page=${page}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
       {currentPage > 1 ? (
         <Button
-          href={`${baseUrl}?page=${currentPage - 1}`}
+          onClick={() => navigate(currentPage - 1)}
           variant="secondary"
           size="lg"
           className="min-w-[120px]"
@@ -36,7 +46,7 @@ export function Pagination({ currentPage, baseUrl }: PaginationProps) {
       </span>
 
       <Button
-        href={`${baseUrl}?page=${currentPage + 1}`}
+        onClick={() => navigate(currentPage + 1)}
         variant="secondary"
         size="lg"
         className="min-w-[120px]"

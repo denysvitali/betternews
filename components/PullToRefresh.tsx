@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, AlertCircle } from "lucide-react";
 
 interface PullToRefreshProps {
   onRefresh: () => Promise<void>;
@@ -12,6 +12,7 @@ export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPulling, setIsPulling] = useState(false);
+  const [refreshError, setRefreshError] = useState(false);
   const startY = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -52,10 +53,14 @@ export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
 
     if (pullDistance >= THRESHOLD && !isRefreshing) {
       setIsRefreshing(true);
+      setRefreshError(false);
       setPullDistance(THRESHOLD);
 
       try {
         await onRefresh();
+      } catch {
+        setRefreshError(true);
+        setTimeout(() => setRefreshError(false), 3000);
       } finally {
         setIsRefreshing(false);
         setPullDistance(0);
@@ -86,6 +91,14 @@ export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
 
   return (
     <div ref={containerRef} className="relative">
+      {/* Refresh error toast */}
+      {refreshError && (
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-full bg-red-600 px-4 py-2 text-xs text-white shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
+          <AlertCircle size={14} />
+          Refresh failed. Please try again.
+        </div>
+      )}
+
       {/* Pull indicator */}
       <div
         className="absolute left-0 right-0 flex items-center justify-center overflow-hidden transition-all duration-200 ease-out z-40"

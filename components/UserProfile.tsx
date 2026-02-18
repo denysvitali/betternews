@@ -70,7 +70,9 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
             <div className="flex gap-2 border-b border-neutral-200 dark:border-neutral-800">
                 <button
                     onClick={() => setActiveTab("submissions")}
-                    className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors ${activeTab === "submissions"
+                    aria-selected={activeTab === "submissions"}
+                    role="tab"
+                    className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-t ${activeTab === "submissions"
                         ? "border-b-2 border-orange-500 text-orange-600 dark:text-orange-500"
                         : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
                         }`}
@@ -80,7 +82,9 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                 </button>
                 <button
                     onClick={() => setActiveTab("comments")}
-                    className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors ${activeTab === "comments"
+                    aria-selected={activeTab === "comments"}
+                    role="tab"
+                    className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-t ${activeTab === "comments"
                         ? "border-b-2 border-orange-500 text-orange-600 dark:text-orange-500"
                         : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
                         }`}

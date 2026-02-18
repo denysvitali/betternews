@@ -2,14 +2,23 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Newspaper, Menu, X, Search, Bookmark } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SearchModal } from "@/components/SearchBar";
 import { IconButton } from "./ui";
 
+const NAV_LINKS = [
+  { href: "/", label: "Top" },
+  { href: "/new", label: "New" },
+  { href: "/best", label: "Best" },
+  { href: "/show", label: "Show" },
+] as const;
+
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const pathname = usePathname();
 
   // Keyboard shortcut for search (Cmd/Ctrl + K)
   useEffect(() => {
@@ -38,19 +47,32 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden sm:flex items-center gap-4 text-sm font-medium text-neutral-600 dark:text-neutral-400">
-            <Link href="/" className="px-2 py-1 hover:text-orange-500 transition-colors">
-              Top
-            </Link>
-            <Link href="/new" className="px-2 py-1 hover:text-orange-500 transition-colors">
-              New
-            </Link>
-            <Link href="/best" className="px-2 py-1 hover:text-orange-500 transition-colors">
-              Best
-            </Link>
-            <Link href="/show" className="px-2 py-1 hover:text-orange-500 transition-colors">
-              Show
-            </Link>
-            <Link href="/saved" className="flex items-center gap-1 px-2 py-1 hover:text-orange-500 transition-colors">
+            {NAV_LINKS.map(({ href, label }) => {
+              const isActive = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`px-2 py-1 transition-colors rounded ${
+                    isActive
+                      ? "text-orange-500 font-semibold"
+                      : "hover:text-orange-500"
+                  }`}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+            <Link
+              href="/saved"
+              className={`flex items-center gap-1 px-2 py-1 transition-colors rounded ${
+                pathname === "/saved"
+                  ? "text-orange-500 font-semibold"
+                  : "hover:text-orange-500"
+              }`}
+              aria-current={pathname === "/saved" ? "page" : undefined}
+            >
               <Bookmark size={14} />
               Saved
             </Link>
@@ -101,38 +123,35 @@ export function Navbar() {
         {isMobileMenuOpen && (
           <div className="sm:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md">
             <div className="container mx-auto px-4 py-3 space-y-2">
-              <Link
-                href="/"
-                className="block px-4 py-3 text-base font-medium text-neutral-600 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Top Stories
-              </Link>
-              <Link
-                href="/new"
-                className="block px-4 py-3 text-base font-medium text-neutral-600 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                New Stories
-              </Link>
-              <Link
-                href="/best"
-                className="block px-4 py-3 text-base font-medium text-neutral-600 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Best Stories
-              </Link>
-              <Link
-                href="/show"
-                className="block px-4 py-3 text-base font-medium text-neutral-600 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Show Stories
-              </Link>
+              {[
+                { href: "/", label: "Top Stories" },
+                { href: "/new", label: "New Stories" },
+                { href: "/best", label: "Best Stories" },
+                { href: "/show", label: "Show Stories" },
+              ].map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`block px-4 py-3 text-base font-medium rounded-md transition-colors ${
+                    pathname === href
+                      ? "text-orange-500 bg-orange-50 dark:bg-orange-950/20"
+                      : "text-neutral-600 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  aria-current={pathname === href ? "page" : undefined}
+                >
+                  {label}
+                </Link>
+              ))}
               <Link
                 href="/saved"
-                className="flex items-center gap-2 px-4 py-3 text-base font-medium text-neutral-600 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
+                className={`flex items-center gap-2 px-4 py-3 text-base font-medium rounded-md transition-colors ${
+                  pathname === "/saved"
+                    ? "text-orange-500 bg-orange-50 dark:bg-orange-950/20"
+                    : "text-neutral-600 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                }`}
                 onClick={() => setIsMobileMenuOpen(false)}
+                aria-current={pathname === "/saved" ? "page" : undefined}
               >
                 <Bookmark size={16} />
                 Saved Stories

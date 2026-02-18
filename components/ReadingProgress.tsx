@@ -35,7 +35,7 @@ export function ReadingProgress() {
       {/* Percentage indicator (shown on hover or when progress > 10%) */}
       {(showPercentage || progress > 10) && (
         <div
-          className="fixed top-4 right-4 z-[60] bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border border-neutral-200 dark:border-neutral-700 rounded-lg px-3 py-1.5 shadow-lg text-xs font-medium text-neutral-700 dark:text-neutral-300 transition-opacity duration-200"
+          className="hidden sm:block fixed top-4 right-4 z-[60] bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border border-neutral-200 dark:border-neutral-700 rounded-lg px-3 py-1.5 shadow-lg text-xs font-medium text-neutral-700 dark:text-neutral-300 transition-opacity duration-200"
           aria-live="polite"
         >
           {progress}% read
