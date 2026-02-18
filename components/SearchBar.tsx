@@ -3,8 +3,9 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Search, X, Loader2, ExternalLink, Clock, MessageSquare, Bookmark, Share2 } from "lucide-react";
 import Link from "next/link";
-import { HNItem, HN_API_BASE } from "@/lib/types";
 import { useDebounce } from "@/lib/hooks";
+
+const ALGOLIA_API = "https://hn.algolia.com/api/v1";
 import { useBookmarks } from "@/lib/bookmarks";
 import { TimeAgo } from "./TimeAgo";
 import { Card, Button } from "./ui";
@@ -53,38 +54,24 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
 
     setIsLoading(true);
     try {
-      // Fetch top 100 stories to search through
-      const res = await fetch(`${HN_API_BASE}/topstories.json`);
-      const storyIds: number[] = await res.json();
+      const url = `${ALGOLIA_API}/search?query=${encodeURIComponent(searchQuery)}&tags=story&hitsPerPage=8`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
 
-      // Fetch first 50 stories for quick search
-      const storyPromises = storyIds.slice(0, 50).map(id =>
-        fetch(`${HN_API_BASE}/item/${id}.json`).then(r => r.json())
+      const matchingStories: SearchResult[] = (json.hits ?? []).map(
+        (hit: Record<string, unknown>) => ({
+          id: Number(hit.objectID),
+          title: String(hit.title ?? ""),
+          url: hit.url as string | undefined,
+          by: hit.author as string | undefined,
+          time: Number(hit.created_at_i ?? 0),
+          score: hit.points as number | undefined,
+          type: "story",
+          text: hit.story_text as string | undefined,
+          descendants: hit.num_comments as number | undefined,
+        })
       );
-
-      const stories: HNItem[] = await Promise.all(storyPromises);
-
-      // Filter stories that match the query
-      const searchLower = searchQuery.toLowerCase();
-      const matchingStories = stories
-        .filter(story =>
-          story &&
-          story.title &&
-          (story.title.toLowerCase().includes(searchLower) ||
-           story.by?.toLowerCase().includes(searchLower))
-        )
-        .slice(0, 8)
-        .map(story => ({
-          id: story.id,
-          title: story.title || "",
-          url: story.url,
-          by: story.by,
-          time: story.time,
-          score: story.score,
-          type: story.type,
-          text: story.text,
-          descendants: story.descendants,
-        }));
 
       setResults(matchingStories);
       setShowResults(true);

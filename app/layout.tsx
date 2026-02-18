@@ -39,6 +39,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Restore path after GitHub Pages 404 redirect */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            var redirect = sessionStorage.getItem('gh-pages-redirect');
+            if (redirect) {
+              sessionStorage.removeItem('gh-pages-redirect');
+              window.history.replaceState(null, '', redirect);
+            }
+          })();
+        `}} />
+      </head>
       <body className="antialiased">
         {/* Skip to content link for accessibility */}
         <a

@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-// @ts-expect-error - psl types are not resolving correctly
 import psl from "psl";
 
 export function cn(...inputs: ClassValue[]) {

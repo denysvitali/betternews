@@ -1,7 +1,32 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { HNItem, HNUser, HN_API_BASE, PAGINATION } from "./types";
+import { HNItem, HNUser, HN_API_BASE, CACHE_TIMES, PAGINATION } from "./types";
+
+// ============================================
+// In-memory request cache
+// ============================================
+
+interface CacheEntry<T> {
+  data: T;
+  expiresAt: number;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const cache = new Map<string, CacheEntry<any>>();
+
+async function cachedFetch<T>(url: string, ttlSeconds: number): Promise<T> {
+  const now = Date.now();
+  const entry = cache.get(url);
+  if (entry && entry.expiresAt > now) {
+    return entry.data as T;
+  }
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data: T = await res.json();
+  cache.set(url, { data, expiresAt: now + ttlSeconds * 1000 });
+  return data;
+}
 
 // ============================================
 // Utility Hooks
@@ -168,15 +193,17 @@ async function fetchPaginatedStories(
   page: number,
   pageSize: number = PAGINATION.DEFAULT_PAGE_SIZE
 ): Promise<HNItem[]> {
-  const res = await fetch(`${HN_API_BASE}/${endpoint}.json`);
-  const storyIds: number[] = await res.json();
+  const storyIds = await cachedFetch<number[]>(
+    `${HN_API_BASE}/${endpoint}.json`,
+    CACHE_TIMES.STORIES
+  );
 
   const startIndex = (page - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const pageIds = storyIds.slice(startIndex, endIndex);
 
   const storyPromises = pageIds.map((id) =>
-    fetch(`${HN_API_BASE}/item/${id}.json`).then((r) => r.json())
+    cachedFetch<HNItem>(`${HN_API_BASE}/item/${id}.json`, CACHE_TIMES.ITEM)
   );
 
   const fetchedStories = await Promise.all(storyPromises);
@@ -236,10 +263,7 @@ export function useShowStories(page: number = 1) {
  */
 export function useStory(id: number) {
   const { data, loading, error } = useFetch(
-    async () => {
-      const res = await fetch(`${HN_API_BASE}/item/${id}.json`);
-      return res.json() as Promise<HNItem>;
-    },
+    () => cachedFetch<HNItem>(`${HN_API_BASE}/item/${id}.json`, CACHE_TIMES.ITEM),
     [id],
     { skip: !id }
   );
@@ -252,10 +276,7 @@ export function useStory(id: number) {
  */
 export function useComment(id: number) {
   const { data, loading, error } = useFetch(
-    async () => {
-      const res = await fetch(`${HN_API_BASE}/item/${id}.json`);
-      return res.json() as Promise<HNItem>;
-    },
+    () => cachedFetch<HNItem>(`${HN_API_BASE}/item/${id}.json`, CACHE_TIMES.ITEM),
     [id],
     { skip: !id }
   );
@@ -268,10 +289,7 @@ export function useComment(id: number) {
  */
 export function useUser(username: string) {
   const { data, loading, error } = useFetch(
-    async () => {
-      const res = await fetch(`${HN_API_BASE}/user/${username}.json`);
-      return res.json() as Promise<HNUser>;
-    },
+    () => cachedFetch<HNUser>(`${HN_API_BASE}/user/${username}.json`, CACHE_TIMES.USER),
     [username],
     { skip: !username }
   );
@@ -296,7 +314,7 @@ export function useUserItems(
 
       const limitedIds = itemIds.slice(0, limit);
       const itemPromises = limitedIds.map((id) =>
-        fetch(`${HN_API_BASE}/item/${id}.json`).then((r) => r.json())
+        cachedFetch<HNItem>(`${HN_API_BASE}/item/${id}.json`, CACHE_TIMES.ITEM)
       );
 
       const fetchedItems = await Promise.all(itemPromises);
