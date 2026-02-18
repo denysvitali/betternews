@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, X, Loader2, ExternalLink, Clock, MessageSquare, Bookmark, Share2 } from "lucide-react";
+import { Search, X, Loader2, ExternalLink, Clock, MessageSquare, Bookmark, Share2, AlertCircle, RotateCcw, Check } from "lucide-react";
 import Link from "next/link";
 import { useDebounce } from "@/lib/hooks";
-
-const ALGOLIA_API = "https://hn.algolia.com/api/v1";
 import { useBookmarks } from "@/lib/bookmarks";
 import { TimeAgo } from "./TimeAgo";
 import { Card, Button } from "./ui";
 import { getDomain } from "@/lib/utils";
+
+const ALGOLIA_API = "https://hn.algolia.com/api/v1";
 
 interface SearchResult {
   id: number;
@@ -33,9 +33,20 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [toastId, setToastId] = useState<number | null>(null);
+  const [toastBookmarked, setToastBookmarked] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedQuery = useDebounce(query, 300);
   const { isBookmarked, toggleBookmark } = useBookmarks();
+
+  const showBookmarkToast = useCallback((bookmarked: boolean) => {
+    setToastBookmarked(bookmarked);
+    setToastId((prev) => {
+      if (prev !== null) clearTimeout(prev);
+      return window.setTimeout(() => setToastId(null), 2000);
+    });
+  }, []);
 
   // Focus input when opened
   useEffect(() => {
@@ -49,10 +60,12 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
     if (!searchQuery.trim() || searchQuery.length < 2) {
       setResults([]);
       setShowResults(false);
+      setSearchError(null);
       return;
     }
 
     setIsLoading(true);
+    setSearchError(null);
     try {
       const url = `${ALGOLIA_API}/search?query=${encodeURIComponent(searchQuery)}&tags=story&hitsPerPage=8`;
       const res = await fetch(url);
@@ -78,6 +91,8 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
     } catch (error) {
       console.error("Search failed:", error);
       setResults([]);
+      setSearchError("Search failed. Check your connection and try again.");
+      setShowResults(true);
     } finally {
       setIsLoading(false);
     }
@@ -104,6 +119,13 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
 
   return (
     <div className="relative">
+      {/* Bookmark toast */}
+      {toastId !== null && (
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full bg-neutral-900 px-3 py-1.5 text-xs text-white shadow-lg dark:bg-neutral-100 dark:text-neutral-900 z-10 whitespace-nowrap animate-in fade-in slide-in-from-top-2 duration-150">
+          <Check size={12} />
+          {toastBookmarked ? "Saved to reading list" : "Removed from reading list"}
+        </div>
+      )}
       <form onSubmit={(e) => { e.preventDefault(); handleExternalSearch(); }} className="relative">
         <div className="relative flex items-center">
           <Search
@@ -138,7 +160,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
 
       {/* Search Results */}
       {showResults && results.length > 0 && (
-        <Card className="mt-2 max-h-96 overflow-y-auto shadow-lg" padding="none">
+        <Card className="mt-2 max-h-[40vh] sm:max-h-96 overflow-y-auto shadow-lg" padding="none">
           {results.map((result) => {
             const domain = result.url ? getDomain(result.url) : null;
             const bookmarked = isBookmarked(result.id);
@@ -204,6 +226,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
+                      const wasBookmarked = isBookmarked(result.id);
                       toggleBookmark({
                         id: result.id,
                         title: result.title,
@@ -212,6 +235,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
                         time: result.time,
                         score: result.score,
                       });
+                      showBookmarkToast(!wasBookmarked);
                     }}
                     className={`flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors ${
                       bookmarked
@@ -265,8 +289,25 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
         </Card>
       )}
 
+      {/* Error state */}
+      {showResults && searchError && !isLoading && (
+        <Card className="mt-2 text-center" padding="md">
+          <div className="flex flex-col items-center gap-2">
+            <AlertCircle size={18} className="text-red-500" />
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">{searchError}</p>
+            <button
+              onClick={() => performSearch(query)}
+              className="flex items-center gap-1.5 text-sm text-orange-600 hover:text-orange-700 dark:text-orange-500 dark:hover:text-orange-400 font-medium"
+            >
+              <RotateCcw size={13} />
+              Retry
+            </button>
+          </div>
+        </Card>
+      )}
+
       {/* No results */}
-      {showResults && query.length >= 2 && results.length === 0 && !isLoading && (
+      {showResults && query.length >= 2 && results.length === 0 && !isLoading && !searchError && (
         <Card className="mt-2 text-center" padding="md">
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
             No stories found for &quot;{query}&quot;
@@ -326,7 +367,7 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-[15vh]">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"

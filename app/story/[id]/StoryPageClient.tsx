@@ -15,7 +15,7 @@ import { BookmarkButton } from "@/components/BookmarkButton";
 import { CommentSortControl, CommentSortType } from "@/components/CommentSortControl";
 import { CollapseDepthControl } from "@/components/CollapseDepthControl";
 import { ArrowUp, MessageSquare, Clock, ExternalLink, BookOpen } from "lucide-react";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useCallback } from "react";
 import Link from "next/link";
 import { StorySkeleton } from "@/components/StorySkeleton";
 import { CommentSkeleton } from "@/components/CommentSkeleton";
@@ -39,6 +39,11 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
     const [commentSort, setCommentSort] = useState<CommentSortType>("default");
     const [collapseDepth, setCollapseDepth] = useState<number>(2);
     const [showCommentScores, setShowCommentScores] = useState<boolean>(false);
+    const [visibleCommentCount, setVisibleCommentCount] = useState<number>(20);
+
+    const loadMoreComments = useCallback(() => {
+        setVisibleCommentCount((prev) => prev + 20);
+    }, []);
 
     const story = initialStory || fetchedStory;
     const loading = !initialStory && fetching;
@@ -243,16 +248,26 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
 
                 <div id="comments-container" className="flex flex-col gap-3 sm:gap-4">
                     {story.kids && story.kids.length > 0 ? (
-                        story.kids.map((kidId) => (
-                            <Suspense key={kidId} fallback={<CommentSkeleton />}>
-                                <Comment
-                                    id={kidId}
-                                    maxInitialDepth={collapseDepth}
-                                    sortBy={commentSort}
-                                    showScore={showCommentScores}
-                                />
-                            </Suspense>
-                        ))
+                        <>
+                            {story.kids.slice(0, visibleCommentCount).map((kidId) => (
+                                <Suspense key={kidId} fallback={<CommentSkeleton />}>
+                                    <Comment
+                                        id={kidId}
+                                        maxInitialDepth={collapseDepth}
+                                        sortBy={commentSort}
+                                        showScore={showCommentScores}
+                                    />
+                                </Suspense>
+                            ))}
+                            {visibleCommentCount < story.kids.length && (
+                                <button
+                                    onClick={loadMoreComments}
+                                    className="mt-2 w-full rounded-lg border border-neutral-200 py-3 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800/50"
+                                >
+                                    Load more comments ({story.kids.length - visibleCommentCount} remaining)
+                                </button>
+                            )}
+                        </>
                     ) : (
                         <EmptyState type="comments" />
                     )}
