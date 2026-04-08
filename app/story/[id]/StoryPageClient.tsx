@@ -143,14 +143,23 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                     </div>
 
                     <div className="flex items-start gap-2 flex-wrap">
-                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight text-neutral-900 dark:text-white">
+                        <h1 className="text-2xl font-semibold leading-tight tracking-[-0.04em] text-neutral-900 dark:text-white sm:text-3xl lg:text-[2.15rem]">
                             {story.title}
                         </h1>
                         {isHNConverted && hnId && (
-                            <span className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded font-mono whitespace-nowrap mt-2 sm:mt-3">
+                            <span className="mt-2 whitespace-nowrap rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 text-xs text-neutral-500 dark:bg-white/6 dark:text-neutral-400 sm:mt-3">
                                 HN#{hnId}
                             </span>
                         )}
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.22em] text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
+                            Story #{story.id}
+                        </span>
+                        <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 text-xs text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
+                            {story.descendants || 0} comments
+                        </span>
                     </div>
 
                     {story.url && (
@@ -185,7 +194,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
 
                     {/* Large Preview for the Story Page - Only show for non-HN URLs */}
                     {story.url && !isHNConverted && (
-                        <div className="mt-3 sm:mt-4 aspect-video w-full max-w-2xl overflow-hidden rounded-lg border border-neutral-100 dark:border-neutral-800">
+                        <div className="mt-3 aspect-video w-full max-w-2xl overflow-hidden rounded-[1.4rem] border border-[var(--border-soft)] shadow-sm sm:mt-4">
                             <LinkPreview url={finalStoryUrl} />
                         </div>
                     )}
@@ -201,7 +210,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                     )}
 
                     {/* Actions */}
-                    <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center gap-3">
+                    <div className="mt-4 flex items-center gap-3 border-t border-[var(--border-soft)] pt-4">
                         <ShareButton title={story.title || "Story"} url={finalStoryUrl} />
                         <BookmarkButton
                             story={{
@@ -232,7 +241,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                     </div>
 
                     {/* Comment Display Controls */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 px-3 sm:px-4 bg-neutral-50 dark:bg-neutral-900/50 rounded-lg border border-neutral-200 dark:border-neutral-800">
+                    <div className="glass-panel flex flex-col gap-3 rounded-[1.2rem] border border-[var(--border-soft)] px-3 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-4">
                         <CommentSortControl
                             currentSort={commentSort}
                             onSortChange={setCommentSort}
@@ -262,7 +271,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                             {visibleCommentCount < story.kids.length && (
                                 <button
                                     onClick={loadMoreComments}
-                                    className="mt-2 w-full rounded-lg border border-neutral-200 py-3 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800/50"
+                                    className="glass-panel mt-2 w-full rounded-[1.1rem] border border-[var(--border-soft)] py-3 text-sm font-medium text-neutral-600 transition-colors hover:bg-white/60 dark:text-neutral-300 dark:hover:bg-white/[0.04]"
                                 >
                                     Load more comments ({story.kids.length - visibleCommentCount} remaining)
                                 </button>
