@@ -3,30 +3,44 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f3eb;
+  --foreground: #1b1c1e;
+  --surface: rgba(255, 252, 246, 0.88);
+  --surface-strong: rgba(255, 249, 240, 0.98);
+  --border-soft: rgba(126, 89, 47, 0.14);
+  --hero-glow: rgba(245, 121, 32, 0.22);
+  --hero-accent: rgba(255, 220, 182, 0.92);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-ibm-plex-mono);
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #0a0d12;
+  --foreground: #edf2f7;
+  --surface: rgba(12, 17, 24, 0.82);
+  --surface-strong: rgba(14, 19, 27, 0.94);
+  --border-soft: rgba(255, 181, 72, 0.12);
+  --hero-glow: rgba(255, 145, 77, 0.18);
+  --hero-accent: rgba(44, 29, 14, 0.9);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-space-grotesk), sans-serif;
   /* Mobile optimization */
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
   transition: background-color 0.3s ease, color 0.3s ease;
+  background-image:
+    radial-gradient(circle at top left, var(--hero-glow), transparent 32%),
+    radial-gradient(circle at 85% 12%, rgba(255, 255, 255, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 28%);
 }
 
 /* Improved mobile scrolling */
@@ -80,4 +94,14 @@ body {
 
 .animation-delay-400 {
   animation-delay: 400ms;
+}
+
+.glass-panel {
+  background: var(--surface);
+  backdrop-filter: blur(18px);
+}
+
+.surface-card {
+  background: linear-gradient(180deg, var(--surface-strong), var(--surface));
+  border-color: var(--border-soft);
 }

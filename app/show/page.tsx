@@ -27,6 +27,17 @@ function ShowStoriesContent() {
         <PageHeader
           title="Show Stories"
           description="Show HN submissions from the community."
+          eyebrow="Builders"
+          meta={
+            <>
+              <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 font-mono dark:bg-white/6">
+                Page {page}
+              </span>
+              <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 font-mono dark:bg-white/6">
+                {stories.length} stories
+              </span>
+            </>
+          }
         />
 
         {error && (

@@ -1,7 +1,19 @@
 import type { Metadata } from "next";
+import { Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { BookmarksProvider } from "@/lib/bookmarks";
 import "./globals.css";
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-ibm-plex-mono",
+});
 
 export const metadata: Metadata = {
   title: "BetterNews",
@@ -49,7 +61,7 @@ export default function RootLayout({
           })();
         `}} />
       </head>
-      <body className="antialiased">
+      <body className={`${spaceGrotesk.variable} ${ibmPlexMono.variable} antialiased`}>
         {/* Skip to content link for accessibility */}
         <a
           href="#main-content"

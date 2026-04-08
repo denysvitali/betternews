@@ -28,6 +28,17 @@ function NewStoriesContent() {
         <PageHeader
           title="New Stories"
           description="The latest submissions from the community."
+          eyebrow="Fresh Feed"
+          meta={
+            <>
+              <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 font-mono dark:bg-white/6">
+                Page {page}
+              </span>
+              <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 font-mono dark:bg-white/6">
+                {stories.length} stories
+              </span>
+            </>
+          }
         />
 
         {error && (

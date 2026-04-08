@@ -36,27 +36,32 @@ export function Navbar() {
   return (
     <>
       <nav className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md dark:bg-neutral-950/80 dark:border-neutral-800">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl sm:text-2xl">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500 text-white">
+        <div className="container mx-auto flex h-18 items-center justify-between px-4 py-3 sm:px-6">
+          <Link href="/" className="flex items-center gap-3 text-xl font-bold sm:text-2xl">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 via-orange-500 to-amber-600 text-white shadow-[0_10px_24px_rgba(245,121,32,0.32)]">
               <Newspaper size={20} />
             </div>
-            <span className="hidden sm:inline">BetterNews</span>
-            <span className="sm:hidden">BN</span>
+            <div className="flex flex-col leading-none">
+              <span className="hidden sm:inline tracking-[-0.04em]">BetterNews</span>
+              <span className="hidden font-mono text-[10px] uppercase tracking-[0.3em] text-neutral-500 dark:text-neutral-400 sm:inline">
+                Signal over noise
+              </span>
+              <span className="tracking-[-0.04em] sm:hidden">BN</span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden sm:flex items-center gap-4 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+          <div className="glass-panel hidden items-center gap-2 rounded-full border border-[var(--border-soft)] px-2 py-2 text-sm font-medium text-neutral-600 shadow-[0_8px_24px_rgba(15,23,42,0.05)] dark:text-neutral-400 sm:flex">
             {NAV_LINKS.map(({ href, label }) => {
               const isActive = pathname === href;
               return (
                 <Link
                   key={href}
                   href={href}
-                  className={`px-2 py-1 transition-colors rounded ${
+                  className={`rounded-full px-3 py-2 transition-all ${
                     isActive
-                      ? "text-orange-500 font-semibold"
-                      : "hover:text-orange-500"
+                      ? "bg-neutral-950 text-white shadow-sm dark:bg-white dark:text-neutral-950"
+                      : "hover:bg-white/70 hover:text-orange-600 dark:hover:bg-white/8"
                   }`}
                   aria-current={isActive ? "page" : undefined}
                 >
@@ -66,10 +71,10 @@ export function Navbar() {
             })}
             <Link
               href="/saved"
-              className={`flex items-center gap-1 px-2 py-1 transition-colors rounded ${
+              className={`flex items-center gap-1 rounded-full px-3 py-2 transition-all ${
                 pathname === "/saved"
-                  ? "text-orange-500 font-semibold"
-                  : "hover:text-orange-500"
+                  ? "bg-neutral-950 text-white shadow-sm dark:bg-white dark:text-neutral-950"
+                  : "hover:bg-white/70 hover:text-orange-600 dark:hover:bg-white/8"
               }`}
               aria-current={pathname === "/saved" ? "page" : undefined}
             >
@@ -80,11 +85,11 @@ export function Navbar() {
             {/* Search Button */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-neutral-500 transition-colors hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:border-neutral-600 dark:hover:bg-neutral-700"
+            className="glass-panel flex items-center gap-2 rounded-full border border-[var(--border-soft)] px-3 py-2 text-neutral-600 transition-colors hover:text-orange-600 dark:text-neutral-300"
             >
               <Search size={14} />
               <span className="text-xs">Search</span>
-              <kbd className="hidden md:inline-flex items-center gap-0.5 rounded border border-neutral-300 bg-neutral-100 px-1.5 py-0.5 text-[10px] font-medium text-neutral-500 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-400">
+              <kbd className="hidden items-center gap-0.5 rounded-full border border-[var(--border-soft)] px-2 py-0.5 font-mono text-[10px] font-medium text-neutral-500 dark:text-neutral-400 md:inline-flex">
                 <span className="text-xs">⌘</span>K
               </kbd>
             </button>
@@ -122,7 +127,7 @@ export function Navbar() {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="sm:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md">
-            <div className="container mx-auto px-4 py-3 space-y-2">
+              <div className="container mx-auto space-y-2 px-4 py-3">
               {[
                 { href: "/", label: "Top Stories" },
                 { href: "/new", label: "New Stories" },
