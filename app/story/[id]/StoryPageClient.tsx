@@ -38,7 +38,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
     // Comment display settings
     const [commentSort, setCommentSort] = useState<CommentSortType>("default");
     const [collapseDepth, setCollapseDepth] = useState<number>(2);
-    const [showCommentScores, setShowCommentScores] = useState<boolean>(false);
+    const [showCommentScores] = useState<boolean>(false);
     const [visibleCommentCount, setVisibleCommentCount] = useState<number>(20);
 
     const loadMoreComments = useCallback(() => {

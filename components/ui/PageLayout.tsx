@@ -4,7 +4,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
 import { cn } from "@/lib/utils";
-import { Skeleton, SkeletonText, SkeletonAvatar } from "./Skeleton";
+import { Skeleton, SkeletonText } from "./Skeleton";
 import { Card } from "./Card";
 
 interface PageLayoutProps {

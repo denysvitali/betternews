@@ -10,12 +10,38 @@ interface LinkPreviewProps {
   className?: string;
 }
 
+interface LinkPreviewPlaceholderProps {
+  className?: string;
+  domain: string;
+}
+
 // 11ty OpenGraph API - completely free, no API key needed
 // Returns the actual Open Graph image that websites define
 const getOGImageUrl = (url: string, size: "small" | "medium" = "small") => {
   const encodedUrl = encodeURIComponent(url);
   return `https://v1.opengraph.11ty.dev/${encodedUrl}/${size}/`;
 };
+
+function LinkPreviewPlaceholder({
+  className,
+  domain,
+}: LinkPreviewPlaceholderProps) {
+  return (
+    <div
+      className={cn(
+        "flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-50 dark:from-neutral-800 dark:to-neutral-900",
+        className
+      )}
+    >
+      <div className="flex flex-col items-center gap-1.5 text-neutral-400 dark:text-neutral-500">
+        <ExternalLink size={18} />
+        <span className="max-w-full truncate px-2 text-[10px] font-medium">
+          {domain}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export function LinkPreview({ url, className }: LinkPreviewProps) {
   const [imageError, setImageError] = useState(false);
@@ -31,25 +57,8 @@ export function LinkPreview({ url, className }: LinkPreviewProps) {
 
   const ogImageUrl = getOGImageUrl(url, "small");
 
-  // Fallback placeholder when image fails or is loading
-  const Placeholder = () => (
-    <div
-      className={cn(
-        "flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-50 dark:from-neutral-800 dark:to-neutral-900",
-        className
-      )}
-    >
-      <div className="flex flex-col items-center gap-1.5 text-neutral-400 dark:text-neutral-500">
-        <ExternalLink size={18} />
-        <span className="text-[10px] font-medium truncate max-w-full px-2">
-          {domain}
-        </span>
-      </div>
-    </div>
-  );
-
   if (imageError) {
-    return <Placeholder />;
+    return <LinkPreviewPlaceholder className={className} domain={domain} />;
   }
 
   return (

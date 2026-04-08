@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from "react";
+import { useRef } from "react";
 
 interface BookmarkedStory {
   id: number;
@@ -45,21 +46,18 @@ function setStoredBookmarks(bookmarks: BookmarkedStory[]): void {
 const BookmarksContext = createContext<BookmarksContextType | null>(null);
 
 export function BookmarksProvider({ children }: { children: ReactNode }) {
-  const [bookmarks, setBookmarks] = useState<BookmarkedStory[]>([]);
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  // Load bookmarks from localStorage on mount
-  useEffect(() => {
-    setBookmarks(getStoredBookmarks());
-    setIsHydrated(true);
-  }, []);
+  const [bookmarks, setBookmarks] = useState<BookmarkedStory[]>(getStoredBookmarks);
+  const hasPersistedInitialValue = useRef(false);
 
   // Save bookmarks to localStorage when they change
   useEffect(() => {
-    if (isHydrated) {
-      setStoredBookmarks(bookmarks);
+    if (!hasPersistedInitialValue.current) {
+      hasPersistedInitialValue.current = true;
+      return;
     }
-  }, [bookmarks, isHydrated]);
+
+    setStoredBookmarks(bookmarks);
+  }, [bookmarks]);
 
   const isBookmarked = useCallback(
     (id: number) => bookmarks.some((b) => b.id === id),

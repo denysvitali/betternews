@@ -1,7 +1,6 @@
 "use client";
 
-import { ArrowUpDown, TrendingUp, Clock, ArrowUpFromDot } from "lucide-react";
-import { Button } from "@/components/ui";
+import { TrendingUp, Clock, ArrowUpFromDot } from "lucide-react";
 
 export type CommentSortType = "default" | "newest" | "oldest";
 
@@ -14,8 +13,10 @@ interface CommentSortControlProps {
 export function CommentSortControl({
   currentSort,
   onSortChange,
-  commentCount,
+  commentCount: _commentCount,
 }: CommentSortControlProps) {
+  void _commentCount;
+
   const sortOptions: Array<{ key: CommentSortType; label: string; icon: React.ReactNode }> = [
     { key: "default", label: "Best", icon: <TrendingUp size={14} /> },
     { key: "newest", label: "Newest", icon: <Clock size={14} /> },

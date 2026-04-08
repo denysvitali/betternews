@@ -53,11 +53,6 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
     };
   }, [story.url, story.id]);
 
-  const storyUrl = useMemo(
-    () => finalStoryUrl || `${typeof window !== "undefined" ? window.location.origin : ""}/story/${story.id}`,
-    [finalStoryUrl, story.id]
-  );
-
   const hasExternalUrl = story.url && !isHNConverted;
 
   return (

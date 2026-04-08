@@ -19,7 +19,6 @@ interface CommentClientProps {
 
 export function CommentClient({ comment, children, level = 0, showScore = false, parentId }: CommentClientProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const replyCount = comment.kids?.length || 0;
   const descendantCount = comment.descendants || 0;
 
   // Scroll to top of comments or parent comment

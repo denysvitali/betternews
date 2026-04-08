@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Newspaper, Bookmark, Search, User } from "lucide-react";
+import { Newspaper, Bookmark, Search } from "lucide-react";
 import { useBookmarks } from "@/lib/bookmarks";
 import { SearchModal } from "@/components/SearchBar";
 import { useState } from "react";

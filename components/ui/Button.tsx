@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { ButtonHTMLAttributes, ReactNode, useState } from "react";
+import { ButtonHTMLAttributes, ReactNode } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "action";
 type ButtonSize = "sm" | "md" | "lg";

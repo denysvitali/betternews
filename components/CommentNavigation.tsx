@@ -20,6 +20,8 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
   const [rootComments, setRootComments] = useState<RootComment[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  void storyId;
+
   // Scroll to a specific comment by ID with offset for sticky header
   const scrollToComment = useCallback((commentId: number) => {
     const element = document.getElementById(`comment-${commentId}`);

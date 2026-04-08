@@ -2,13 +2,13 @@
 
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import type { Components, ExtraProps } from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import { visit } from "unist-util-visit";
-import { Node } from "unist";
-import { Root } from "hast";
+import type { Root as MdastRoot, Text } from "mdast";
 import DOMPurify from "isomorphic-dompurify";
 import { convertHNUrlToRelative } from "@/lib/utils";
 
@@ -25,20 +25,32 @@ const sanitizeOptions = {
 
 // Custom remark plugin to process HN-specific markdown
 function hnRemarkPlugin() {
-  return (tree: Root) => {
-    visit(tree, "text", (node: any) => {
+  return (tree: MdastRoot) => {
+    visit(tree, "text", (node) => {
+      const textNode = node as Text;
+
       // Convert HN-style links [text](url) to proper markdown links
-      if (typeof node.value === "string") {
-        node.value = node.value
+      if (typeof textNode.value === "string") {
+        textNode.value = textNode.value
           .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "[$1]($2)");
       }
     });
   };
 }
 
+type MarkdownAnchorProps = React.ComponentPropsWithoutRef<"a"> & ExtraProps;
+type MarkdownCodeProps = React.ComponentPropsWithoutRef<"code"> &
+  ExtraProps & {
+    inline?: boolean;
+  };
+type MarkdownElementProps<T extends keyof React.JSX.IntrinsicElements> =
+  React.ComponentPropsWithoutRef<T> & ExtraProps;
+type SyntaxHighlighterStyle = Record<string, React.CSSProperties>;
+const codeBlockStyle = vscDarkPlus as unknown as SyntaxHighlighterStyle;
+
 // Custom components for ReactMarkdown
-const markdownComponents = {
-  a: ({ node, ...props }: any) => {
+const markdownComponents: Components = {
+  a: ({ ...props }: MarkdownAnchorProps) => {
     const href = props.href || "";
 
     // Try to convert HN URLs to relative paths
@@ -71,13 +83,14 @@ const markdownComponents = {
       </span>
     );
   },
-  code: ({ node, inline, className, children, ...props }: any) => {
+  code: ({ inline, className, children, style: _style, ...props }: MarkdownCodeProps) => {
+    void _style;
     const match = /language-(\w+)/.exec(className || "");
 
     if (!inline && match) {
       return (
         <SyntaxHighlighter
-          style={vscDarkPlus}
+          style={codeBlockStyle}
           language={match[1]}
           PreTag="div"
           {...props}
@@ -96,49 +109,49 @@ const markdownComponents = {
       </code>
     );
   },
-  pre: ({ node, ...props }: any) => (
+  pre: (props: MarkdownElementProps<"pre">) => (
     <pre
       className="overflow-x-auto bg-neutral-100 dark:bg-neutral-900 p-3 rounded-lg my-4"
       {...props}
     />
   ),
-  blockquote: ({ node, ...props }: any) => (
+  blockquote: (props: MarkdownElementProps<"blockquote">) => (
     <blockquote
       className="border-l-4 border-orange-500 pl-4 italic text-neutral-600 dark:text-neutral-400 my-2"
       {...props}
     />
   ),
-  hr: ({ node, ...props }: any) => (
+  hr: (props: MarkdownElementProps<"hr">) => (
     <hr className="border-neutral-200 dark:border-neutral-800 my-6" {...props} />
   ),
-  ul: ({ node, ...props }: any) => (
+  ul: (props: MarkdownElementProps<"ul">) => (
     <ul className="list-disc pl-6 my-2 space-y-1" {...props} />
   ),
-  ol: ({ node, ...props }: any) => (
+  ol: (props: MarkdownElementProps<"ol">) => (
     <ol className="list-decimal pl-6 my-2 space-y-1" {...props} />
   ),
-  li: ({ node, ...props }: any) => (
+  li: (props: MarkdownElementProps<"li">) => (
     <li className="pl-1" {...props} />
   ),
-  h1: ({ node, ...props }: any) => (
+  h1: (props: MarkdownElementProps<"h1">) => (
     <h1 className="text-2xl font-bold mt-6 mb-3" {...props} />
   ),
-  h2: ({ node, ...props }: any) => (
+  h2: (props: MarkdownElementProps<"h2">) => (
     <h2 className="text-xl font-bold mt-5 mb-2" {...props} />
   ),
-  h3: ({ node, ...props }: any) => (
+  h3: (props: MarkdownElementProps<"h3">) => (
     <h3 className="text-lg font-bold mt-4 mb-2" {...props} />
   ),
-  h4: ({ node, ...props }: any) => (
+  h4: (props: MarkdownElementProps<"h4">) => (
     <h4 className="text-base font-bold mt-3 mb-1" {...props} />
   ),
-  h5: ({ node, ...props }: any) => (
+  h5: (props: MarkdownElementProps<"h5">) => (
     <h5 className="text-sm font-bold mt-2 mb-1" {...props} />
   ),
-  h6: ({ node, ...props }: any) => (
+  h6: (props: MarkdownElementProps<"h6">) => (
     <h6 className="text-xs font-bold mt-1 mb-1" {...props} />
   ),
-  p: ({ node, ...props }: any) => (
+  p: (props: MarkdownElementProps<"p">) => (
     <p className="mb-3 leading-relaxed" {...props} />
   )
 };
