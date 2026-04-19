@@ -88,7 +88,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
             )}
           </div>
 
-          {/* Metadata row - all items have h-5 for consistent vertical alignment */}
+          {/* Metadata row - story details and actions share the same wrap to keep cards compact */}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
             <StoryBadge title={story.title} type={story.type} />
 
@@ -138,20 +138,11 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
                 </span>
               </>
             )}
-          </div>
 
-          {/* Text preview for text posts */}
-          {story.text && (
-            <div className="line-clamp-2 rounded-2xl border border-[var(--border-soft)] bg-white/45 px-3 py-2 text-sm text-neutral-600 dark:bg-white/[0.03] dark:text-neutral-400 prose prose-sm dark:prose-invert max-w-none [&>p]:mb-0 [&>p]:leading-relaxed">
-              <MarkdownRenderer content={story.text} allowHtml={true} />
-            </div>
-          )}
-
-          {/* Actions row */}
-          <div className="flex items-center gap-2 pt-1">
+            <span className="inline-flex items-center h-5 text-neutral-300 dark:text-neutral-600">·</span>
             <Link
               href={`/story/${story.id}`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-soft)] px-3 py-1.5 text-xs text-neutral-600 transition-colors hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-500"
+              className="inline-flex h-6 items-center gap-1.5 rounded-full border border-[var(--border-soft)] bg-white/60 px-2.5 text-xs text-neutral-600 transition-colors hover:text-orange-600 dark:bg-white/6 dark:text-neutral-300 dark:hover:text-orange-500"
             >
               <MessageSquare size={14} className="flex-shrink-0" />
               <span>{story.descendants || 0} comments</span>
@@ -166,6 +157,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
                 time: story.time,
                 score: story.score,
               }}
+              className="touch-target-auto h-6 rounded-full px-2.5 py-1 text-xs"
             />
 
             {hasExternalUrl && (
@@ -173,13 +165,20 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
                 href={finalStoryUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-auto inline-flex items-center rounded-full border border-[var(--border-soft)] px-2.5 py-1.5 text-xs text-neutral-500 transition-colors hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-400"
+                className="inline-flex h-6 items-center rounded-full border border-[var(--border-soft)] px-2.5 text-xs text-neutral-500 transition-colors hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-400"
                 title="Open external link"
               >
                 <ExternalLink size={14} className="flex-shrink-0" />
               </a>
             )}
           </div>
+
+          {/* Text preview for text posts */}
+          {story.text && (
+            <div className="line-clamp-2 rounded-2xl border border-[var(--border-soft)] bg-white/45 px-3 py-2 text-sm text-neutral-600 dark:bg-white/[0.03] dark:text-neutral-400 prose prose-sm dark:prose-invert max-w-none [&>p]:mb-0 [&>p]:leading-relaxed">
+              <MarkdownRenderer content={story.text} allowHtml={true} />
+            </div>
+          )}
         </div>
 
         {/* Thumbnail - desktop only */}
