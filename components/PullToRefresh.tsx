@@ -88,6 +88,7 @@ export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
 
   const progress = Math.min(pullDistance / THRESHOLD, 1);
   const rotation = progress * 360;
+  const readyToRefresh = pullDistance >= THRESHOLD;
 
   return (
     <div ref={containerRef} className="relative">
@@ -101,27 +102,32 @@ export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
 
       {/* Pull indicator */}
       <div
-        className="absolute left-0 right-0 flex items-center justify-center overflow-hidden transition-all duration-200 ease-out z-40"
+        className="absolute left-0 right-0 z-40 flex items-center justify-center overflow-hidden transition-all duration-200 ease-out motion-reduce:transition-none"
         style={{
           height: pullDistance,
           opacity: progress,
         }}
       >
-        <div
-          className={`flex items-center justify-center rounded-full bg-orange-500 p-2 shadow-lg transition-transform ${
-            isRefreshing ? "animate-spin" : ""
-          }`}
-          style={{
-            transform: isRefreshing ? undefined : `rotate(${rotation}deg)`,
-          }}
-        >
-          <RefreshCw size={20} className="text-white" />
+        <div className="flex flex-col items-center gap-2">
+          <div
+            className={`flex items-center justify-center rounded-full bg-orange-500 p-2 shadow-lg transition-transform motion-reduce:transition-none ${
+              isRefreshing ? "motion-safe:animate-spin" : ""
+            }`}
+            style={{
+              transform: isRefreshing ? undefined : `rotate(${rotation}deg)`,
+            }}
+          >
+            <RefreshCw size={20} className="text-white" />
+          </div>
+          <span className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-medium text-neutral-700 shadow-sm dark:bg-neutral-900/90 dark:text-neutral-200">
+            {isRefreshing ? "Refreshing" : readyToRefresh ? "Release to refresh" : "Pull to refresh"}
+          </span>
         </div>
       </div>
 
       {/* Content */}
       <div
-        className="transition-transform duration-200 ease-out"
+        className="transition-transform duration-200 ease-out motion-reduce:transition-none"
         style={{
           transform: `translateY(${pullDistance}px)`,
         }}

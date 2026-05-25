@@ -66,10 +66,9 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
       const comments: RootComment[] = [];
 
       commentElements.forEach((element, index) => {
-        const id = parseInt(element.getAttribute('data-comment-id') || '0');
+        const id = Number.parseInt(element.getAttribute('data-comment-id') || '0', 10);
         const author = element.getAttribute('data-comment-author') || 'Unknown';
-        const repliesElement = element.querySelector('[data-reply-count]');
-        const replyCount = repliesElement ? parseInt(repliesElement.getAttribute('data-reply-count') || '0') : 0;
+        const replyCount = Number.parseInt(element.getAttribute('data-reply-count') || '0', 10);
 
         if (id > 0) {
           comments.push({
@@ -98,7 +97,7 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
         childList: true,
         subtree: true,
         attributes: true,
-        attributeFilter: ['data-comment-id', 'data-comment-author']
+        attributeFilter: ['data-comment-id', 'data-comment-author', 'data-reply-count']
       });
     }
 

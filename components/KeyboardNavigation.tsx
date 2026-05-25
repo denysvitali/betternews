@@ -110,7 +110,9 @@ export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) 
     if (!currentComment) return;
 
     // Find the collapse button within this comment
-    const collapseBtn = currentComment.querySelector('button[title="Collapse"], button[title="Expand"]');
+    const collapseBtn = currentComment.querySelector(
+      'button[aria-label="Collapse comment"], button[aria-label="Expand comment"]'
+    );
     if (collapseBtn) {
       (collapseBtn as HTMLButtonElement).click();
     }

@@ -8,7 +8,7 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import { visit } from "unist-util-visit";
-import type { Root as MdastRoot, Text } from "mdast";
+import type { Node } from "unist";
 import DOMPurify from "isomorphic-dompurify";
 import { convertHNUrlToRelative } from "@/lib/utils";
 
@@ -24,10 +24,12 @@ const sanitizeOptions = {
 };
 
 // Custom remark plugin to process HN-specific markdown
+type TextNode = Node & { value?: unknown };
+
 function hnRemarkPlugin() {
-  return (tree: MdastRoot) => {
+  return (tree: Node) => {
     visit(tree, "text", (node) => {
-      const textNode = node as Text;
+      const textNode = node as TextNode;
 
       // Convert HN-style links [text](url) to proper markdown links
       if (typeof textNode.value === "string") {

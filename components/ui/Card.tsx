@@ -19,8 +19,8 @@ const paddingStyles = {
 
 const variantStyles = {
   default: "border-[var(--border-soft)] shadow-[0_10px_30px_rgba(15,23,42,0.06)] focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2",
-  hover: "border-[var(--border-soft)] shadow-[0_12px_34px_rgba(15,23,42,0.08)] hover:border-orange-300/60 hover:shadow-[0_18px_44px_rgba(245,121,32,0.12)] hover:-translate-y-1 active:scale-[0.985] transition-all duration-300 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2",
-  interactive: "border-[var(--border-soft)] shadow-[0_12px_34px_rgba(15,23,42,0.08)] hover:border-orange-300/60 hover:shadow-[0_16px_38px_rgba(245,121,32,0.1)] hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-300 cursor-pointer focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2",
+  hover: "border-[var(--border-soft)] shadow-[0_12px_34px_rgba(15,23,42,0.08)] active:scale-[0.985] transition-all duration-300 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 motion-safe:hover:border-orange-300/60 motion-safe:hover:shadow-[0_18px_44px_rgba(245,121,32,0.12)] motion-safe:hover:-translate-y-1",
+  interactive: "border-[var(--border-soft)] shadow-[0_12px_34px_rgba(15,23,42,0.08)] active:scale-[0.99] transition-all duration-300 cursor-pointer focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 motion-safe:hover:border-orange-300/60 motion-safe:hover:shadow-[0_16px_38px_rgba(245,121,32,0.1)] motion-safe:hover:-translate-y-0.5",
 };
 
 export function Card({

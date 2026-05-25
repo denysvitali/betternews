@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { Newspaper, Bookmark, Search } from "lucide-react";
 import { useBookmarks } from "@/lib/bookmarks";
 import { SearchModal } from "@/components/SearchBar";
@@ -40,23 +41,30 @@ export function BottomNav() {
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
+                aria-current={isActive ? "page" : undefined}
                 className={`relative flex flex-col items-center justify-center flex-1 h-full transition-colors ${
                   isActive
-                    ? "text-orange-500"
+                    ? "text-orange-600 dark:text-orange-400"
                     : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300"
                 }`}
               >
-                {item.icon}
-                <span className="text-[10px] font-medium mt-0.5">{item.label}</span>
+                <span className={`flex h-8 min-w-12 items-center justify-center rounded-full transition-colors ${
+                  isActive ? "bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-300" : ""
+                }`}>
+                  {item.icon}
+                </span>
+                <span className={`mt-0.5 text-[10px] ${isActive ? "font-bold" : "font-medium"}`}>
+                  {item.label}
+                </span>
                 {item.badgeCount && (
                   <span className="absolute top-1 right-1/4 min-w-[16px] h-4 flex items-center justify-center px-1 bg-orange-500 text-white text-[10px] font-bold rounded-full">
                     {item.badgeCount > 9 ? "9+" : item.badgeCount}
                   </span>
                 )}
-              </a>
+              </Link>
             );
           })}
 

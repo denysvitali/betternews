@@ -1,15 +1,12 @@
 import type { NextConfig } from "next";
-import { execSync } from "child_process";
 
 const isGithubActions = process.env.GITHUB_ACTIONS === 'true';
-
-// Get git commit hash at build time
-let gitCommitHash = '';
-try {
-  gitCommitHash = execSync('git rev-parse HEAD').toString().trim().slice(0, 6);
-} catch {
-  gitCommitHash = 'dev';
-}
+const gitCommitHash = (
+  process.env.NEXT_PUBLIC_GIT_COMMIT ||
+  process.env.VERCEL_GIT_COMMIT_SHA ||
+  process.env.GITHUB_SHA ||
+  "dev"
+).slice(0, 6);
 
 const nextConfig: NextConfig = {
   output: isGithubActions ? 'export' : undefined,

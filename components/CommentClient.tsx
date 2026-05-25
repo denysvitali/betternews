@@ -20,6 +20,8 @@ interface CommentClientProps {
 export function CommentClient({ comment, children, level = 0, showScore = false, parentId }: CommentClientProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const descendantCount = comment.descendants || 0;
+  const author = comment.by;
+  const authorInitial = author?.slice(0, 1).toUpperCase() || "?";
 
   // Scroll to top of comments or parent comment
   const scrollToParent = () => {
@@ -43,22 +45,28 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
   };
 
   return (
-    <div className="flex flex-col gap-2 py-3 border-t border-neutral-100 dark:border-neutral-900 first:border-0">
+    <div className="relative flex flex-col gap-2 border-t border-neutral-100 py-3 pl-2 dark:border-neutral-900 first:border-0">
+      {level > 0 && (
+        <span
+          aria-hidden="true"
+          className="absolute bottom-3 left-0 top-3 w-0.5 rounded-full bg-orange-400/40 dark:bg-orange-500/30"
+        />
+      )}
       {/* Header */}
       <span className="text-xs text-neutral-500 dark:text-neutral-400 select-none flex items-center flex-wrap gap-1">
-        <IconButton
-          variant="ghost"
-          className="inline-flex w-5 h-5 p-0.5 align-middle rounded"
+        <button
+          type="button"
+          className="inline-flex h-6 items-center gap-1 rounded px-1.5 py-0.5 align-middle text-[11px] text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
           onClick={() => setIsCollapsed(!isCollapsed)}
           aria-label={isCollapsed ? "Expand comment" : "Collapse comment"}
-          icon={
-            isCollapsed ? (
-              <Plus size={12} strokeWidth={2.5} className="text-orange-500" />
-            ) : (
-              <Minus size={12} strokeWidth={2.5} className="text-neutral-400" />
-            )
-          }
-        />
+        >
+          {isCollapsed ? (
+            <Plus size={12} strokeWidth={2.5} className="text-orange-500" />
+          ) : (
+            <Minus size={12} strokeWidth={2.5} className="text-neutral-400" />
+          )}
+          <span className="hidden sm:inline">{isCollapsed ? "Expand" : "Collapse"}</span>
+        </button>
         <IconButton
           variant="ghost"
           className="inline-flex w-3 h-3 p-0 align-middle"
@@ -66,10 +74,17 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
           icon={<Triangle size={8} strokeWidth={2} className="text-neutral-400 fill-neutral-400" />}
         />
         {" "}
-        <Link
-          href={`/user/${comment.by}`}
-          className="font-bold text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500 flex items-center"
-        >{comment.by}</Link>
+        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-neutral-100 text-[10px] font-bold text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+          {authorInitial}
+        </span>
+        {author ? (
+          <Link
+            href={`/user/${author}`}
+            className="font-bold text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500 flex items-center"
+          >{author}</Link>
+        ) : (
+          <span className="font-bold text-neutral-500">unknown</span>
+        )}
         {showScore && comment.score && (
           <>
             <span className="text-neutral-300 dark:text-neutral-600"> · </span>
@@ -84,8 +99,10 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
         {descendantCount > 0 && (
           <>
             <span className="text-neutral-300 dark:text-neutral-600"> · </span>
-            <MessageSquare size={10} strokeWidth={2} className="inline align-middle text-orange-500" />
-            <span className="text-orange-500">{descendantCount}</span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-1.5 py-0.5 text-[11px] font-medium text-orange-600 dark:border-orange-900/60 dark:bg-orange-950/30 dark:text-orange-400">
+              <MessageSquare size={10} strokeWidth={2} />
+              replies: {descendantCount}
+            </span>
           </>
         )}
         {/* Show Best Of badge for highly-discussed comments */}
@@ -108,6 +125,18 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
             </button>
           </>
         )}
+        {level === 0 && (
+          <>
+            <span className="text-neutral-300 dark:text-neutral-600"> · </span>
+            <button
+              onClick={scrollToParent}
+              className="flex items-center gap-0.5 text-neutral-400 transition-colors hover:text-orange-500 dark:hover:text-orange-400"
+            >
+              <ArrowUpToLine size={10} strokeWidth={2} />
+              Comments top
+            </button>
+          </>
+        )}
       </span>
 
       {!isCollapsed && (
@@ -126,6 +155,14 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
             </div>
           )}
         </>
+      )}
+      {isCollapsed && descendantCount > 0 && (
+        <button
+          onClick={() => setIsCollapsed(false)}
+          className="ml-6 mt-1 w-fit rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 text-xs font-medium text-neutral-600 transition-colors hover:text-orange-600 dark:bg-white/6 dark:text-neutral-300 dark:hover:text-orange-400"
+        >
+          +{descendantCount} replies hidden
+        </button>
       )}
     </div>
   );

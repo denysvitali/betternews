@@ -37,6 +37,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
   const [toastId, setToastId] = useState<number | null>(null);
   const [toastBookmarked, setToastBookmarked] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchAbortRef = useRef<AbortController | null>(null);
   const debouncedQuery = useDebounce(query, 300);
   const { isBookmarked, toggleBookmark } = useBookmarks();
 
@@ -58,17 +59,23 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
   // Search when query changes
   const performSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim() || searchQuery.length < 2) {
+      searchAbortRef.current?.abort();
       setResults([]);
       setShowResults(false);
       setSearchError(null);
+      setIsLoading(false);
       return;
     }
+
+    searchAbortRef.current?.abort();
+    const controller = new AbortController();
+    searchAbortRef.current = controller;
 
     setIsLoading(true);
     setSearchError(null);
     try {
       const url = `${ALGOLIA_API}/search?query=${encodeURIComponent(searchQuery)}&tags=story&hitsPerPage=8`;
-      const res = await fetch(url);
+      const res = await fetch(url, { signal: controller.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
 
@@ -86,21 +93,30 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
         })
       );
 
+      if (controller.signal.aborted) return;
       setResults(matchingStories);
       setShowResults(true);
     } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
       console.error("Search failed:", error);
       setResults([]);
       setSearchError("Search failed. Check your connection and try again.");
       setShowResults(true);
     } finally {
-      setIsLoading(false);
+      if (searchAbortRef.current === controller) {
+        searchAbortRef.current = null;
+        setIsLoading(false);
+      }
     }
   }, []);
 
   useEffect(() => {
     performSearch(debouncedQuery);
   }, [debouncedQuery, performSearch]);
+
+  useEffect(() => {
+    return () => searchAbortRef.current?.abort();
+  }, []);
 
   const handleExternalSearch = () => {
     if (!query.trim()) return;

@@ -25,7 +25,7 @@ export function PageLayout({
       <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(circle_at_top,rgba(245,121,32,0.16),transparent_60%)] dark:bg-[radial-gradient(circle_at_top,rgba(245,121,32,0.12),transparent_60%)]" />
       <Navbar />
       <main className={cn(
-        "container relative mx-auto flex max-w-5xl flex-1 px-4 py-6 sm:max-w-4xl sm:px-6 sm:py-8",
+        "container relative mx-auto flex max-w-5xl flex-1 flex-col px-4 py-6 sm:max-w-4xl sm:px-6 sm:py-8",
         mainClassName
       )}>
         {children}

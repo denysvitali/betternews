@@ -8,10 +8,11 @@ import { Pagination } from "@/components/Pagination";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { Suspense, useCallback } from "react";
 import { PageLayout, PageHeader, PageLoading, PageError } from "@/components/ui";
+import { parsePositiveIntParam } from "@/lib/params";
 
 function NewStoriesContent() {
   const searchParams = useSearchParams();
-  const page = parseInt(searchParams.get("page") || "1");
+  const page = parsePositiveIntParam(searchParams.get("page"));
   const { stories, loading, error, refetch } = useNewStories(page);
 
   const handleRefresh = useCallback(async () => {

@@ -19,8 +19,9 @@ interface StoryCardProps {
 }
 
 export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProps) {
+  const author = story.by;
   const host = useMemo(
-    () => (story.url ? getDomain(story.url) : "news.ycombinator.com"),
+    () => (story.url ? getDomain(story.url) : "news.ycombinator.com") || "Unknown source",
     [story.url]
   );
 
@@ -81,9 +82,10 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
             >
               {story.title}
             </a>
-            {isHNConverted && hnId && (
-              <span className="ml-2 inline-block text-[10px] text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded font-mono align-middle">
-                HN#{hnId}
+            {isHNConverted && (
+              <span className="inline-flex w-fit items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/30 dark:text-blue-300">
+                <MessageSquare size={10} />
+                Discussion{hnId ? ` #${hnId}` : ""}
               </span>
             )}
           </div>
@@ -92,12 +94,18 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
             <StoryBadge title={story.title} type={story.type} />
 
-            <Link
-              href={`/user/${story.by}`}
-              className="inline-flex h-6 items-center rounded-full border border-transparent px-2 font-medium transition-colors hover:border-[var(--border-soft)] hover:text-orange-600 dark:hover:text-orange-500"
-            >
-              {story.by}
-            </Link>
+            {author ? (
+              <Link
+                href={`/user/${author}`}
+                className="inline-flex h-6 items-center rounded-full border border-transparent px-2 font-medium transition-colors hover:border-[var(--border-soft)] hover:text-orange-600 dark:hover:text-orange-500"
+              >
+                {author}
+              </Link>
+            ) : (
+              <span className="inline-flex h-6 items-center px-2 font-medium text-neutral-500">
+                unknown
+              </span>
+            )}
 
             <span className="inline-flex items-center h-5 text-neutral-300 dark:text-neutral-600">·</span>
 
@@ -117,11 +125,15 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
             {hasExternalUrl && (
               <>
                 <span className="inline-flex items-center h-5 text-neutral-300 dark:text-neutral-600">·</span>
+                <span className="inline-flex h-6 items-center gap-1 rounded-full border border-[var(--border-soft)] bg-white/60 px-2 text-[11px] font-medium text-neutral-500 dark:bg-white/6 dark:text-neutral-400">
+                  <ExternalLink size={11} className="flex-shrink-0" />
+                  External
+                </span>
                 <a
                   href={`https://news.ycombinator.com/from?site=${host}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-6 max-w-[140px] items-center rounded-full border border-[var(--border-soft)] px-2.5 font-mono text-[11px] text-neutral-500 transition-colors hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-400"
+                  className="inline-flex h-6 max-w-[140px] min-w-0 items-center overflow-x-auto whitespace-nowrap rounded-full border border-[var(--border-soft)] px-2.5 font-mono text-[11px] text-neutral-500 transition-colors hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-400"
                   title={host}
                 >
                   {host}
@@ -175,8 +187,16 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
 
           {/* Text preview for text posts */}
           {story.text && (
-            <div className="line-clamp-2 rounded-2xl border border-[var(--border-soft)] bg-white/45 px-3 py-2 text-sm text-neutral-600 dark:bg-white/[0.03] dark:text-neutral-400 prose prose-sm dark:prose-invert max-w-none [&>p]:mb-0 [&>p]:leading-relaxed">
-              <MarkdownRenderer content={story.text} allowHtml={true} />
+            <div className="rounded-2xl border border-[var(--border-soft)] bg-white/45 px-3 py-2 text-sm text-neutral-600 dark:bg-white/[0.03] dark:text-neutral-400">
+              <div className="line-clamp-2 prose prose-sm max-w-none dark:prose-invert [&>p]:mb-0 [&>p]:leading-relaxed">
+                <MarkdownRenderer content={story.text} allowHtml={true} />
+              </div>
+              <Link
+                href={`/story/${story.id}`}
+                className="mt-1 inline-flex text-xs font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
+              >
+                Read full text
+              </Link>
             </div>
           )}
         </div>

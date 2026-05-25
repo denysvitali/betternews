@@ -38,6 +38,7 @@ function LinkPreviewPlaceholder({
         <span className="max-w-full truncate px-2 text-[10px] font-medium">
           {domain}
         </span>
+        <span className="text-[10px]">No preview available</span>
       </div>
     </div>
   );
@@ -70,7 +71,7 @@ export function LinkPreview({ url, className }: LinkPreviewProps) {
     >
       {/* Loading skeleton */}
       {!imageLoaded && !imageError && (
-        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-700 dark:to-neutral-800" />
+        <div className="absolute inset-0 animate-shimmer bg-[linear-gradient(110deg,rgba(245,245,245,0.7),rgba(255,255,255,0.95),rgba(245,245,245,0.7))] dark:bg-[linear-gradient(110deg,rgba(38,38,38,0.85),rgba(64,64,64,0.95),rgba(38,38,38,0.85))]" />
       )}
 
       {/* Actual image */}

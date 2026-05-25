@@ -24,18 +24,18 @@ export function ReadingProgress() {
         onMouseLeave={() => setShowPercentage(false)}
       >
         <div
-          className="h-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-150 ease-out relative"
+          className="relative h-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-150 ease-out motion-reduce:transition-none"
           style={{ width: `${progress}%` }}
         >
           {/* Progress glow effect */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-4 bg-orange-500 rounded-full blur-sm opacity-50" />
+          <div className="absolute right-0 top-1/2 h-4 w-2 -translate-y-1/2 rounded-full bg-orange-500 opacity-50 blur-sm motion-reduce:hidden" />
         </div>
       </div>
 
       {/* Percentage indicator (shown on hover or when progress > 10%) */}
       {(showPercentage || progress > 10) && (
         <div
-          className="hidden sm:block fixed top-4 right-4 z-[60] bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border border-neutral-200 dark:border-neutral-700 rounded-lg px-3 py-1.5 shadow-lg text-xs font-medium text-neutral-700 dark:text-neutral-300 transition-opacity duration-200"
+          className="fixed right-4 top-4 z-[60] hidden rounded-lg border border-neutral-200 bg-white/90 px-3 py-1.5 text-xs font-medium text-neutral-700 shadow-lg backdrop-blur-sm transition-opacity duration-200 motion-reduce:transition-none dark:border-neutral-700 dark:bg-neutral-900/90 dark:text-neutral-300 sm:block"
           aria-live="polite"
         >
           {progress}% read

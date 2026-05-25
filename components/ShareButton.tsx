@@ -30,15 +30,15 @@ export function ShareButton({ title, url, className = "" }: ShareButtonProps) {
     setShowMenu(false);
   };
 
-  const copyToClipboard = async () => {
+  const copyToClipboard = async (value = url) => {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(value);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback for older browsers
       const textArea = document.createElement("textarea");
-      textArea.value = url;
+      textArea.value = value;
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand("copy");
@@ -94,7 +94,7 @@ export function ShareButton({ title, url, className = "" }: ShareButtonProps) {
           {/* Menu */}
           <Card className="absolute right-0 top-full mt-2 z-50 w-48 shadow-xl animate-in fade-in slide-in-from-top-2 duration-200" padding="none">
             <button
-              onClick={copyToClipboard}
+              onClick={() => copyToClipboard(url)}
               className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
             >
               {copied ? (
@@ -108,6 +108,20 @@ export function ShareButton({ title, url, className = "" }: ShareButtonProps) {
                   <span>Copy link</span>
                 </>
               )}
+            </button>
+            <button
+              onClick={() => copyToClipboard(title)}
+              className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+              <Copy size={16} />
+              <span>Copy title</span>
+            </button>
+            <button
+              onClick={() => copyToClipboard(`${title}\n${url}`)}
+              className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+              <Copy size={16} />
+              <span>Copy title + URL</span>
             </button>
             <button
               onClick={shareToTwitter}

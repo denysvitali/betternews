@@ -105,3 +105,19 @@ body {
   background: linear-gradient(180deg, var(--surface-strong), var(--surface));
   border-color: var(--border-soft);
 }
+
+:where(a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid rgb(249 115 22);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

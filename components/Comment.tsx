@@ -20,6 +20,20 @@ interface CommentProps {
 // Default depth after which replies are collapsed
 const DEFAULT_MAX_INITIAL_DEPTH = 2;
 
+export function sortCommentIds(ids: number[], sortBy: CommentSortType): number[] {
+  const sortedIds = [...ids];
+
+  if (sortBy === "newest") {
+    return sortedIds.sort((a, b) => b - a);
+  }
+
+  if (sortBy === "oldest") {
+    return sortedIds.sort((a, b) => a - b);
+  }
+
+  return sortedIds;
+}
+
 export const Comment = memo(function Comment({
   id,
   level = 0,
@@ -39,13 +53,8 @@ export const Comment = memo(function Comment({
   // Sort replies based on the selected sort option
   const sortedKids = useMemo(() => {
     if (!comment?.kids) return [];
-    const kids = [...comment.kids];
-
-    // For now, we only sort by default (HN order) since we don't have
-    // the full comment data with timestamps. When sortBy changes,
-    // the parent component would need to fetch and pass pre-sorted data.
-    return kids;
-  }, [comment?.kids]);
+    return sortCommentIds(comment.kids, sortBy);
+  }, [comment?.kids, sortBy]);
 
   if (loading) {
     return <CommentSkeleton level={level} />;
@@ -123,6 +132,7 @@ export const Comment = memo(function Comment({
       data-comment-id={comment.id}
       data-comment-author={comment.by}
       data-comment-level={level}
+      data-reply-count={replyCount}
       className="transition-all duration-300"
     >
       <CommentClient comment={comment} level={level} showScore={showScore} parentId={parentId}>

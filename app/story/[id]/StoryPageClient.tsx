@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useStory } from "@/lib/hooks";
 import { HNItem } from "@/lib/types";
-import { Comment } from "@/components/Comment";
+import { Comment, sortCommentIds } from "@/components/Comment";
 import { LinkPreview } from "@/components/LinkPreview";
 import { KeyboardNavigation } from "@/components/KeyboardNavigation";
 import { ShareButton } from "@/components/ShareButton";
@@ -14,8 +14,8 @@ import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { CommentSortControl, CommentSortType } from "@/components/CommentSortControl";
 import { CollapseDepthControl } from "@/components/CollapseDepthControl";
-import { ArrowUp, MessageSquare, Clock, ExternalLink, BookOpen } from "lucide-react";
-import { Suspense, useState, useCallback } from "react";
+import { ArrowLeft, ArrowUp, MessageSquare, Clock, ExternalLink, BookOpen } from "lucide-react";
+import { Suspense, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { StorySkeleton } from "@/components/StorySkeleton";
 import { CommentSkeleton } from "@/components/CommentSkeleton";
@@ -23,6 +23,7 @@ import { CommentNavigation } from "@/components/CommentNavigation";
 import { getDomain, getReadingTime, convertHNUrlToRelative } from "@/lib/utils";
 import { PageLayout, PageError, Card, Badge, Skeleton } from "@/components/ui";
 import { ReadingProgress } from "@/components/ReadingProgress";
+import { parsePositiveIntParam } from "@/lib/params";
 
 interface StoryPageClientProps {
     initialStory?: HNItem | null;
@@ -32,7 +33,7 @@ interface StoryPageClientProps {
 export default function StoryPageClient({ initialStory, storyId: propStoryId }: StoryPageClientProps) {
     const params = useParams();
     const paramId = params?.id ? (Array.isArray(params.id) ? params.id[0] : params.id) : undefined;
-    const storyId = propStoryId || (paramId ? parseInt(paramId) : 0);
+    const storyId = propStoryId && propStoryId >= 1 ? propStoryId : parsePositiveIntParam(paramId, 0);
     const { story: fetchedStory, loading: fetching, error: fetchError } = useStory(initialStory ? 0 : storyId);
 
     // Comment display settings
@@ -46,8 +47,21 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
     }, []);
 
     const story = initialStory || fetchedStory;
+    const sortedCommentIds = useMemo(
+        () => sortCommentIds(story?.kids ?? [], commentSort),
+        [story?.kids, commentSort]
+    );
+    const invalidStoryId = !initialStory && storyId < 1;
     const loading = !initialStory && fetching;
     const error = !initialStory && fetchError;
+
+    if (invalidStoryId) {
+        return (
+            <PageLayout>
+                <PageError message="Story not found or failed to load." />
+            </PageLayout>
+        );
+    }
 
     if (loading || (!initialStory && !fetchedStory && !fetchError)) {
         return (
@@ -75,11 +89,12 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
         );
     }
 
+    const author = story.by;
     const host = story.url ? getDomain(story.url) : "news.ycombinator.com";
 
     // Convert HN URLs to relative paths
     const relativePath = story.url ? convertHNUrlToRelative(story.url) : null;
-    const finalStoryUrl = relativePath || story.url || `${typeof window !== 'undefined' ? window.location.origin : ''}/story/${story.id}`;
+    const finalStoryUrl = relativePath || story.url || `/story/${story.id}`;
     const isHNConverted = relativePath !== null;
     const hnId = relativePath ? relativePath.match(/\/story\/(\d+)/)?.[1] : null;
 
@@ -87,6 +102,42 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
         <PageLayout>
             {/* Reading progress indicator */}
             <ReadingProgress />
+
+            <div className="mb-3 flex items-center justify-between gap-3 text-xs text-neutral-500 dark:text-neutral-400">
+                <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2">
+                    <Link href="/" className="font-medium text-neutral-600 transition-colors hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-400">
+                        Home
+                    </Link>
+                    <span aria-hidden="true">/</span>
+                    <span className="truncate">Story</span>
+                </nav>
+                <Link href="/" className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 font-medium transition-colors hover:text-orange-600 dark:bg-white/6 dark:hover:text-orange-400">
+                    <ArrowLeft size={12} />
+                    Back to feed
+                </Link>
+            </div>
+
+            <div className="sticky top-20 z-40 mb-4">
+                <div className="glass-panel flex items-center justify-between gap-3 rounded-full border border-[var(--border-soft)] px-3 py-2 shadow-[0_10px_26px_rgba(15,23,42,0.08)]">
+                    <Link href="/" className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium text-neutral-600 transition-colors hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-400">
+                        <ArrowLeft size={14} />
+                        Feed
+                    </Link>
+                    <div className="flex items-center gap-2">
+                        <ShareButton title={story.title || "Story"} url={finalStoryUrl} />
+                        <BookmarkButton
+                            story={{
+                                id: story.id,
+                                title: story.title || "",
+                                url: story.url,
+                                by: story.by,
+                                time: story.time,
+                                score: story.score,
+                            }}
+                        />
+                    </div>
+                </div>
+            </div>
 
             {/* Story Header */}
             <Card variant="default" padding="md" className="mb-6 sm:mb-8 sm:p-6">
@@ -98,12 +149,16 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                             {story.score}
                         </Badge>
                         <span>|</span>
-                        <Link
-                            href={`/user/${story.by}`}
-                            className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
-                        >
-                            {story.by}
-                        </Link>
+                        {author ? (
+                            <Link
+                                href={`/user/${author}`}
+                                className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
+                            >
+                                {author}
+                            </Link>
+                        ) : (
+                            <span className="font-medium text-neutral-500">unknown</span>
+                        )}
                         <span>|</span>
                         <div className="flex items-center gap-1">
                             <Clock size={12} />
@@ -129,12 +184,16 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                             </Badge>
                         </div>
                         <div className="flex items-center gap-1.5 h-4">
-                            <Link
-                                href={`/user/${story.by}`}
-                                className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors flex items-center h-full"
-                            >
-                                {story.by}
-                            </Link>
+                            {author ? (
+                                <Link
+                                    href={`/user/${author}`}
+                                    className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors flex items-center h-full"
+                                >
+                                    {author}
+                                </Link>
+                            ) : (
+                                <span className="font-medium text-neutral-500">unknown</span>
+                            )}
                             <span className="text-neutral-300 dark:text-neutral-600 flex items-center h-full">·</span>
                             <span className="flex items-center h-full">
                                 <TimeAgo timestamp={story.time} addSuffix={false} />
@@ -146,9 +205,10 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                         <h1 className="text-2xl font-semibold leading-tight tracking-[-0.04em] text-neutral-900 dark:text-white sm:text-3xl lg:text-[2.15rem]">
                             {story.title}
                         </h1>
-                        {isHNConverted && hnId && (
-                            <span className="mt-2 whitespace-nowrap rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 text-xs text-neutral-500 dark:bg-white/6 dark:text-neutral-400 sm:mt-3">
-                                HN#{hnId}
+                        {isHNConverted && (
+                            <span className="mt-2 inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/30 dark:text-blue-300 sm:mt-3">
+                                <MessageSquare size={12} />
+                                Discussion{hnId ? ` #${hnId}` : ""}
                             </span>
                         )}
                     </div>
@@ -157,9 +217,16 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                         <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.22em] text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
                             Story #{story.id}
                         </span>
-                        <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 text-xs text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 text-xs text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
+                            <MessageSquare size={12} />
                             {story.descendants || 0} comments
                         </span>
+                        {story.text && (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 text-xs text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
+                                <BookOpen size={12} />
+                                {getReadingTime(story.text)}
+                            </span>
+                        )}
                     </div>
 
                     {story.url && (
@@ -174,9 +241,9 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                                         : "hover:text-orange-600 dark:hover:text-orange-500"
                                 }`}
                             >
-                                {!isHNConverted && <ExternalLink size={14} />}
+                                {isHNConverted ? <MessageSquare size={14} /> : <ExternalLink size={14} />}
                                 <span className="truncate max-w-[200px] sm:max-w-none">
-                                    {isHNConverted ? `Internal link to HN story #${hnId}` : story.url}
+                                    {isHNConverted ? `Discussion${hnId ? ` #${hnId}` : ""}` : story.url}
                                 </span>
                             </a>
                             {!isHNConverted && (
@@ -217,7 +284,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                                 id: story.id,
                                 title: story.title || "",
                                 url: story.url,
-                                by: story.by,
+                                by: author,
                                 time: story.time,
                                 score: story.score,
                             }}
@@ -256,9 +323,9 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                 </div>
 
                 <div id="comments-container" className="flex flex-col gap-3 sm:gap-4">
-                    {story.kids && story.kids.length > 0 ? (
+                    {sortedCommentIds.length > 0 ? (
                         <>
-                            {story.kids.slice(0, visibleCommentCount).map((kidId) => (
+                            {sortedCommentIds.slice(0, visibleCommentCount).map((kidId) => (
                                 <Suspense key={kidId} fallback={<CommentSkeleton />}>
                                     <Comment
                                         id={kidId}
@@ -268,12 +335,13 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                                     />
                                 </Suspense>
                             ))}
-                            {visibleCommentCount < story.kids.length && (
+                            {visibleCommentCount < sortedCommentIds.length && (
                                 <button
                                     onClick={loadMoreComments}
-                                    className="glass-panel mt-2 w-full rounded-[1.1rem] border border-[var(--border-soft)] py-3 text-sm font-medium text-neutral-600 transition-colors hover:bg-white/60 dark:text-neutral-300 dark:hover:bg-white/[0.04]"
+                                    className="glass-panel mt-2 w-full rounded-[1.1rem] border border-[var(--border-soft)] py-3 text-sm font-medium text-neutral-600 transition-colors hover:bg-white/60 disabled:cursor-not-allowed disabled:opacity-60 dark:text-neutral-300 dark:hover:bg-white/[0.04]"
+                                    disabled={visibleCommentCount >= sortedCommentIds.length}
                                 >
-                                    Load more comments ({story.kids.length - visibleCommentCount} remaining)
+                                    Load more comments ({sortedCommentIds.length - visibleCommentCount} remaining)
                                 </button>
                             )}
                         </>
