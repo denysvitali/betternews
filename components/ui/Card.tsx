@@ -12,15 +12,15 @@ export interface CardProps {
 
 const paddingStyles = {
   none: "",
-  sm: "p-3",
-  md: "p-4",
-  lg: "p-6 sm:p-8",
+  sm: "p-4",
+  md: "p-5",
+  lg: "p-6 sm:p-7",
 };
 
 const variantStyles = {
-  default: "border-[var(--border-soft)] shadow-[0_10px_30px_rgba(15,23,42,0.06)] focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2",
-  hover: "border-[var(--border-soft)] shadow-[0_12px_34px_rgba(15,23,42,0.08)] active:scale-[0.985] transition-all duration-300 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 motion-safe:hover:border-orange-300/60 motion-safe:hover:shadow-[0_18px_44px_rgba(245,121,32,0.12)] motion-safe:hover:-translate-y-1",
-  interactive: "border-[var(--border-soft)] shadow-[0_12px_34px_rgba(15,23,42,0.08)] active:scale-[0.99] transition-all duration-300 cursor-pointer focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 motion-safe:hover:border-orange-300/60 motion-safe:hover:shadow-[0_16px_38px_rgba(245,121,32,0.1)] motion-safe:hover:-translate-y-0.5",
+  default: "border-[var(--border-soft)] shadow-sm focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2",
+  hover: "border-[var(--border-soft)] shadow-sm transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 motion-safe:hover:border-orange-300/70 motion-safe:hover:bg-orange-50/35 dark:motion-safe:hover:bg-white/[0.03]",
+  interactive: "cursor-pointer border-[var(--border-soft)] shadow-sm transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 motion-safe:hover:border-orange-300/70 motion-safe:hover:bg-orange-50/35 dark:motion-safe:hover:bg-white/[0.03]",
 };
 
 export function Card({
@@ -34,7 +34,7 @@ export function Card({
   return (
     <Component
       className={cn(
-        "surface-card rounded-[1.4rem] border transition-colors duration-200",
+        "surface-card rounded-lg border transition-colors duration-200",
         variantStyles[variant],
         paddingStyles[padding],
         className

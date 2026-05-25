@@ -10,8 +10,8 @@ export function Footer() {
 
   return (
     <footer className="mt-auto border-t border-[var(--border-soft)] bg-transparent">
-      <div className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6 py-8">
-        <div className="glass-panel grid grid-cols-2 gap-8 rounded-[1.8rem] border border-[var(--border-soft)] px-5 py-6 shadow-[0_18px_48px_rgba(15,23,42,0.06)] sm:grid-cols-4 sm:px-7">
+      <div className="container mx-auto max-w-5xl px-4 py-8 sm:px-6">
+        <div className="grid grid-cols-2 gap-8 rounded-lg border border-[var(--border-soft)] bg-[var(--surface)] px-5 py-6 shadow-sm sm:grid-cols-4 sm:px-7">
           {/* Navigation */}
           <div>
             <h3 className="mb-3 text-sm font-semibold text-neutral-900 dark:text-white">
@@ -132,7 +132,7 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-[var(--border-soft)] pt-6 sm:flex-row">
+        <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-[var(--border-soft)] pt-5 sm:flex-row">
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
             {currentYear} BetterNews. Not affiliated with Y Combinator.
           </p>

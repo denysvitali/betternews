@@ -35,33 +35,30 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md dark:bg-neutral-950/80 dark:border-neutral-800">
-        <div className="container mx-auto flex h-18 items-center justify-between px-4 py-3 sm:px-6">
-          <Link href="/" className="flex items-center gap-3 text-xl font-bold sm:text-2xl">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 via-orange-500 to-amber-600 text-white shadow-[0_10px_24px_rgba(245,121,32,0.32)]">
+      <nav className="sticky top-0 z-50 w-full border-b border-[var(--border-soft)] bg-white/90 backdrop-blur-md dark:bg-neutral-950/90">
+        <div className="container mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
+          <Link href="/" className="flex items-center gap-3 text-xl font-bold">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500 text-white shadow-sm">
               <Newspaper size={20} />
             </div>
-            <div className="flex flex-col leading-none">
-              <span className="hidden sm:inline tracking-[-0.04em]">BetterNews</span>
-              <span className="hidden font-mono text-[10px] uppercase tracking-[0.3em] text-neutral-500 dark:text-neutral-400 sm:inline">
-                Signal over noise
-              </span>
-              <span className="tracking-[-0.04em] sm:hidden">BN</span>
+            <div className="flex leading-none">
+              <span className="hidden sm:inline">BetterNews</span>
+              <span className="sm:hidden">BN</span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="glass-panel hidden items-center gap-2 rounded-full border border-[var(--border-soft)] px-2 py-2 text-sm font-medium text-neutral-600 shadow-[0_8px_24px_rgba(15,23,42,0.05)] dark:text-neutral-400 sm:flex">
+          <div className="hidden items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-400 sm:flex">
             {NAV_LINKS.map(({ href, label }) => {
               const isActive = pathname === href;
               return (
                 <Link
                   key={href}
                   href={href}
-                  className={`rounded-full px-3 py-2 transition-all ${
+                  className={`rounded-md px-3 py-2 transition-colors ${
                     isActive
-                      ? "bg-neutral-950 text-white shadow-sm dark:bg-white dark:text-neutral-950"
-                      : "hover:bg-white/70 hover:text-orange-600 dark:hover:bg-white/8"
+                      ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-950"
+                      : "hover:bg-neutral-100 hover:text-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-white"
                   }`}
                   aria-current={isActive ? "page" : undefined}
                 >
@@ -71,10 +68,10 @@ export function Navbar() {
             })}
             <Link
               href="/saved"
-              className={`flex items-center gap-1 rounded-full px-3 py-2 transition-all ${
+              className={`flex items-center gap-1 rounded-md px-3 py-2 transition-colors ${
                 pathname === "/saved"
-                  ? "bg-neutral-950 text-white shadow-sm dark:bg-white dark:text-neutral-950"
-                  : "hover:bg-white/70 hover:text-orange-600 dark:hover:bg-white/8"
+                  ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-950"
+                  : "hover:bg-neutral-100 hover:text-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-white"
               }`}
               aria-current={pathname === "/saved" ? "page" : undefined}
             >
@@ -85,11 +82,11 @@ export function Navbar() {
             {/* Search Button */}
             <button
               onClick={() => setIsSearchOpen(true)}
-            className="glass-panel flex items-center gap-2 rounded-full border border-[var(--border-soft)] px-3 py-2 text-neutral-600 transition-colors hover:text-orange-600 dark:text-neutral-300"
+              className="ml-2 flex items-center gap-2 rounded-md border border-[var(--border-soft)] bg-[var(--surface)] px-3 py-2 text-neutral-600 transition-colors hover:border-orange-300 hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-white"
             >
               <Search size={14} />
               <span className="text-xs">Search</span>
-              <kbd className="hidden items-center gap-0.5 rounded-full border border-[var(--border-soft)] px-2 py-0.5 font-mono text-[10px] font-medium text-neutral-500 dark:text-neutral-400 md:inline-flex">
+              <kbd className="hidden items-center gap-0.5 rounded border border-[var(--border-soft)] px-1.5 py-0.5 font-mono text-[10px] font-medium text-neutral-500 dark:text-neutral-400 md:inline-flex">
                 <span className="text-xs">⌘</span>K
               </kbd>
             </button>

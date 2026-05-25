@@ -3,44 +3,45 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f7f3eb;
-  --foreground: #1b1c1e;
-  --surface: rgba(255, 252, 246, 0.88);
-  --surface-strong: rgba(255, 249, 240, 0.98);
-  --border-soft: rgba(126, 89, 47, 0.14);
-  --hero-glow: rgba(245, 121, 32, 0.22);
-  --hero-accent: rgba(255, 220, 182, 0.92);
+  --background: #f6f7f8;
+  --foreground: #17191c;
+  --surface: #ffffff;
+  --surface-strong: #ffffff;
+  --border-soft: rgba(15, 23, 42, 0.12);
+  --muted-surface: #f1f3f5;
+  --accent: #f97316;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-space-grotesk);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-ibm-plex-mono);
 }
 
 .dark {
-  --background: #0a0d12;
-  --foreground: #edf2f7;
-  --surface: rgba(12, 17, 24, 0.82);
-  --surface-strong: rgba(14, 19, 27, 0.94);
-  --border-soft: rgba(255, 181, 72, 0.12);
-  --hero-glow: rgba(255, 145, 77, 0.18);
-  --hero-accent: rgba(44, 29, 14, 0.9);
+  --background: #101214;
+  --foreground: #f4f5f6;
+  --surface: #171a1f;
+  --surface-strong: #1d2026;
+  --border-soft: rgba(255, 255, 255, 0.1);
+  --muted-surface: #20242b;
+  --accent: #fb923c;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-inter), sans-serif;
   /* Mobile optimization */
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
   transition: background-color 0.3s ease, color 0.3s ease;
-  background-image:
-    radial-gradient(circle at top left, var(--hero-glow), transparent 32%),
-    radial-gradient(circle at 85% 12%, rgba(255, 255, 255, 0.08), transparent 24%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 28%);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 220px);
+}
+
+.dark body {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0) 220px);
 }
 
 /* Improved mobile scrolling */
@@ -98,11 +99,11 @@ body {
 
 .glass-panel {
   background: var(--surface);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(12px);
 }
 
 .surface-card {
-  background: linear-gradient(180deg, var(--surface-strong), var(--surface));
+  background: var(--surface);
   border-color: var(--border-soft);
 }
 

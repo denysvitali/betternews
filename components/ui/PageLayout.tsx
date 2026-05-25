@@ -22,10 +22,9 @@ export function PageLayout({
 }: PageLayoutProps) {
   return (
     <div className={cn("relative flex min-h-screen flex-col overflow-hidden bg-transparent transition-colors duration-300", className)}>
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(circle_at_top,rgba(245,121,32,0.16),transparent_60%)] dark:bg-[radial-gradient(circle_at_top,rgba(245,121,32,0.12),transparent_60%)]" />
       <Navbar />
       <main className={cn(
-        "container relative mx-auto flex max-w-5xl flex-1 flex-col px-4 py-6 sm:max-w-4xl sm:px-6 sm:py-8",
+        "container relative mx-auto flex max-w-5xl flex-1 flex-col px-4 py-5 sm:px-6 sm:py-7",
         mainClassName
       )}>
         {children}
@@ -57,23 +56,22 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "glass-panel relative mb-6 overflow-hidden rounded-[1.8rem] border border-[var(--border-soft)] px-5 py-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:mb-8 sm:px-7 sm:py-7",
+        "relative mb-5 border-b border-[var(--border-soft)] pb-5 sm:mb-6 sm:pb-6",
         className
       )}
     >
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-40 bg-[radial-gradient(circle_at_center,rgba(245,121,32,0.18),transparent_70%)]" />
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-2xl">
           {eyebrow && (
-            <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.28em] text-orange-600 dark:text-orange-400">
+            <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400">
               {eyebrow}
             </p>
           )}
-          <h1 className="text-3xl font-semibold tracking-[-0.04em] text-neutral-950 dark:text-white sm:text-4xl">
+          <h1 className="text-3xl font-semibold text-neutral-950 dark:text-white sm:text-4xl">
             {title}
           </h1>
           {description && (
-            <p className="mt-2 max-w-xl text-sm leading-6 text-neutral-600 dark:text-neutral-300 sm:text-base">
+            <p className="mt-2 max-w-xl text-sm leading-6 text-neutral-600 dark:text-neutral-300">
               {description}
             </p>
           )}

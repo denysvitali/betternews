@@ -32,10 +32,10 @@ function NewStoriesContent() {
           eyebrow="Fresh Feed"
           meta={
             <>
-              <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 font-mono dark:bg-white/6">
+              <span className="rounded-md border border-[var(--border-soft)] bg-[var(--surface)] px-3 py-1 font-mono shadow-sm">
                 Page {page}
               </span>
-              <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 font-mono dark:bg-white/6">
+              <span className="rounded-md border border-[var(--border-soft)] bg-[var(--surface)] px-3 py-1 font-mono shadow-sm">
                 {stories.length} stories
               </span>
             </>

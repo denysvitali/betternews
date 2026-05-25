@@ -6,7 +6,7 @@ import { MessageSquare, ArrowUp, Clock, BookOpen, ExternalLink } from "lucide-re
 import { HNItem } from "@/lib/hn";
 import { LinkPreview } from "./LinkPreview";
 import { getDomain, getReadingTime, convertHNUrlToRelative } from "@/lib/utils";
-import { StoryBadge } from "./StoryBadge";
+import { getCleanTitle, StoryBadge } from "./StoryBadge";
 
 import { TimeAgo } from "./TimeAgo";
 import { BookmarkButton } from "./BookmarkButton";
@@ -57,83 +57,73 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
   const hasExternalUrl = story.url && !isHNConverted;
 
   return (
-    <Card variant="hover" padding="sm" className="overflow-hidden">
-      <div className="flex gap-3">
-        {/* Rank number - fixed width, top aligned */}
-        <div className="flex w-10 flex-shrink-0 justify-center pt-0.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border-soft)] bg-white/70 font-mono text-xs font-semibold text-neutral-600 shadow-sm tabular-nums dark:bg-white/6 dark:text-neutral-300">
+    <Card variant="hover" padding="sm" as="article" className="overflow-hidden">
+      <div className="grid grid-cols-[2rem_minmax(0,1fr)] gap-4 sm:grid-cols-[2.25rem_minmax(0,1fr)_8.5rem]">
+        <div className="flex sm:justify-center">
+          <span className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--border-soft)] bg-[var(--muted-surface)] font-mono text-xs font-semibold text-neutral-600 tabular-nums dark:text-neutral-300">
             {index + 1}
           </span>
         </div>
 
-        {/* Main content area */}
-        <div className="min-w-0 flex-1 space-y-2">
-          {/* Title */}
-          <div className="space-y-2">
+        <div className="min-w-0 space-y-3">
+          <div className="space-y-1.5">
             <a
               href={finalStoryUrl}
               target={!isHNConverted && finalStoryUrl.startsWith("http") ? "_blank" : undefined}
               rel={!isHNConverted && finalStoryUrl.startsWith("http") ? "noreferrer" : undefined}
-              className={`block text-[1.02rem] font-semibold leading-snug tracking-[-0.025em] ${
+              className={`block text-base font-semibold leading-snug sm:text-[1.05rem] ${
                 isHNConverted
                   ? "text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                  : "text-neutral-900 hover:text-orange-600 dark:text-neutral-100 dark:hover:text-orange-500"
+                  : "text-neutral-950 hover:text-orange-600 dark:text-neutral-50 dark:hover:text-orange-400"
               } transition-colors`}
             >
-              {story.title}
+              {getCleanTitle(story.title || "")}
             </a>
             {isHNConverted && (
-              <span className="inline-flex w-fit items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/30 dark:text-blue-300">
+              <span className="inline-flex w-fit items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/30 dark:text-blue-300">
                 <MessageSquare size={10} />
                 Discussion{hnId ? ` #${hnId}` : ""}
               </span>
             )}
           </div>
 
-          {/* Metadata row - story details and actions share the same wrap to keep cards compact */}
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-neutral-500 dark:text-neutral-400">
             <StoryBadge title={story.title} type={story.type} />
 
             {author ? (
               <Link
                 href={`/user/${author}`}
-                className="inline-flex h-6 items-center rounded-full border border-transparent px-2 font-medium transition-colors hover:border-[var(--border-soft)] hover:text-orange-600 dark:hover:text-orange-500"
+                className="font-medium text-neutral-700 transition-colors hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-400"
               >
                 {author}
               </Link>
             ) : (
-              <span className="inline-flex h-6 items-center px-2 font-medium text-neutral-500">
-                unknown
-              </span>
+              <span className="font-medium text-neutral-500">unknown</span>
             )}
 
-            <span className="inline-flex items-center h-5 text-neutral-300 dark:text-neutral-600">·</span>
+            <span className="text-neutral-300 dark:text-neutral-600">/</span>
 
-            <span className="inline-flex h-6 items-center gap-1 rounded-full border border-[var(--border-soft)] bg-white/60 px-2.5 dark:bg-white/6">
+            <span className="inline-flex items-center gap-1">
               <Clock size={12} className="flex-shrink-0" />
               <TimeAgo timestamp={story.time} />
             </span>
 
-            <span className="inline-flex items-center h-5 text-neutral-300 dark:text-neutral-600">·</span>
+            <span className="text-neutral-300 dark:text-neutral-600">/</span>
 
-            <span className="inline-flex items-center h-5">
-              <Badge variant="orange" size="sm" icon={<ArrowUp size={10} className="flex-shrink-0" />}>
+            <span className="inline-flex items-center">
+              <Badge variant="orange" size="sm" icon={<ArrowUp size={10} className="flex-shrink-0" />} className="rounded-md">
                 {story.score || 0}
               </Badge>
             </span>
 
             {hasExternalUrl && (
               <>
-                <span className="inline-flex items-center h-5 text-neutral-300 dark:text-neutral-600">·</span>
-                <span className="inline-flex h-6 items-center gap-1 rounded-full border border-[var(--border-soft)] bg-white/60 px-2 text-[11px] font-medium text-neutral-500 dark:bg-white/6 dark:text-neutral-400">
-                  <ExternalLink size={11} className="flex-shrink-0" />
-                  External
-                </span>
+                <span className="text-neutral-300 dark:text-neutral-600">/</span>
                 <a
                   href={`https://news.ycombinator.com/from?site=${host}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-6 max-w-[140px] min-w-0 items-center overflow-x-auto whitespace-nowrap rounded-full border border-[var(--border-soft)] px-2.5 font-mono text-[11px] text-neutral-500 transition-colors hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-400"
+                  className="inline-flex max-w-[180px] min-w-0 items-center truncate font-mono text-[11px] text-neutral-500 transition-colors hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-400"
                   title={host}
                 >
                   {host}
@@ -143,18 +133,19 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
 
             {readingTime && (
               <>
-                <span className="inline-flex items-center h-5 text-neutral-300 dark:text-neutral-600">·</span>
-                <span className="inline-flex h-6 items-center gap-1 rounded-full border border-[var(--border-soft)] bg-white/60 px-2.5 dark:bg-white/6">
+                <span className="text-neutral-300 dark:text-neutral-600">/</span>
+                <span className="inline-flex items-center gap-1">
                   <BookOpen size={12} className="flex-shrink-0" />
                   <span>{readingTime}</span>
                 </span>
               </>
             )}
+          </div>
 
-            <span className="inline-flex items-center h-5 text-neutral-300 dark:text-neutral-600">·</span>
+          <div className="flex flex-wrap items-center gap-2">
             <Link
               href={`/story/${story.id}`}
-              className="inline-flex h-6 items-center gap-1.5 rounded-full border border-[var(--border-soft)] bg-white/60 px-2.5 text-xs text-neutral-600 transition-colors hover:text-orange-600 dark:bg-white/6 dark:text-neutral-300 dark:hover:text-orange-500"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[var(--border-soft)] bg-[var(--muted-surface)] px-2.5 text-xs font-medium text-neutral-700 transition-colors hover:border-orange-300 hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-400"
             >
               <MessageSquare size={14} className="flex-shrink-0" />
               <span>{story.descendants || 0} comments</span>
@@ -169,7 +160,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
                 time: story.time,
                 score: story.score,
               }}
-              className="touch-target-auto h-6 rounded-full px-2.5 py-1 text-xs"
+              className="touch-target-auto h-8 rounded-md px-2.5 py-1 text-xs"
             />
 
             {hasExternalUrl && (
@@ -177,17 +168,17 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
                 href={finalStoryUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-6 items-center rounded-full border border-[var(--border-soft)] px-2.5 text-xs text-neutral-500 transition-colors hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-400"
+                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[var(--border-soft)] px-2.5 text-xs font-medium text-neutral-600 transition-colors hover:border-orange-300 hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-400"
                 title="Open external link"
               >
                 <ExternalLink size={14} className="flex-shrink-0" />
+                <span>Open</span>
               </a>
             )}
           </div>
 
-          {/* Text preview for text posts */}
           {story.text && (
-            <div className="rounded-2xl border border-[var(--border-soft)] bg-white/45 px-3 py-2 text-sm text-neutral-600 dark:bg-white/[0.03] dark:text-neutral-400">
+            <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--muted-surface)] px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400">
               <div className="line-clamp-2 prose prose-sm max-w-none dark:prose-invert [&>p]:mb-0 [&>p]:leading-relaxed">
                 <MarkdownRenderer content={story.text} allowHtml={true} />
               </div>
@@ -201,19 +192,17 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
           )}
         </div>
 
-        {/* Thumbnail - desktop only */}
         {hasExternalUrl && (
-          <div className="hidden flex-shrink-0 items-start sm:flex">
-            <div className="h-22 w-32 overflow-hidden rounded-[1.2rem] border border-[var(--border-soft)] shadow-sm">
+          <div className="hidden sm:block">
+            <div className="aspect-[4/3] w-full overflow-hidden rounded-lg border border-[var(--border-soft)] bg-[var(--muted-surface)]">
               <LinkPreview url={finalStoryUrl} />
             </div>
           </div>
         )}
       </div>
 
-      {/* Mobile thumbnail - full width below content */}
       {hasExternalUrl && (
-        <div className="mt-3 h-32 w-full overflow-hidden rounded-[1.2rem] border border-[var(--border-soft)] sm:hidden">
+        <div className="mt-4 aspect-[16/9] w-full overflow-hidden rounded-lg border border-[var(--border-soft)] bg-[var(--muted-surface)] sm:hidden">
           <LinkPreview url={finalStoryUrl} />
         </div>
       )}

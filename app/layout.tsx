@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
+import { Inter, IBM_Plex_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { BookmarksProvider } from "@/lib/bookmarks";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-space-grotesk",
+  variable: "--font-inter",
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
@@ -61,7 +61,7 @@ export default function RootLayout({
           })();
         `}} />
       </head>
-      <body className={`${spaceGrotesk.variable} ${ibmPlexMono.variable} antialiased`}>
+      <body className={`${inter.variable} ${ibmPlexMono.variable} antialiased`}>
         {/* Skip to content link for accessibility */}
         <a
           href="#main-content"
