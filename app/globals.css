@@ -122,7 +122,6 @@ html[data-density="super"] .story-card:hover {
 }
 
 html[data-density="super"] .story-card .story-rank,
-html[data-density="super"] .story-card .story-thumbnail,
 html[data-density="super"] .story-card .story-mobile-thumbnail,
 html[data-density="super"] .story-card .story-external-label,
 html[data-density="super"] .story-card .story-reading,
@@ -130,6 +129,21 @@ html[data-density="super"] .story-card .story-text,
 html[data-density="super"] .story-card .story-bookmark,
 html[data-density="super"] .story-card .story-open {
   display: none;
+}
+
+html[data-density="super"] .story-card .story-card-grid {
+  grid-template-columns: minmax(0, 1fr) 50px;
+  gap: 0.5rem;
+}
+
+html[data-density="super"] .story-card .story-thumbnail {
+  display: block;
+}
+
+html[data-density="super"] .story-card .story-thumbnail > div {
+  width: 50px;
+  height: 50px;
+  aspect-ratio: auto;
 }
 
 html[data-density="super"] .story-card .story-title {

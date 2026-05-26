@@ -58,7 +58,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
 
   return (
     <Card variant="hover" padding="sm" as="article" className="story-card overflow-hidden">
-      <div className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2.5 sm:grid-cols-[1.9rem_minmax(0,1fr)_7rem]">
+      <div className="story-card-grid grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2.5 sm:grid-cols-[1.9rem_minmax(0,1fr)_7rem]">
         <div className="story-rank flex sm:justify-center">
           <span className="flex h-6 w-7 items-center justify-center rounded border border-[var(--border-soft)] bg-[var(--muted-surface)] font-mono text-[11px] font-semibold text-neutral-600 tabular-nums dark:text-neutral-300">
             {index + 1}
