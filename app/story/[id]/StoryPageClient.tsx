@@ -103,47 +103,30 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
             {/* Reading progress indicator */}
             <ReadingProgress />
 
-            <div className="mb-3 flex items-center justify-between gap-3 text-xs text-neutral-500 dark:text-neutral-400">
-                <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2">
-                    <Link href="/" className="font-medium text-neutral-600 transition-colors hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-400">
-                        Home
-                    </Link>
-                    <span aria-hidden="true">/</span>
-                    <span className="truncate">Story</span>
-                </nav>
-                <Link href="/" className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 font-medium transition-colors hover:text-orange-600 dark:bg-white/6 dark:hover:text-orange-400">
-                    <ArrowLeft size={12} />
-                    Back to feed
-                </Link>
-            </div>
-
-            <div className="sticky top-20 z-40 mb-4">
-                <div className="glass-panel flex items-center justify-between gap-3 rounded-full border border-[var(--border-soft)] px-3 py-2 shadow-[0_10px_26px_rgba(15,23,42,0.08)]">
-                    <Link href="/" className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium text-neutral-600 transition-colors hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-400">
-                        <ArrowLeft size={14} />
-                        Feed
-                    </Link>
-                    <div className="flex items-center gap-2">
-                        <ShareButton title={story.title || "Story"} url={finalStoryUrl} />
-                        <BookmarkButton
-                            story={{
-                                id: story.id,
-                                title: story.title || "",
-                                url: story.url,
-                                by: story.by,
-                                time: story.time,
-                                score: story.score,
-                            }}
-                        />
-                    </div>
-                </div>
-            </div>
-
             {/* Story Header */}
-            <Card variant="default" padding="md" className="mb-6 sm:mb-8 sm:p-6">
-                <div className="flex flex-col gap-3 sm:gap-4">
+            <Card variant="default" padding="md" className="story-page-card mb-4 sm:mb-5 sm:p-5">
+                <div className="flex flex-col gap-2.5 sm:gap-3">
+                    <div className="flex items-center justify-between gap-3">
+                        <Link href="/" className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 transition-colors hover:text-orange-600 dark:text-neutral-400 dark:hover:text-orange-400">
+                            <ArrowLeft size={13} />
+                            Top
+                        </Link>
+                        <div className="flex items-center gap-2">
+                            <ShareButton title={story.title || "Story"} url={finalStoryUrl} />
+                            <BookmarkButton
+                                story={{
+                                    id: story.id,
+                                    title: story.title || "",
+                                    url: story.url,
+                                    by: story.by,
+                                    time: story.time,
+                                    score: story.score,
+                                }}
+                            />
+                        </div>
+                    </div>
                     {/* Desktop header info */}
-                    <div className="hidden sm:flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400 flex-wrap">
+                    <div className="hidden sm:flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400 flex-wrap">
                         <StoryBadge title={story.title} type={story.type} />
                         <Badge variant="orange" size="md" icon={<ArrowUp size={12} />}>
                             {story.score}
@@ -202,11 +185,11 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                     </div>
 
                     <div className="flex items-start gap-2 flex-wrap">
-                        <h1 className="text-2xl font-semibold leading-tight tracking-[-0.04em] text-neutral-900 dark:text-white sm:text-3xl lg:text-[2.15rem]">
+                        <h1 className="story-page-title text-xl font-semibold leading-tight text-neutral-900 dark:text-white sm:text-2xl lg:text-3xl">
                             {story.title}
                         </h1>
                         {isHNConverted && (
-                            <span className="mt-2 inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/30 dark:text-blue-300 sm:mt-3">
+                            <span className="mt-1 inline-flex items-center gap-1 whitespace-nowrap rounded border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/30 dark:text-blue-300 sm:mt-2">
                                 <MessageSquare size={12} />
                                 Discussion{hnId ? ` #${hnId}` : ""}
                             </span>
@@ -214,15 +197,12 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.22em] text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
-                            Story #{story.id}
-                        </span>
-                        <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 text-xs text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
+                        <span className="inline-flex items-center gap-1 rounded border border-[var(--border-soft)] bg-white/60 px-2 py-0.5 text-xs text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
                             <MessageSquare size={12} />
                             {story.descendants || 0} comments
                         </span>
                         {story.text && (
-                            <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 text-xs text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
+                            <span className="inline-flex items-center gap-1 rounded border border-[var(--border-soft)] bg-white/60 px-2 py-0.5 text-xs text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
                                 <BookOpen size={12} />
                                 {getReadingTime(story.text)}
                             </span>
@@ -261,7 +241,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
 
                     {/* Large Preview for the Story Page - Only show for non-HN URLs */}
                     {story.url && !isHNConverted && (
-                        <div className="mt-3 aspect-video w-full max-w-2xl overflow-hidden rounded-[1.4rem] border border-[var(--border-soft)] shadow-sm sm:mt-4">
+                        <div className="story-page-preview mt-2 aspect-video w-full max-w-2xl overflow-hidden rounded-lg border border-[var(--border-soft)] shadow-sm sm:mt-3">
                             <LinkPreview url={finalStoryUrl} />
                         </div>
                     )}
@@ -277,7 +257,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                     )}
 
                     {/* Actions */}
-                    <div className="mt-4 flex items-center gap-3 border-t border-[var(--border-soft)] pt-4">
+                    <div className="story-actions mt-2 flex items-center gap-2 border-t border-[var(--border-soft)] pt-3">
                         <ShareButton title={story.title || "Story"} url={finalStoryUrl} />
                         <BookmarkButton
                             story={{
@@ -297,18 +277,18 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
             {/* Comments Section */}
             <CommentNavigation totalComments={story.descendants || 0} storyId={story.id} />
 
-            <Card variant="default" padding="md" className="sm:p-6">
+            <Card variant="default" padding="md" className="comments-card sm:p-5">
                 {/* Comments Header with Controls */}
-                <div className="mb-4 sm:mb-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                        <h2 className="flex items-center gap-2 text-lg sm:text-xl font-bold">
+                <div className="mb-3 sm:mb-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                        <h2 className="flex items-center gap-2 text-base sm:text-lg font-bold">
                             <MessageSquare className="text-orange-500" size={20} />
                             <span>{story.descendants || 0} Comments</span>
                         </h2>
                     </div>
 
                     {/* Comment Display Controls */}
-                    <div className="glass-panel flex flex-col gap-3 rounded-[1.2rem] border border-[var(--border-soft)] px-3 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-4">
+                    <div className="comment-controls glass-panel flex flex-col gap-2 rounded-lg border border-[var(--border-soft)] px-2.5 py-2 sm:flex-row sm:items-center sm:gap-3 sm:px-3">
                         <CommentSortControl
                             currentSort={commentSort}
                             onSortChange={setCommentSort}
@@ -322,7 +302,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                     </div>
                 </div>
 
-                <div id="comments-container" className="flex flex-col gap-3 sm:gap-4">
+                <div id="comments-container" className="comments-container flex flex-col gap-1.5 sm:gap-2">
                     {sortedCommentIds.length > 0 ? (
                         <>
                             {sortedCommentIds.slice(0, visibleCommentCount).map((kidId) => (

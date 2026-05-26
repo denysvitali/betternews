@@ -24,7 +24,7 @@ export function PageLayout({
     <div className={cn("relative flex min-h-screen flex-col overflow-hidden bg-transparent transition-colors duration-300", className)}>
       <Navbar />
       <main className={cn(
-        "container relative mx-auto flex max-w-5xl flex-1 flex-col px-4 py-5 sm:px-6 sm:py-7",
+        "container relative mx-auto flex max-w-5xl flex-1 flex-col px-3 py-3 sm:px-5 sm:py-5",
         mainClassName
       )}>
         {children}
@@ -56,32 +56,32 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "relative mb-5 border-b border-[var(--border-soft)] pb-5 sm:mb-6 sm:pb-6",
+        "mb-3 flex items-center justify-between gap-3 border-b border-[var(--border-soft)] pb-2 sm:mb-4",
         className
       )}
     >
-      <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="max-w-2xl">
+      <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1">
+        <div className="min-w-0">
           {eyebrow && (
-            <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400">
+            <p className="sr-only">
               {eyebrow}
             </p>
           )}
-          <h1 className="text-3xl font-semibold text-neutral-950 dark:text-white sm:text-4xl">
+          <h1 className="text-xl font-semibold text-neutral-950 dark:text-white sm:text-2xl">
             {title}
           </h1>
-          {description && (
-            <p className="mt-2 max-w-xl text-sm leading-6 text-neutral-600 dark:text-neutral-300">
-              {description}
-            </p>
-          )}
         </div>
-        {meta && (
-          <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-600 dark:text-neutral-300">
-            {meta}
-          </div>
+        {description && (
+          <p className="hidden text-sm text-neutral-500 dark:text-neutral-400 sm:block">
+            {description}
+          </p>
         )}
       </div>
+      {meta && (
+        <div className="flex shrink-0 flex-wrap items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+          {meta}
+        </div>
+      )}
     </div>
   );
 }

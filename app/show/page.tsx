@@ -26,17 +26,12 @@ function ShowStoriesContent() {
     <PullToRefresh onRefresh={handleRefresh}>
       <PageLayout>
         <PageHeader
-          title="Show Stories"
-          description="Show HN submissions from the community."
-          eyebrow="Builders"
+          title="Show"
           meta={
             <>
-              <span className="rounded-md border border-[var(--border-soft)] bg-[var(--surface)] px-3 py-1 font-mono shadow-sm">
-                Page {page}
-              </span>
-              <span className="rounded-md border border-[var(--border-soft)] bg-[var(--surface)] px-3 py-1 font-mono shadow-sm">
-                {stories.length} stories
-              </span>
+              <span>p{page}</span>
+              <span aria-hidden="true">·</span>
+              <span>{stories.length}</span>
             </>
           }
         />
@@ -47,7 +42,7 @@ function ShowStoriesContent() {
 
         {!error && (
           <>
-            <div className="flex flex-col gap-4">
+            <div className="story-list flex flex-col gap-2.5">
               {stories.map((story, index) => (
                 <StoryCard
                   key={story.id}

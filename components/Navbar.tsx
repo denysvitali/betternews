@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Newspaper, Menu, X, Search, Bookmark } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SearchModal } from "@/components/SearchBar";
+import { DensityToggle } from "@/components/DensityToggle";
 import { IconButton } from "./ui";
 
 const NAV_LINKS = [
@@ -55,7 +56,7 @@ export function Navbar() {
                 <Link
                   key={href}
                   href={href}
-                  className={`rounded-md px-3 py-2 transition-colors ${
+                  className={`rounded-md px-3 py-1.5 transition-colors ${
                     isActive
                       ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-950"
                       : "hover:bg-neutral-100 hover:text-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-white"
@@ -82,7 +83,7 @@ export function Navbar() {
             {/* Search Button */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="ml-2 flex items-center gap-2 rounded-md border border-[var(--border-soft)] bg-[var(--surface)] px-3 py-2 text-neutral-600 transition-colors hover:border-orange-300 hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-white"
+              className="ml-2 flex items-center gap-2 rounded-md border border-[var(--border-soft)] bg-[var(--surface)] px-3 py-1.5 text-neutral-600 transition-colors hover:border-orange-300 hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-white"
             >
               <Search size={14} />
               <span className="text-xs">Search</span>
@@ -91,6 +92,7 @@ export function Navbar() {
               </kbd>
             </button>
 
+            <DensityToggle className="bg-white/40 dark:bg-white/6" />
             <ThemeToggle />
           </div>
 
@@ -158,6 +160,7 @@ export function Navbar() {
                 <Bookmark size={16} />
                 Saved Stories
               </Link>
+              <DensityToggle className="w-full justify-center rounded-md bg-white/60 dark:bg-white/6" />
             </div>
           </div>
         )}

@@ -38,40 +38,40 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
         return {
           finalStoryUrl: relativePath,
           isHNConverted: true,
-          hnId: hnIdMatch ? hnIdMatch[1] : null
+          hnId: hnIdMatch ? hnIdMatch[1] : null,
         };
       }
       return {
         finalStoryUrl: story.url,
         isHNConverted: false,
-        hnId: null
+        hnId: null,
       };
     }
     return {
       finalStoryUrl: `/story/${story.id}`,
       isHNConverted: false,
-      hnId: null
+      hnId: null,
     };
   }, [story.url, story.id]);
 
   const hasExternalUrl = story.url && !isHNConverted;
 
   return (
-    <Card variant="hover" padding="sm" as="article" className="overflow-hidden">
-      <div className="grid grid-cols-[2rem_minmax(0,1fr)] gap-4 sm:grid-cols-[2.25rem_minmax(0,1fr)_8.5rem]">
-        <div className="flex sm:justify-center">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--border-soft)] bg-[var(--muted-surface)] font-mono text-xs font-semibold text-neutral-600 tabular-nums dark:text-neutral-300">
+    <Card variant="hover" padding="sm" as="article" className="story-card overflow-hidden">
+      <div className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2.5 sm:grid-cols-[1.9rem_minmax(0,1fr)_7rem]">
+        <div className="story-rank flex sm:justify-center">
+          <span className="flex h-6 w-7 items-center justify-center rounded border border-[var(--border-soft)] bg-[var(--muted-surface)] font-mono text-[11px] font-semibold text-neutral-600 tabular-nums dark:text-neutral-300">
             {index + 1}
           </span>
         </div>
 
-        <div className="min-w-0 space-y-3">
-          <div className="space-y-1.5">
+        <div className="min-w-0 space-y-1.5">
+          <div className="space-y-1">
             <a
               href={finalStoryUrl}
               target={!isHNConverted && finalStoryUrl.startsWith("http") ? "_blank" : undefined}
               rel={!isHNConverted && finalStoryUrl.startsWith("http") ? "noreferrer" : undefined}
-              className={`block text-base font-semibold leading-snug sm:text-[1.05rem] ${
+              className={`story-title block text-[0.98rem] font-semibold leading-snug ${
                 isHNConverted
                   ? "text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                   : "text-neutral-950 hover:text-orange-600 dark:text-neutral-50 dark:hover:text-orange-400"
@@ -80,14 +80,14 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
               {getCleanTitle(story.title || "")}
             </a>
             {isHNConverted && (
-              <span className="inline-flex w-fit items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/30 dark:text-blue-300">
+              <span className="inline-flex w-fit items-center gap-1 rounded border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/30 dark:text-blue-300">
                 <MessageSquare size={10} />
                 Discussion{hnId ? ` #${hnId}` : ""}
               </span>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+          <div className="story-meta flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
             <StoryBadge title={story.title} type={story.type} />
 
             {author ? (
@@ -103,7 +103,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
 
             <span className="text-neutral-300 dark:text-neutral-600">/</span>
 
-            <span className="inline-flex items-center gap-1">
+            <span className="story-time inline-flex items-center gap-1">
               <Clock size={12} className="flex-shrink-0" />
               <TimeAgo timestamp={story.time} />
             </span>
@@ -123,7 +123,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
                   href={`https://news.ycombinator.com/from?site=${host}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex max-w-[180px] min-w-0 items-center truncate font-mono text-[11px] text-neutral-500 transition-colors hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-400"
+                  className="story-host inline-flex max-w-[180px] min-w-0 truncate font-mono text-[11px] text-neutral-500 transition-colors hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-400"
                   title={host}
                 >
                   {host}
@@ -134,7 +134,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
             {readingTime && (
               <>
                 <span className="text-neutral-300 dark:text-neutral-600">/</span>
-                <span className="inline-flex items-center gap-1">
+                <span className="story-reading inline-flex items-center gap-1">
                   <BookOpen size={12} className="flex-shrink-0" />
                   <span>{readingTime}</span>
                 </span>
@@ -142,10 +142,10 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             <Link
               href={`/story/${story.id}`}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[var(--border-soft)] bg-[var(--muted-surface)] px-2.5 text-xs font-medium text-neutral-700 transition-colors hover:border-orange-300 hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-400"
+              className="story-comments inline-flex h-7 items-center gap-1.5 rounded-md border border-[var(--border-soft)] bg-[var(--muted-surface)] px-2 text-xs font-medium text-neutral-700 transition-colors hover:border-orange-300 hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-400"
             >
               <MessageSquare size={14} className="flex-shrink-0" />
               <span>{story.descendants || 0} comments</span>
@@ -160,7 +160,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
                 time: story.time,
                 score: story.score,
               }}
-              className="touch-target-auto h-8 rounded-md px-2.5 py-1 text-xs"
+              className="story-bookmark touch-target-auto h-7 rounded-md px-2 py-0.5 text-xs"
             />
 
             {hasExternalUrl && (
@@ -168,7 +168,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
                 href={finalStoryUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[var(--border-soft)] px-2.5 text-xs font-medium text-neutral-600 transition-colors hover:border-orange-300 hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-400"
+                className="story-open inline-flex h-7 items-center gap-1.5 rounded-md border border-[var(--border-soft)] px-2 text-xs font-medium text-neutral-600 transition-colors hover:border-orange-300 hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-400"
                 title="Open external link"
               >
                 <ExternalLink size={14} className="flex-shrink-0" />
@@ -178,7 +178,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
           </div>
 
           {story.text && (
-            <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--muted-surface)] px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400">
+            <div className="story-text rounded-lg border border-[var(--border-soft)] bg-[var(--muted-surface)] px-2.5 py-1.5 text-sm text-neutral-600 dark:text-neutral-400">
               <div className="line-clamp-2 prose prose-sm max-w-none dark:prose-invert [&>p]:mb-0 [&>p]:leading-relaxed">
                 <MarkdownRenderer content={story.text} allowHtml={true} />
               </div>
@@ -193,7 +193,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
         </div>
 
         {hasExternalUrl && (
-          <div className="hidden sm:block">
+          <div className="story-thumbnail hidden sm:block">
             <div className="aspect-[4/3] w-full overflow-hidden rounded-lg border border-[var(--border-soft)] bg-[var(--muted-surface)]">
               <LinkPreview url={finalStoryUrl} />
             </div>
@@ -202,7 +202,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
       </div>
 
       {hasExternalUrl && (
-        <div className="mt-4 aspect-[16/9] w-full overflow-hidden rounded-lg border border-[var(--border-soft)] bg-[var(--muted-surface)] sm:hidden">
+        <div className="story-mobile-thumbnail mt-2 aspect-[16/9] w-full overflow-hidden rounded-lg border border-[var(--border-soft)] bg-[var(--muted-surface)] sm:hidden">
           <LinkPreview url={finalStoryUrl} />
         </div>
       )}
