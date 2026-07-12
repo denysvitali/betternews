@@ -5,15 +5,26 @@ import {
   HN_API_BASE,
   CACHE_TIMES,
   PAGINATION,
+  isLiveItem,
 } from "./types";
 
 // Re-export types for backward compatibility
 export type { HNItem, HNUser, HNItemRecursive } from "./types";
 
+type StoryFeed = "topstories" | "newstories" | "beststories" | "showstories";
+
+/**
+ * Slice a list of ids to a single page.
+ */
+function paginate<T>(ids: T[], page: number, limit: number): T[] {
+  const start = (page - 1) * limit;
+  return ids.slice(start, start + limit);
+}
+
 /**
  * Fetch a single item from the HN API
  */
-export async function getItem(id: number): Promise<HNItem> {
+export async function getItem(id: number): Promise<HNItem | null> {
   const res = await fetch(`${HN_API_BASE}/item/${id}.json`, {
     next: { revalidate: CACHE_TIMES.ITEM },
   });
@@ -26,12 +37,16 @@ export async function getItem(id: number): Promise<HNItem> {
 }
 
 /**
- * Fetch multiple items in parallel
+ * Fetch multiple items in parallel, dropping any that are deleted or dead.
  */
 export async function getItems(ids: number[]): Promise<HNItem[]> {
   try {
-    const items = await Promise.all(ids.map((id) => getItem(id)));
-    return items.filter((item) => item && !item.deleted && !item.dead);
+    const results = await Promise.allSettled(ids.map((id) => getItem(id)));
+    return results.flatMap((result) =>
+      result.status === "fulfilled" && isLiveItem(result.value)
+        ? [result.value]
+        : []
+    );
   } catch (error) {
     console.error("Failed to fetch items:", error);
     return [];
@@ -39,123 +54,68 @@ export async function getItems(ids: number[]): Promise<HNItem[]> {
 }
 
 /**
- * Fetch paginated top stories
+ * Fetch a paginated story feed by endpoint.
  */
-export async function getTopStories(
-  page = 1,
-  limit = PAGINATION.DEFAULT_PAGE_SIZE
+async function getStoryFeed(
+  feed: StoryFeed,
+  page: number,
+  limit: number
 ): Promise<HNItem[]> {
   try {
-    const res = await fetch(`${HN_API_BASE}/topstories.json`, {
+    const res = await fetch(`${HN_API_BASE}/${feed}.json`, {
       next: { revalidate: CACHE_TIMES.STORIES },
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to fetch top stories: ${res.status}`);
+      throw new Error(`Failed to fetch ${feed}: ${res.status}`);
     }
 
     const ids: number[] = await res.json();
-    const start = (page - 1) * limit;
-    const end = start + limit;
-    const pageIds = ids.slice(start, end);
-
-    return getItems(pageIds);
+    return getItems(paginate(ids, page, limit));
   } catch (error) {
-    console.error("Failed to fetch top stories:", error);
+    console.error(`Failed to fetch ${feed}:`, error);
     return [];
   }
+}
+
+/**
+ * Fetch paginated top stories
+ */
+export function getTopStories(
+  page = 1,
+  limit = PAGINATION.DEFAULT_PAGE_SIZE
+): Promise<HNItem[]> {
+  return getStoryFeed("topstories", page, limit);
 }
 
 /**
  * Fetch paginated new stories
  */
-export async function getNewStories(
+export function getNewStories(
   page = 1,
   limit = PAGINATION.DEFAULT_PAGE_SIZE
 ): Promise<HNItem[]> {
-  try {
-    const res = await fetch(`${HN_API_BASE}/newstories.json`, {
-      next: { revalidate: CACHE_TIMES.STORIES },
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch new stories: ${res.status}`);
-    }
-
-    const ids: number[] = await res.json();
-    const start = (page - 1) * limit;
-    const end = start + limit;
-    const pageIds = ids.slice(start, end);
-
-    return getItems(pageIds);
-  } catch (error) {
-    console.error("Failed to fetch new stories:", error);
-    return [];
-  }
+  return getStoryFeed("newstories", page, limit);
 }
 
 /**
  * Fetch paginated best stories
  */
-export async function getBestStories(
+export function getBestStories(
   page = 1,
   limit = PAGINATION.DEFAULT_PAGE_SIZE
 ): Promise<HNItem[]> {
-  try {
-    const res = await fetch(`${HN_API_BASE}/beststories.json`, {
-      next: { revalidate: CACHE_TIMES.STORIES },
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch best stories: ${res.status}`);
-    }
-
-    const ids: number[] = await res.json();
-    const start = (page - 1) * limit;
-    const end = start + limit;
-    const pageIds = ids.slice(start, end);
-
-    return getItems(pageIds);
-  } catch (error) {
-    console.error("Failed to fetch best stories:", error);
-    return [];
-  }
+  return getStoryFeed("beststories", page, limit);
 }
 
 /**
  * Fetch paginated show stories
  */
-export async function getShowStories(
+export function getShowStories(
   page = 1,
   limit = PAGINATION.DEFAULT_PAGE_SIZE
 ): Promise<HNItem[]> {
-  try {
-    const res = await fetch(`${HN_API_BASE}/showstories.json`, {
-      next: { revalidate: CACHE_TIMES.STORIES },
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch show stories: ${res.status}`);
-    }
-
-    const ids: number[] = await res.json();
-    const start = (page - 1) * limit;
-    const end = start + limit;
-    const pageIds = ids.slice(start, end);
-
-    return getItems(pageIds);
-  } catch (error) {
-    console.error("Failed to fetch show stories:", error);
-    return [];
-  }
-}
-
-/**
- * Fetch a story with its comments
- * @deprecated Use getItem instead
- */
-export async function getStoryWithComments(id: number): Promise<HNItem> {
-  return getItem(id);
+  return getStoryFeed("showstories", page, limit);
 }
 
 /**
@@ -186,10 +146,14 @@ export async function getUserItems(
   limit = PAGINATION.DEFAULT_USER_ITEMS
 ): Promise<HNItem[]> {
   try {
-    const items = await Promise.all(
+    const results = await Promise.allSettled(
       itemIds.slice(0, limit).map((id) => getItem(id))
     );
-    return items.filter((item) => item && !item.deleted && !item.dead);
+    return results.flatMap((result) =>
+      result.status === "fulfilled" && isLiveItem(result.value)
+        ? [result.value]
+        : []
+    );
   } catch (error) {
     console.error("Failed to fetch user items:", error);
     return [];
@@ -206,23 +170,25 @@ export async function getStoryWithRecursiveComments(
 ): Promise<HNItemRecursive | null> {
   try {
     const item = await getItem(id);
-    if (!item || item.deleted || item.dead) return null;
+    if (!isLiveItem(item)) return null;
 
     let kids: HNItemRecursive[] = [];
 
     if (depth > 0 && item.kids && item.kids.length > 0) {
       const kidsIds = item.kids.slice(0, limit);
-      const kidsPromises = kidsIds.map((kidId) =>
-        getStoryWithRecursiveComments(kidId, depth - 1, limit)
+      const results = await Promise.allSettled(
+        kidsIds.map((kidId) =>
+          getStoryWithRecursiveComments(kidId, depth - 1, limit)
+        )
       );
-      const results = await Promise.all(kidsPromises);
-      kids = results.filter((k): k is HNItemRecursive => k !== null);
+      kids = results.flatMap((result) =>
+        result.status === "fulfilled" && result.value !== null
+          ? [result.value]
+          : []
+      );
     }
 
-    return {
-      ...item,
-      kids: kids,
-    } as HNItemRecursive;
+    return { ...item, kids };
   } catch (error) {
     console.error(`Failed to fetch story ${id} with comments:`, error);
     return null;

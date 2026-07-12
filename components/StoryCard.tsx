@@ -54,7 +54,13 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
     };
   }, [story.url, story.id]);
 
-  const hasExternalUrl = story.url && !isHNConverted;
+  const hasExternalUrl = Boolean(story.url) && !isHNConverted;
+  const opensInNewTab = !isHNConverted && finalStoryUrl.startsWith("http");
+  const titleClassName = `story-title block text-[0.98rem] font-semibold leading-snug ${
+    isHNConverted
+      ? "text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+      : "text-neutral-950 hover:text-orange-600 dark:text-neutral-50 dark:hover:text-orange-400"
+  } transition-colors`;
 
   return (
     <Card variant="hover" padding="sm" as="article" className="story-card overflow-hidden">
@@ -67,18 +73,20 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
 
         <div className="min-w-0 space-y-1.5">
           <div className="space-y-1">
-            <a
-              href={finalStoryUrl}
-              target={!isHNConverted && finalStoryUrl.startsWith("http") ? "_blank" : undefined}
-              rel={!isHNConverted && finalStoryUrl.startsWith("http") ? "noreferrer" : undefined}
-              className={`story-title block text-[0.98rem] font-semibold leading-snug ${
-                isHNConverted
-                  ? "text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                  : "text-neutral-950 hover:text-orange-600 dark:text-neutral-50 dark:hover:text-orange-400"
-              } transition-colors`}
-            >
-              {getCleanTitle(story.title || "")}
-            </a>
+            {opensInNewTab ? (
+              <a
+                href={finalStoryUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={titleClassName}
+              >
+                {getCleanTitle(story.title || "")}
+              </a>
+            ) : (
+              <Link href={finalStoryUrl} className={titleClassName}>
+                {getCleanTitle(story.title || "")}
+              </Link>
+            )}
             {isHNConverted && (
               <span className="inline-flex w-fit items-center gap-1 rounded border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/30 dark:text-blue-300">
                 <MessageSquare size={10} />

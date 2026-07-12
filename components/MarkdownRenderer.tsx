@@ -7,8 +7,6 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
-import { visit } from "unist-util-visit";
-import type { Node } from "unist";
 import DOMPurify from "isomorphic-dompurify";
 import { convertHNUrlToRelative } from "@/lib/utils";
 
@@ -23,28 +21,8 @@ const sanitizeOptions = {
   ALLOWED_URI_REGEXP: /^(https?|mailto):/i
 };
 
-// Custom remark plugin to process HN-specific markdown
-type TextNode = Node & { value?: unknown };
-
-function hnRemarkPlugin() {
-  return (tree: Node) => {
-    visit(tree, "text", (node) => {
-      const textNode = node as TextNode;
-
-      // Convert HN-style links [text](url) to proper markdown links
-      if (typeof textNode.value === "string") {
-        textNode.value = textNode.value
-          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "[$1]($2)");
-      }
-    });
-  };
-}
-
 type MarkdownAnchorProps = React.ComponentPropsWithoutRef<"a"> & ExtraProps;
-type MarkdownCodeProps = React.ComponentPropsWithoutRef<"code"> &
-  ExtraProps & {
-    inline?: boolean;
-  };
+type MarkdownCodeProps = React.ComponentPropsWithoutRef<"code"> & ExtraProps;
 type MarkdownElementProps<T extends keyof React.JSX.IntrinsicElements> =
   React.ComponentPropsWithoutRef<T> & ExtraProps;
 type SyntaxHighlighterStyle = Record<string, React.CSSProperties>;
@@ -85,11 +63,11 @@ const markdownComponents: Components = {
       </span>
     );
   },
-  code: ({ inline, className, children, style: _style, ...props }: MarkdownCodeProps) => {
+  code: ({ className, children, style: _style, ...props }: MarkdownCodeProps) => {
     void _style;
     const match = /language-(\w+)/.exec(className || "");
 
-    if (!inline && match) {
+    if (match) {
       return (
         <SyntaxHighlighter
           style={codeBlockStyle}
@@ -178,14 +156,15 @@ export function MarkdownRenderer({
   // Clean the content first
   let cleanedContent = content.trim();
 
-  // Decode HTML entities that HN API returns
+  // Decode HTML entities that the HN API returns.
+  // `&amp;` is decoded last so encoded entities like `&amp;lt;` survive intact.
   cleanedContent = cleanedContent
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&")
     .replace(/&quot;/g, '"')
     .replace(/&#x27;/g, "'")
-    .replace(/&#x2F;/g, "/");  // HN uses this for forward slashes
+    .replace(/&#x2F;/g, "/")  // HN uses this for forward slashes
+    .replace(/&amp;/g, "&");
 
   // If stripHtml is enabled, remove HTML tags completely
   if (stripHtml) {
@@ -215,7 +194,7 @@ export function MarkdownRenderer({
   return (
     <div className={`prose dark:prose-invert max-w-none ${className}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkBreaks, hnRemarkPlugin]}
+        remarkPlugins={[remarkGfm, remarkBreaks]}
         components={markdownComponents}
         skipHtml={!allowHtml}
         unwrapDisallowed={true}

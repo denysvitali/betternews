@@ -1,69 +1,26 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useTopStories } from "@/lib/hooks";
-import { StoryCard } from "@/components/StoryCard";
-import { Pagination } from "@/components/Pagination";
-import { PullToRefresh } from "@/components/PullToRefresh";
-import { Suspense, useCallback } from "react";
-import { PageLayout, PageHeader, PageLoading, PageError } from "@/components/ui";
-import { parsePositiveIntParam } from "@/lib/params";
-
-function HomeContent() {
-  const searchParams = useSearchParams();
-  const page = parsePositiveIntParam(searchParams.get("page"));
-  const { stories, loading, error, refetch } = useTopStories(page);
-
-  const handleRefresh = useCallback(async () => {
-    await refetch();
-  }, [refetch]);
-
-  if (loading) {
-    return <PageLoading />;
-  }
-
-  return (
-    <PullToRefresh onRefresh={handleRefresh}>
-      <PageLayout>
-        <PageHeader
-          title="Top"
-          meta={
-            <>
-              <span>p{page}</span>
-              <span aria-hidden="true">·</span>
-              <span>{stories.length}</span>
-            </>
-          }
-        />
-
-        {error && (
-          <PageError message="Failed to load stories. Please try again later." />
-        )}
-
-        {!error && (
-          <>
-            <div className="story-list flex flex-col gap-2.5">
-              {stories.map((story, index) => (
-                <StoryCard
-                  key={story.id}
-                  story={story}
-                  index={index + ((page - 1) * 30)}
-                />
-              ))}
-            </div>
-
-            <Pagination currentPage={page} baseUrl="/" />
-          </>
-        )}
-      </PageLayout>
-    </PullToRefresh>
-  );
-}
+import { StoryListPage } from "@/components/StoryListPage";
+import StoryPageClient from "@/app/story/[id]/StoryPageClient";
+import UserPageClient from "@/app/user/[username]/UserPageClient";
 
 export default function Home() {
-  return (
-    <Suspense fallback={<PageLoading />}>
-      <HomeContent />
-    </Suspense>
-  );
+  const pathname = usePathname();
+  const storyMatch = pathname?.match(/^\/story\/(\d+)\/?$/);
+  const userMatch = pathname?.match(/^\/user\/([^/]+)\/?$/);
+
+  // GitHub Pages serves the root document for unknown paths through
+  // public/404.html. Render dynamic routes here after that SPA fallback
+  // restores the original URL.
+  if (storyMatch) {
+    return <StoryPageClient storyId={Number(storyMatch[1])} />;
+  }
+
+  if (userMatch) {
+    return <UserPageClient username={decodeURIComponent(userMatch[1])} />;
+  }
+
+  return <StoryListPage title="Top" baseUrl="/" useStories={useTopStories} />;
 }

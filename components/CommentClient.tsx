@@ -57,6 +57,7 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
           className="inline-flex h-6 items-center gap-1 rounded px-1.5 py-0.5 align-middle text-[11px] text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
           onClick={() => setIsCollapsed(!isCollapsed)}
           aria-label={isCollapsed ? "Expand comment" : "Collapse comment"}
+          aria-expanded={!isCollapsed}
         >
           {isCollapsed ? (
             <Plus size={12} strokeWidth={2.5} className="text-orange-500" />
@@ -134,7 +135,9 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
       )}
       {isCollapsed && descendantCount > 0 && (
         <button
+          type="button"
           onClick={() => setIsCollapsed(false)}
+          aria-label="Expand comment replies"
           className="ml-6 mt-1 w-fit rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 text-xs font-medium text-neutral-600 transition-colors hover:text-orange-600 dark:bg-white/6 dark:text-neutral-300 dark:hover:text-orange-400"
         >
           +{descendantCount} replies hidden

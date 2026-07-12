@@ -16,6 +16,16 @@ const SHORTCUTS = [
   { key: "esc", label: "Close / Clear" },
 ] as const;
 
+// Tailwind classes applied to the currently keyboard-focused comment.
+const HIGHLIGHT_CLASSES = [
+  "keyboard-nav-highlight",
+  "ring-2",
+  "ring-orange-400",
+  "dark:ring-orange-500",
+  "ring-opacity-75",
+  "rounded-lg",
+] as const;
+
 export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) {
   const [currentCommentIndex, setCurrentCommentIndex] = useState(-1);
   const [showHelp, setShowHelp] = useState(false);
@@ -27,11 +37,11 @@ export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) 
   const highlightComment = useCallback((element: Element | null, scroll = true) => {
     // Remove previous highlights
     document.querySelectorAll('.keyboard-nav-highlight').forEach(el => {
-      el.classList.remove('keyboard-nav-highlight', 'ring-2', 'ring-orange-400', 'dark:ring-orange-500', 'ring-opacity-75', 'rounded-lg');
+      el.classList.remove(...HIGHLIGHT_CLASSES);
     });
 
     if (element) {
-      element.classList.add('keyboard-nav-highlight', 'ring-2', 'ring-orange-400', 'dark:ring-orange-500', 'ring-opacity-75', 'rounded-lg');
+      element.classList.add(...HIGHLIGHT_CLASSES);
       if (scroll) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
@@ -42,12 +52,11 @@ export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) 
     const comments = getAllComments();
     if (comments.length === 0) return;
 
-    let newIndex = currentCommentIndex;
-    if (direction === 'next') {
-      newIndex = Math.min(currentCommentIndex + 1, comments.length - 1);
-    } else {
-      newIndex = Math.max(currentCommentIndex - 1, 0);
-    }
+    const delta = direction === 'next' ? 1 : -1;
+    const newIndex = Math.min(
+      Math.max(currentCommentIndex + delta, 0),
+      comments.length - 1
+    );
 
     if (newIndex !== currentCommentIndex || currentCommentIndex === -1) {
       setCurrentCommentIndex(newIndex);
@@ -55,52 +64,34 @@ export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) 
     }
   }, [currentCommentIndex, getAllComments, highlightComment]);
 
-  const navigateToNextRoot = useCallback(() => {
+  const navigateToRoot = useCallback((direction: 'next' | 'prev') => {
     const rootComments = Array.from(document.querySelectorAll('[data-comment-level="0"]'));
     if (rootComments.length === 0) return;
 
-    const currentRoot = rootComments.findIndex((el, idx) => {
-      const allComments = getAllComments();
-      const currentEl = allComments[currentCommentIndex];
-      if (!currentEl) return idx === 0;
+    const allComments = getAllComments();
+    const currentEl = allComments[currentCommentIndex];
 
-      // Check if current comment is this root or a child of it
-      const commentId = currentEl.getAttribute('data-comment-id');
-      return el.getAttribute('data-comment-id') === commentId || el.contains(currentEl);
-    });
-
-    const nextRootIdx = Math.min(currentRoot + 1, rootComments.length - 1);
-    const nextRoot = rootComments[nextRootIdx];
-
-    if (nextRoot) {
-      const allComments = getAllComments();
-      const newIndex = allComments.indexOf(nextRoot);
-      setCurrentCommentIndex(newIndex);
-      highlightComment(nextRoot);
-    }
-  }, [currentCommentIndex, getAllComments, highlightComment]);
-
-  const navigateToPrevRoot = useCallback(() => {
-    const rootComments = Array.from(document.querySelectorAll('[data-comment-level="0"]'));
-    if (rootComments.length === 0) return;
-
+    // Find the root that currently contains (or is) the focused comment.
     const currentRoot = rootComments.findIndex((el) => {
-      const allComments = getAllComments();
-      const currentEl = allComments[currentCommentIndex];
       if (!currentEl) return false;
 
       const commentId = currentEl.getAttribute('data-comment-id');
       return el.getAttribute('data-comment-id') === commentId || el.contains(currentEl);
     });
 
-    const prevRootIdx = Math.max(currentRoot - 1, 0);
-    const prevRoot = rootComments[prevRootIdx];
+    const delta = direction === 'next' ? 1 : -1;
+    const startingRoot = currentRoot === -1
+      ? direction === "next" ? -1 : 0
+      : currentRoot;
+    const targetIdx = Math.min(
+      Math.max(startingRoot + delta, 0),
+      rootComments.length - 1
+    );
+    const targetRoot = rootComments[targetIdx];
 
-    if (prevRoot) {
-      const allComments = getAllComments();
-      const newIndex = allComments.indexOf(prevRoot);
-      setCurrentCommentIndex(newIndex);
-      highlightComment(prevRoot);
+    if (targetRoot) {
+      setCurrentCommentIndex(allComments.indexOf(targetRoot));
+      highlightComment(targetRoot);
     }
   }, [currentCommentIndex, getAllComments, highlightComment]);
 
@@ -122,8 +113,14 @@ export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) 
     if (!enabled) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is typing in an input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+      // Don't trigger while the user is typing or interacting with controls.
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        e.target instanceof HTMLSelectElement ||
+        (e.target instanceof HTMLElement &&
+          (e.target.isContentEditable || e.target.closest("button, a")))
+      ) {
         return;
       }
 
@@ -138,11 +135,11 @@ export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) 
           break;
         case 'n':
           e.preventDefault();
-          navigateToNextRoot();
+          navigateToRoot('next');
           break;
         case 'p':
           e.preventDefault();
-          navigateToPrevRoot();
+          navigateToRoot('prev');
           break;
         case ' ':
           e.preventDefault();
@@ -162,7 +159,7 @@ export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) 
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [enabled, navigateToComment, navigateToNextRoot, navigateToPrevRoot, toggleCurrentComment, highlightComment]);
+  }, [enabled, navigateToComment, navigateToRoot, toggleCurrentComment, highlightComment]);
 
   if (!enabled) return null;
 

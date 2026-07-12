@@ -1,7 +1,17 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { HNItem, HNUser, HN_API_BASE, CACHE_TIMES, PAGINATION } from "./types";
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  HNItem,
+  HNUser,
+  HN_API_BASE,
+  CACHE_TIMES,
+  PAGINATION,
+  isLiveItem,
+} from "./types";
+
+// Re-export types for consumers that historically imported them from hooks.
+export type { HNItem as Story, HNItem as Comment, HNUser as User } from "./types";
 
 // ============================================
 // In-memory request cache
@@ -12,20 +22,91 @@ interface CacheEntry<T> {
   expiresAt: number;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const cache = new Map<string, CacheEntry<any>>();
+const cache = new Map<string, CacheEntry<unknown>>();
+const inFlight = new Map<string, Promise<unknown>>();
+const MAX_CACHE_ENTRIES = 500;
+const MAX_CONCURRENT_REQUESTS = 8;
+let activeRequests = 0;
+const queuedRequests: Array<() => void> = [];
 
-async function cachedFetch<T>(url: string, ttlSeconds: number): Promise<T> {
+function setCacheEntry<T>(url: string, data: T, expiresAt: number): void {
+  if (cache.size >= MAX_CACHE_ENTRIES && !cache.has(url)) {
+    const now = Date.now();
+    for (const [key, entry] of cache) {
+      if (entry.expiresAt <= now || cache.size >= MAX_CACHE_ENTRIES) {
+        cache.delete(key);
+      }
+      if (cache.size < MAX_CACHE_ENTRIES) break;
+    }
+  }
+  cache.set(url, { data, expiresAt });
+}
+
+function enqueueRequest<T>(request: () => Promise<T>): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const start = () => {
+      activeRequests += 1;
+      Promise.resolve()
+        .then(request)
+        .then(resolve, reject)
+        .finally(() => {
+          activeRequests -= 1;
+          const next = queuedRequests.shift();
+          if (next) next();
+        });
+    };
+
+    if (activeRequests < MAX_CONCURRENT_REQUESTS) {
+      start();
+    } else {
+      queuedRequests.push(start);
+    }
+  });
+}
+
+async function cachedFetch<T>(
+  url: string,
+  ttlSeconds: number,
+  force = false
+): Promise<T> {
   const now = Date.now();
   const entry = cache.get(url);
-  if (entry && entry.expiresAt > now) {
+  if (!force && entry && entry.expiresAt > now) {
     return entry.data as T;
   }
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data: T = await res.json();
-  cache.set(url, { data, expiresAt: now + ttlSeconds * 1000 });
-  return data;
+
+  const existingRequest = inFlight.get(url);
+  if (existingRequest) {
+    return existingRequest as Promise<T>;
+  }
+
+  const request = enqueueRequest(() =>
+    fetch(url, force ? { cache: "no-store" } : undefined).then(async (res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: T = await res.json();
+      setCacheEntry(url, data, Date.now() + ttlSeconds * 1000);
+      return data;
+    })
+  )
+    .finally(() => {
+      if (inFlight.get(url) === request) {
+        inFlight.delete(url);
+      }
+    });
+
+  inFlight.set(url, request);
+  return request;
+}
+
+/**
+ * Fetch a single HN item, using the in-memory cache.
+ */
+function fetchItem(id: number, force = false): Promise<HNItem | null> {
+  return cachedFetch<HNItem | null>(
+    `${HN_API_BASE}/item/${id}.json`,
+    CACHE_TIMES.ITEM,
+    force
+  );
 }
 
 // ============================================
@@ -127,60 +208,60 @@ export function useReadingProgress(): number {
 // Data Fetching Hooks
 // ============================================
 
-// Re-export types for backward compatibility
-export type { HNItem as Story, HNItem as Comment, HNUser as User } from "./types";
-
 /**
  * Generic fetch hook to reduce duplication
  */
 function useFetch<T>(
-  fetchFn: () => Promise<T>,
+  fetchFn: (force?: boolean) => Promise<T>,
   deps: unknown[],
   options?: { skip?: boolean }
 ) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(!options?.skip);
   const [error, setError] = useState<Error | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const fetchFnRef = useRef(fetchFn);
+  const requestIdRef = useRef(0);
+  fetchFnRef.current = fetchFn;
 
-  const refetch = useCallback(() => {
-    setRefreshKey((prev) => prev + 1);
+  const runFetch = useCallback(async (force: boolean) => {
+    const requestId = ++requestIdRef.current;
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await fetchFnRef.current(force);
+      if (requestId === requestIdRef.current) {
+        setData(result);
+        setLoading(false);
+      }
+    } catch (err) {
+      if (requestId === requestIdRef.current) {
+        setError(err instanceof Error ? err : new Error(String(err)));
+        setLoading(false);
+      }
+      throw err;
+    }
   }, []);
+
+  const refetch = useCallback(() => runFetch(true), [runFetch]);
 
   useEffect(() => {
     if (options?.skip) {
+      requestIdRef.current += 1;
       setLoading(false);
+      setData(null);
+      setError(null);
       return;
     }
 
-    let isMounted = true;
-
-    async function doFetch() {
-      try {
-        setLoading(true);
-        setError(null);
-        const result = await fetchFn();
-        if (isMounted) {
-          setData(result);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err instanceof Error ? err : new Error(String(err)));
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    doFetch();
-
-    return () => {
-      isMounted = false;
-    };
+    void runFetch(false).catch(() => {
+      // The hook exposes the error state; initial loads should not produce an
+      // unhandled promise rejection.
+    });
+    // `fetchFn` is stored in a ref so changing its closure does not retrigger
+    // the request outside the explicitly supplied dependency list.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...deps, refreshKey, options?.skip]);
+  }, [...deps, options?.skip, runFetch]);
 
   return { data, loading, error, refetch };
 }
@@ -191,23 +272,29 @@ function useFetch<T>(
 async function fetchPaginatedStories(
   endpoint: "topstories" | "newstories" | "beststories" | "showstories",
   page: number,
-  pageSize: number = PAGINATION.DEFAULT_PAGE_SIZE
+  pageSize: number = PAGINATION.DEFAULT_PAGE_SIZE,
+  force = false
 ): Promise<HNItem[]> {
   const storyIds = await cachedFetch<number[]>(
     `${HN_API_BASE}/${endpoint}.json`,
-    CACHE_TIMES.STORIES
+    CACHE_TIMES.STORIES,
+    force
   );
 
   const startIndex = (page - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const pageIds = storyIds.slice(startIndex, endIndex);
 
-  const storyPromises = pageIds.map((id) =>
-    cachedFetch<HNItem>(`${HN_API_BASE}/item/${id}.json`, CACHE_TIMES.ITEM)
+  const results = await Promise.allSettled(
+    pageIds.map((id) => fetchItem(id, force))
   );
-
-  const fetchedStories = await Promise.all(storyPromises);
-  return fetchedStories.filter((s) => s && s.type === "story");
+  return results.flatMap((result) =>
+    result.status === "fulfilled" &&
+    isLiveItem(result.value) &&
+    result.value.type === "story"
+      ? [result.value]
+      : []
+  );
 }
 
 /**
@@ -215,7 +302,7 @@ async function fetchPaginatedStories(
  */
 export function useTopStories(page: number = 1) {
   const { data, loading, error, refetch } = useFetch(
-    () => fetchPaginatedStories("topstories", page),
+    (force) => fetchPaginatedStories("topstories", page, undefined, force),
     [page]
   );
 
@@ -227,7 +314,7 @@ export function useTopStories(page: number = 1) {
  */
 export function useNewStories(page: number = 1) {
   const { data, loading, error, refetch } = useFetch(
-    () => fetchPaginatedStories("newstories", page),
+    (force) => fetchPaginatedStories("newstories", page, undefined, force),
     [page]
   );
 
@@ -239,7 +326,7 @@ export function useNewStories(page: number = 1) {
  */
 export function useBestStories(page: number = 1) {
   const { data, loading, error, refetch } = useFetch(
-    () => fetchPaginatedStories("beststories", page),
+    (force) => fetchPaginatedStories("beststories", page, undefined, force),
     [page]
   );
 
@@ -251,7 +338,7 @@ export function useBestStories(page: number = 1) {
  */
 export function useShowStories(page: number = 1) {
   const { data, loading, error, refetch } = useFetch(
-    () => fetchPaginatedStories("showstories", page),
+    (force) => fetchPaginatedStories("showstories", page, undefined, force),
     [page]
   );
 
@@ -262,11 +349,9 @@ export function useShowStories(page: number = 1) {
  * Hook for fetching a single story
  */
 export function useStory(id: number) {
-  const { data, loading, error } = useFetch(
-    () => cachedFetch<HNItem>(`${HN_API_BASE}/item/${id}.json`, CACHE_TIMES.ITEM),
-    [id],
-    { skip: !id }
-  );
+  const { data, loading, error } = useFetch((force) => fetchItem(id, force), [id], {
+    skip: !id,
+  });
 
   return { story: data, loading, error };
 }
@@ -275,13 +360,34 @@ export function useStory(id: number) {
  * Hook for fetching a comment
  */
 export function useComment(id: number) {
-  const { data, loading, error } = useFetch(
-    () => cachedFetch<HNItem>(`${HN_API_BASE}/item/${id}.json`, CACHE_TIMES.ITEM),
-    [id],
-    { skip: !id }
-  );
+  const { data, loading, error } = useFetch((force) => fetchItem(id, force), [id], {
+    skip: !id,
+  });
 
   return { comment: data, loading, error };
+}
+
+/** Fetch child timestamps so comment sorting reflects creation time. */
+export function useCommentTimes(ids: number[], enabled: boolean) {
+  const idsKey = enabled ? ids.join(",") : "";
+  const { data, loading, error } = useFetch(
+    async (force) => {
+      const results = await Promise.allSettled(
+        ids.map((id) => fetchItem(id, force))
+      );
+      return new Map(
+        results.flatMap((result) =>
+          result.status === "fulfilled" && result.value
+            ? [[result.value.id, result.value.time] as const]
+            : []
+        )
+      );
+    },
+    [idsKey, enabled],
+    { skip: !enabled || !idsKey }
+  );
+
+  return { times: data ?? new Map<number, number>(), loading, error };
 }
 
 /**
@@ -289,7 +395,12 @@ export function useComment(id: number) {
  */
 export function useUser(username: string) {
   const { data, loading, error } = useFetch(
-    () => cachedFetch<HNUser>(`${HN_API_BASE}/user/${username}.json`, CACHE_TIMES.USER),
+    (force) =>
+      cachedFetch<HNUser>(
+        `${HN_API_BASE}/user/${username}.json`,
+        CACHE_TIMES.USER,
+        force
+      ),
     [username],
     { skip: !username }
   );
@@ -307,20 +418,20 @@ export function useUserItems(
   const idsKey = itemIds?.slice(0, limit).join(",") ?? "";
 
   const { data, loading, error } = useFetch(
-    async () => {
+    async (force) => {
       if (!itemIds || itemIds.length === 0) {
         return [];
       }
 
       const limitedIds = itemIds.slice(0, limit);
-      const itemPromises = limitedIds.map((id) =>
-        cachedFetch<HNItem>(`${HN_API_BASE}/item/${id}.json`, CACHE_TIMES.ITEM)
+      const results = await Promise.allSettled(
+        limitedIds.map((id) => fetchItem(id, force))
       );
-
-      const fetchedItems = await Promise.all(itemPromises);
-      return fetchedItems.filter(
-        (item) => item && !item.deleted && !item.dead
-      ) as HNItem[];
+      return results.flatMap((result) =>
+        result.status === "fulfilled" && isLiveItem(result.value)
+          ? [result.value]
+          : []
+      );
     },
     [idsKey, limit],
     { skip: !idsKey }

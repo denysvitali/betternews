@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useId } from "react";
 import { Search, X, Loader2, ExternalLink, Clock, MessageSquare, Bookmark, Share2, AlertCircle, RotateCcw, Check } from "lucide-react";
 import Link from "next/link";
 import { useDebounce } from "@/lib/hooks";
@@ -23,6 +23,37 @@ interface SearchResult {
   descendants?: number;
 }
 
+interface AlgoliaHit {
+  objectID: string;
+  title?: string;
+  url?: string;
+  author?: string;
+  created_at_i?: number;
+  points?: number;
+  story_text?: string;
+  num_comments?: number;
+}
+
+function isAlgoliaHit(value: unknown): value is AlgoliaHit {
+  if (!value || typeof value !== "object") return false;
+  const hit = value as Partial<AlgoliaHit>;
+  return typeof hit.objectID === "string" && Number.isSafeInteger(Number(hit.objectID));
+}
+
+function mapHit(hit: AlgoliaHit): SearchResult {
+  return {
+    id: Number(hit.objectID),
+    title: String(hit.title ?? ""),
+    url: hit.url,
+    by: hit.author,
+    time: Number(hit.created_at_i ?? 0),
+    score: hit.points,
+    type: "story",
+    text: hit.story_text,
+    descendants: hit.num_comments,
+  };
+}
+
 interface SearchBarProps {
   onClose?: () => void;
   isOpen?: boolean;
@@ -37,6 +68,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
   const [toastId, setToastId] = useState<number | null>(null);
   const [toastBookmarked, setToastBookmarked] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchResultsId = useId();
   const searchAbortRef = useRef<AbortController | null>(null);
   const debouncedQuery = useDebounce(query, 300);
   const { isBookmarked, toggleBookmark } = useBookmarks();
@@ -58,7 +90,8 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
 
   // Search when query changes
   const performSearch = useCallback(async (searchQuery: string) => {
-    if (!searchQuery.trim() || searchQuery.length < 2) {
+    const normalizedQuery = searchQuery.trim();
+    if (normalizedQuery.length < 2) {
       searchAbortRef.current?.abort();
       setResults([]);
       setShowResults(false);
@@ -74,27 +107,17 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
     setIsLoading(true);
     setSearchError(null);
     try {
-      const url = `${ALGOLIA_API}/search?query=${encodeURIComponent(searchQuery)}&tags=story&hitsPerPage=8`;
+      const url = `${ALGOLIA_API}/search?query=${encodeURIComponent(normalizedQuery)}&tags=story&hitsPerPage=8`;
       const res = await fetch(url, { signal: controller.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
-
-      const matchingStories: SearchResult[] = (json.hits ?? []).map(
-        (hit: Record<string, unknown>) => ({
-          id: Number(hit.objectID),
-          title: String(hit.title ?? ""),
-          url: hit.url as string | undefined,
-          by: hit.author as string | undefined,
-          time: Number(hit.created_at_i ?? 0),
-          score: hit.points as number | undefined,
-          type: "story",
-          text: hit.story_text as string | undefined,
-          descendants: hit.num_comments as number | undefined,
-        })
-      );
+      const json: unknown = await res.json();
+      const hits =
+        json && typeof json === "object" && "hits" in json && Array.isArray(json.hits)
+          ? json.hits
+          : [];
 
       if (controller.signal.aborted) return;
-      setResults(matchingStories);
+      setResults(hits.filter(isAlgoliaHit).map(mapHit));
       setShowResults(true);
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
@@ -118,18 +141,27 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
     return () => searchAbortRef.current?.abort();
   }, []);
 
+  const resetSearch = useCallback(() => {
+    searchAbortRef.current?.abort();
+    searchAbortRef.current = null;
+    setResults([]);
+    setShowResults(false);
+    setSearchError(null);
+    setIsLoading(false);
+  }, []);
+
   const handleExternalSearch = () => {
     if (!query.trim()) return;
     const searchUrl = `https://hn.algolia.com/?q=${encodeURIComponent(query.trim())}`;
     window.open(searchUrl, "_blank", "noopener,noreferrer");
     setQuery("");
+    resetSearch();
     onClose?.();
   };
 
   const handleResultClick = () => {
     setQuery("");
-    setResults([]);
-    setShowResults(false);
+    resetSearch();
     onClose?.();
   };
 
@@ -154,12 +186,18 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search stories..."
+            aria-label="Search stories"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={showResults}
+            aria-controls={showResults && results.length > 0 ? searchResultsId : undefined}
             className="w-full rounded-lg border border-neutral-200 bg-white py-2.5 pl-10 pr-10 text-sm text-neutral-900 placeholder-neutral-500 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder-neutral-400"
           />
           {query && !isLoading && (
             <button
               type="button"
-              onClick={() => { setQuery(""); setResults([]); setShowResults(false); }}
+              onClick={() => { setQuery(""); resetSearch(); }}
+              aria-label="Clear search"
               className="absolute right-3 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
             >
               <X size={16} />
@@ -176,6 +214,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
 
       {/* Search Results */}
       {showResults && results.length > 0 && (
+        <div id={searchResultsId} role="listbox" aria-label="Search results">
         <Card className="mt-2 max-h-[40vh] sm:max-h-96 overflow-y-auto shadow-lg" padding="none">
           {results.map((result) => {
             const domain = result.url ? getDomain(result.url) : null;
@@ -188,6 +227,8 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
             return (
               <div
                 key={result.id}
+                role="option"
+                aria-selected={false}
                 className="flex flex-col gap-2 border-b border-neutral-100 p-3 transition-colors hover:bg-neutral-50 last:border-0 dark:border-neutral-700 dark:hover:bg-neutral-700"
               >
                 <div className="flex items-start gap-2">
@@ -268,15 +309,16 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      if (navigator.share && result.url) {
-                        navigator.share({
-                          title: result.title,
-                          url: result.url,
-                        }).catch(() => {});
+                      const shareUrl = result.url || `${window.location.origin}/story/${result.id}`;
+                      if (navigator.share) {
+                        void navigator.share({ title: result.title, url: shareUrl }).catch(() => {});
+                      } else if (navigator.clipboard) {
+                        void navigator.clipboard.writeText(shareUrl);
                       }
                     }}
                     className="flex items-center gap-1 text-xs px-2 py-1 rounded bg-neutral-100 text-neutral-500 hover:bg-neutral-200 transition-colors dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
-                    aria-label="Share"
+                    aria-label="Share story"
+                    title="Share story or copy link"
                   >
                     <Share2 size={12} />
                     Share
@@ -303,6 +345,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
             <span>Search more on HN Algolia</span>
           </button>
         </Card>
+        </div>
       )}
 
       {/* Error state */}

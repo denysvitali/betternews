@@ -43,6 +43,11 @@ export interface HNItemRecursive extends Omit<HNItem, "kids"> {
   kids?: HNItemRecursive[];
 }
 
+/** Type guard for items that can be rendered by the application. */
+export function isLiveItem(item: HNItem | null | undefined): item is HNItem {
+  return !!item && !item.deleted && !item.dead;
+}
+
 /**
  * Story type - a subset of HNItem for story display
  */

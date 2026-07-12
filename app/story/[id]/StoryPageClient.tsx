@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useStory } from "@/lib/hooks";
+import { useStory, useCommentTimes } from "@/lib/hooks";
 import { HNItem } from "@/lib/types";
 import { Comment, sortCommentIds } from "@/components/Comment";
 import { LinkPreview } from "@/components/LinkPreview";
@@ -30,6 +30,24 @@ interface StoryPageClientProps {
     storyId?: number;
 }
 
+function StoryLoadingState() {
+    return (
+        <PageLayout showBackToTop={false}>
+            <div className="mb-6 sm:mb-8">
+                <StorySkeleton />
+            </div>
+            <Card variant="default" padding="md" className="sm:p-6">
+                <Skeleton className="mb-6 h-6 w-32" />
+                <div className="flex flex-col">
+                    {[...Array(5)].map((_, i) => (
+                        <CommentSkeleton key={i} />
+                    ))}
+                </div>
+            </Card>
+        </PageLayout>
+    );
+}
+
 export default function StoryPageClient({ initialStory, storyId: propStoryId }: StoryPageClientProps) {
     const params = useParams();
     const paramId = params?.id ? (Array.isArray(params.id) ? params.id[0] : params.id) : undefined;
@@ -39,7 +57,6 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
     // Comment display settings
     const [commentSort, setCommentSort] = useState<CommentSortType>("default");
     const [collapseDepth, setCollapseDepth] = useState<number>(2);
-    const [showCommentScores] = useState<boolean>(false);
     const [visibleCommentCount, setVisibleCommentCount] = useState<number>(20);
 
     const loadMoreComments = useCallback(() => {
@@ -47,9 +64,13 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
     }, []);
 
     const story = initialStory || fetchedStory;
+    const { times: commentTimes } = useCommentTimes(
+        story?.kids ?? [],
+        commentSort !== "default"
+    );
     const sortedCommentIds = useMemo(
-        () => sortCommentIds(story?.kids ?? [], commentSort),
-        [story?.kids, commentSort]
+        () => sortCommentIds(story?.kids ?? [], commentSort, commentTimes),
+        [story?.kids, commentSort, commentTimes]
     );
     const invalidStoryId = !initialStory && storyId < 1;
     const loading = !initialStory && fetching;
@@ -64,21 +85,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
     }
 
     if (loading || (!initialStory && !fetchedStory && !fetchError)) {
-        return (
-            <PageLayout showBackToTop={false}>
-                <div className="mb-6 sm:mb-8">
-                    <StorySkeleton />
-                </div>
-                <Card variant="default" padding="md" className="sm:p-6">
-                    <Skeleton className="mb-6 h-6 w-32" />
-                    <div className="flex flex-col">
-                        {[...Array(5)].map((_, i) => (
-                            <CommentSkeleton key={i} />
-                        ))}
-                    </div>
-                </Card>
-            </PageLayout>
-        );
+        return <StoryLoadingState />;
     }
 
     if (error || !story) {
@@ -311,7 +318,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                                         id={kidId}
                                         maxInitialDepth={collapseDepth}
                                         sortBy={commentSort}
-                                        showScore={showCommentScores}
+                                        showScore={false}
                                     />
                                 </Suspense>
                             ))}
