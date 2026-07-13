@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { HNItem } from "@/lib/hn";
 import { PAGINATION } from "@/lib/types";
@@ -30,12 +30,32 @@ function StoryListContent({ title, baseUrl, useStories }: StoryListPageProps) {
   const searchParams = useSearchParams();
   const page = parsePositiveIntParam(searchParams.get("page"));
   const { stories, loading, error, refetch } = useStories(page);
+  const [loadedPages, setLoadedPages] = useState<Map<number, HNItem[]>>(new Map());
+
+  useEffect(() => {
+    if (loading || error) return;
+
+    setLoadedPages((pages) => {
+      const nextPages = new Map(pages);
+      nextPages.set(page, stories);
+      return nextPages;
+    });
+  }, [error, loading, page, stories]);
+
+  const visibleStories = [...loadedPages.entries()]
+    .sort(([leftPage], [rightPage]) => leftPage - rightPage)
+    .flatMap(([storyPage, pageStories]) =>
+      pageStories.map((story, index) => ({
+        story,
+        index: index + (storyPage - 1) * PAGINATION.DEFAULT_PAGE_SIZE,
+      }))
+    );
 
   const handleRefresh = useCallback(async () => {
     await refetch();
   }, [refetch]);
 
-  if (loading) {
+  if (loading && loadedPages.size === 0) {
     return <PageLoading />;
   }
 
@@ -48,7 +68,7 @@ function StoryListContent({ title, baseUrl, useStories }: StoryListPageProps) {
             <>
               <span>p{page}</span>
               <span aria-hidden="true">·</span>
-              <span>{stories.length}</span>
+              <span>{visibleStories.length}</span>
             </>
           }
         />
@@ -58,16 +78,16 @@ function StoryListContent({ title, baseUrl, useStories }: StoryListPageProps) {
         ) : (
           <>
             <div className="story-list flex flex-col gap-2.5">
-              {stories.map((story, index) => (
+              {visibleStories.map(({ story, index }) => (
                 <StoryCard
                   key={story.id}
                   story={story}
-                  index={index + (page - 1) * PAGINATION.DEFAULT_PAGE_SIZE}
+                  index={index}
                 />
               ))}
             </div>
 
-            <Pagination currentPage={page} baseUrl={baseUrl} />
+            <Pagination currentPage={page} baseUrl={baseUrl} loading={loading} />
           </>
         )}
       </PageLayout>
