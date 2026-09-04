@@ -35,13 +35,13 @@ export function Navbar() {
   return (
     <>
       <nav className="sticky top-0 z-50 w-full border-b border-[var(--border-soft)] bg-[color-mix(in_srgb,var(--background)_88%,transparent)] backdrop-blur-xl">
-        <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:h-[72px] sm:px-6">
+        <div className="container mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:h-[72px] sm:px-6">
           <Link href="/" className="group flex items-center gap-3" aria-label="BetterNews home">
-            <span className="flex h-9 w-9 items-center justify-center rounded-[0.7rem] bg-[var(--brand)] font-mono text-xs font-bold text-white shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)] transition-transform group-hover:-rotate-3 dark:bg-orange-500 sm:h-10 sm:w-10 sm:rounded-xl sm:text-sm">
+            <span className="flex h-8 w-8 items-center justify-center rounded-[0.6rem] bg-[var(--brand)] font-mono text-[10px] font-bold text-white shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)] transition-transform group-hover:-rotate-3 dark:bg-orange-500 sm:h-10 sm:w-10 sm:rounded-xl sm:text-sm">
               BN
             </span>
             <span className="leading-none">
-              <span className="block text-[15px] font-bold tracking-[-0.03em] text-[var(--brand)] dark:text-white">BetterNews</span>
+              <span className="block text-sm font-bold tracking-[-0.03em] text-[var(--brand)] dark:text-white sm:text-[15px]">BetterNews</span>
               <span className="mt-1 hidden font-mono text-[9px] uppercase tracking-[0.16em] text-neutral-500 sm:block">signal over noise</span>
             </span>
           </Link>

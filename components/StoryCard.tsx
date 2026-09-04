@@ -53,28 +53,36 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
         </div>
 
         <div className="min-w-0">
-          <div className="story-kicker mb-2 flex min-w-0 items-center gap-2">
+          <div
+            className={
+              hasExternalUrl
+                ? "story-kicker mb-2 grid min-w-0 grid-cols-[4.25rem_minmax(0,1fr)] items-center gap-3 sm:block"
+                : "story-kicker mb-2 flex min-w-0 items-center gap-2"
+            }
+          >
             <span className="story-rank-mobile shrink-0 font-mono text-[10px] font-semibold text-neutral-400 dark:text-neutral-500 sm:hidden">
               {rank}
             </span>
-            <span className="story-host min-w-0 max-w-[190px] truncate font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-orange-600 dark:text-orange-400">
-              {host}
-            </span>
-            <StoryBadge title={story.title} type={story.type} />
-            <span className="story-score-mobile ml-auto inline-flex shrink-0 items-center gap-1 rounded-full bg-orange-50 px-2 py-1 font-mono text-[10px] font-semibold text-orange-700 dark:bg-orange-950/40 dark:text-orange-300 sm:hidden">
-              <ArrowUp size={11} />
-              {story.score || 0}
-            </span>
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="story-host min-w-0 max-w-[190px] truncate font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-orange-600 dark:text-orange-400">
+                {host}
+              </span>
+              <StoryBadge title={story.title} type={story.type} />
+              <span className="story-score-mobile ml-auto inline-flex shrink-0 items-center gap-1 rounded-full bg-orange-50 px-2 py-1 font-mono text-[10px] font-semibold text-orange-700 dark:bg-orange-950/40 dark:text-orange-300 sm:hidden">
+                <ArrowUp size={11} />
+                {story.score || 0}
+              </span>
+            </div>
           </div>
 
           <div
             className={
               hasExternalUrl
-                ? "story-card-body grid grid-cols-[minmax(0,1fr)_5rem] items-start gap-3 sm:grid-cols-[minmax(0,1fr)_7rem] sm:gap-4"
+                ? "story-card-body grid grid-cols-[4.25rem_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[minmax(0,1fr)_7rem] sm:gap-4"
                 : "story-card-body"
             }
           >
-            <div className="min-w-0">
+            <div className="story-card-copy order-2 min-w-0 sm:order-1">
               {opensInNewTab ? (
                 <a href={finalStoryUrl} target="_blank" rel="noopener noreferrer" className={titleClassName}>
                   {storyTitle}
@@ -161,7 +169,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
                 href={finalStoryUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="story-preview aspect-[4/3] w-full overflow-hidden rounded-xl border border-[var(--border-soft)] bg-[var(--muted-surface)] shadow-sm transition-transform hover:scale-[1.03]"
+                className="story-preview order-1 aspect-[4/3] w-full overflow-hidden rounded-lg border border-[var(--border-soft)] bg-[var(--muted-surface)] shadow-sm transition-transform hover:scale-[1.03] sm:order-2 sm:rounded-xl"
                 aria-label={`Open ${storyTitle}`}
               >
                 <LinkPreview url={finalStoryUrl} />
