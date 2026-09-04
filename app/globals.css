@@ -3,13 +3,14 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f6f7f8;
-  --foreground: #17191c;
-  --surface: #ffffff;
+  --background: #f3f1eb;
+  --foreground: #17231f;
+  --surface: #fffefa;
   --surface-strong: #ffffff;
-  --border-soft: rgba(15, 23, 42, 0.12);
-  --muted-surface: #f1f3f5;
-  --accent: #f97316;
+  --border-soft: rgba(24, 55, 45, 0.14);
+  --muted-surface: #eeece5;
+  --accent: #f4512c;
+  --brand: #173d32;
 }
 
 @theme inline {
@@ -20,13 +21,14 @@
 }
 
 .dark {
-  --background: #101214;
-  --foreground: #f4f5f6;
-  --surface: #171a1f;
-  --surface-strong: #1d2026;
+  --background: #101613;
+  --foreground: #f4f1e8;
+  --surface: #18201d;
+  --surface-strong: #1d2824;
   --border-soft: rgba(255, 255, 255, 0.1);
-  --muted-surface: #20242b;
-  --accent: #fb923c;
+  --muted-surface: #222d29;
+  --accent: #ff6b47;
+  --brand: #f4f1e8;
 }
 
 body {
@@ -37,11 +39,16 @@ body {
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
   transition: background-color 0.3s ease, color 0.3s ease;
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 220px);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 8% 4%, rgba(244, 81, 44, 0.08), transparent 24rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent 26rem);
 }
 
 .dark body {
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0) 220px);
+  background-image:
+    radial-gradient(circle at 8% 4%, rgba(255, 107, 71, 0.09), transparent 24rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 26rem);
 }
 
 /* Improved mobile scrolling */
@@ -98,13 +105,17 @@ body {
 }
 
 .glass-panel {
-  background: var(--surface);
-  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  backdrop-filter: blur(18px);
 }
 
 .surface-card {
   background: var(--surface);
   border-color: var(--border-soft);
+}
+
+::selection {
+  background: rgba(244, 81, 44, 0.2);
 }
 
 html[data-density="super"] .story-list {

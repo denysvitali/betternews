@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Newspaper, Menu, X, Search, Bookmark } from "lucide-react";
+import { Bookmark, Menu, Search, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SearchModal } from "@/components/SearchBar";
 import { DensityToggle } from "@/components/DensityToggle";
@@ -21,152 +21,100 @@ export function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
 
-  // Keyboard shortcut for search (Cmd/Ctrl + K)
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
+        event.preventDefault();
         setIsSearchOpen(true);
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   return (
     <>
-      <nav className="sticky top-0 z-50 w-full border-b border-[var(--border-soft)] bg-white/90 backdrop-blur-md dark:bg-neutral-950/90">
-        <div className="container mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-3 text-xl font-bold">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500 text-white shadow-sm">
-              <Newspaper size={20} />
-            </div>
-            <div className="flex leading-none">
-              <span className="hidden sm:inline">BetterNews</span>
-              <span className="sm:hidden">BN</span>
-            </div>
+      <nav className="sticky top-0 z-50 w-full border-b border-[var(--border-soft)] bg-[color-mix(in_srgb,var(--background)_88%,transparent)] backdrop-blur-xl">
+        <div className="container mx-auto flex h-[72px] max-w-6xl items-center justify-between px-4 sm:px-6">
+          <Link href="/" className="group flex items-center gap-3" aria-label="BetterNews home">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--brand)] font-mono text-sm font-bold text-white shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)] transition-transform group-hover:-rotate-3 dark:bg-orange-500">
+              BN
+            </span>
+            <span className="leading-none">
+              <span className="block text-[15px] font-bold tracking-[-0.03em] text-[var(--brand)] dark:text-white">BetterNews</span>
+              <span className="mt-1 hidden font-mono text-[9px] uppercase tracking-[0.16em] text-neutral-500 sm:block">signal over noise</span>
+            </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-400 sm:flex">
-            {NAV_LINKS.map(({ href, label }) => {
-              const isActive = pathname === href;
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`rounded-md px-3 py-1.5 transition-colors ${
-                    isActive
-                      ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-950"
-                      : "hover:bg-neutral-100 hover:text-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-white"
-                  }`}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  {label}
-                </Link>
-              );
-            })}
+          <div className="hidden items-center gap-3 sm:flex">
+            <div className="flex items-center rounded-full border border-[var(--border-soft)] bg-[var(--surface)] p-1 shadow-sm">
+              {NAV_LINKS.map(({ href, label }) => {
+                const isActive = pathname === href;
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`rounded-full px-3.5 py-2 text-xs font-semibold transition-all ${
+                      isActive
+                        ? "bg-[var(--brand)] text-white shadow-sm dark:bg-orange-500"
+                        : "text-neutral-500 hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-white"
+                    }`}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
+            </div>
             <Link
               href="/saved"
-              className={`flex items-center gap-1 rounded-md px-3 py-2 transition-colors ${
-                pathname === "/saved"
-                  ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-950"
-                  : "hover:bg-neutral-100 hover:text-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-white"
-              }`}
-              aria-current={pathname === "/saved" ? "page" : undefined}
+              aria-label="Saved stories"
+              className={`flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border-soft)] transition-colors ${pathname === "/saved" ? "bg-orange-500 text-white" : "bg-[var(--surface)] text-neutral-500 hover:text-orange-600"}`}
             >
-              <Bookmark size={14} />
-              Saved
+              <Bookmark size={16} />
             </Link>
-
-            {/* Search Button */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="ml-2 flex items-center gap-2 rounded-md border border-[var(--border-soft)] bg-[var(--surface)] px-3 py-1.5 text-neutral-600 transition-colors hover:border-orange-300 hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-white"
+              className="flex h-10 items-center gap-2 rounded-full border border-[var(--border-soft)] bg-[var(--surface)] px-3.5 text-xs font-medium text-neutral-500 shadow-sm transition-colors hover:border-orange-300 hover:text-orange-600 dark:text-neutral-300"
             >
-              <Search size={14} />
-              <span className="text-xs">Search</span>
-              <kbd className="hidden items-center gap-0.5 rounded border border-[var(--border-soft)] px-1.5 py-0.5 font-mono text-[10px] font-medium text-neutral-500 dark:text-neutral-400 md:inline-flex">
-                <span className="text-xs">⌘</span>K
-              </kbd>
+              <Search size={15} />
+              Search
+              <kbd className="rounded bg-[var(--muted-surface)] px-1.5 py-0.5 font-mono text-[9px]">⌘K</kbd>
             </button>
-
-            <DensityToggle className="bg-white/40 dark:bg-white/6" />
+            <DensityToggle className="h-10 bg-[var(--surface)]" />
             <ThemeToggle />
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="sm:hidden flex items-center gap-1">
-            {/* Mobile Search Button */}
-            <IconButton
-              variant="ghost"
-              onClick={() => setIsSearchOpen(true)}
-              aria-label="Search"
-              icon={<Search size={20} className="text-neutral-600 dark:text-neutral-400" />}
-            />
-
+          <div className="flex items-center gap-1 sm:hidden">
+            <IconButton variant="ghost" onClick={() => setIsSearchOpen(true)} aria-label="Search" icon={<Search size={19} />} />
             <ThemeToggle />
-
             <IconButton
               variant="ghost"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => setIsMobileMenuOpen((open) => !open)}
               aria-label="Toggle mobile menu"
-              icon={
-                isMobileMenuOpen ? (
-                  <X size={24} className="text-neutral-600 dark:text-neutral-400" />
-                ) : (
-                  <Menu size={24} className="text-neutral-600 dark:text-neutral-400" />
-                )
-              }
+              icon={isMobileMenuOpen ? <X size={21} /> : <Menu size={21} />}
             />
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="sm:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md">
-              <div className="container mx-auto space-y-2 px-4 py-3">
-              {[
-                { href: "/", label: "Top Stories" },
-                { href: "/new", label: "New Stories" },
-                { href: "/best", label: "Best Stories" },
-                { href: "/show", label: "Show Stories" },
-              ].map(({ href, label }) => (
+          <div className="border-t border-[var(--border-soft)] bg-[var(--surface)] px-4 py-3 sm:hidden">
+            <div className="grid grid-cols-2 gap-2">
+              {[...NAV_LINKS, { href: "/saved", label: "Saved" }].map(({ href, label }) => (
                 <Link
                   key={href}
                   href={href}
-                  className={`block px-4 py-3 text-base font-medium rounded-md transition-colors ${
-                    pathname === href
-                      ? "text-orange-500 bg-orange-50 dark:bg-orange-950/20"
-                      : "text-neutral-600 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                  }`}
+                  className={`rounded-xl px-4 py-3 text-sm font-semibold ${pathname === href ? "bg-[var(--brand)] text-white dark:bg-orange-500" : "bg-[var(--muted-surface)] text-neutral-600 dark:text-neutral-300"}`}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  aria-current={pathname === href ? "page" : undefined}
                 >
                   {label}
                 </Link>
               ))}
-              <Link
-                href="/saved"
-                className={`flex items-center gap-2 px-4 py-3 text-base font-medium rounded-md transition-colors ${
-                  pathname === "/saved"
-                    ? "text-orange-500 bg-orange-50 dark:bg-orange-950/20"
-                    : "text-neutral-600 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-                aria-current={pathname === "/saved" ? "page" : undefined}
-              >
-                <Bookmark size={16} />
-                Saved Stories
-              </Link>
-              <DensityToggle className="w-full justify-center rounded-md bg-white/60 dark:bg-white/6" />
             </div>
+            <DensityToggle className="mt-2 w-full justify-center bg-[var(--muted-surface)]" />
           </div>
         )}
       </nav>
-
-      {/* Search Modal */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </>
   );

@@ -1,157 +1,49 @@
-"use client";
-
 import Link from "next/link";
-import { Github, ExternalLink, Heart, GitCommit } from "lucide-react";
+import { ArrowUpRight, Github } from "lucide-react";
+
+const footerLinks = [
+  { href: "/", label: "Top" },
+  { href: "/new", label: "New" },
+  { href: "/best", label: "Best" },
+  { href: "https://news.ycombinator.com", label: "HN original", external: true },
+] as const;
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
-  const commitHash = process.env.NEXT_PUBLIC_GIT_COMMIT || 'dev';
-  const commitUrl = `https://github.com/denysvitali/betternews/commit/${commitHash}`;
-
   return (
-    <footer className="mt-auto border-t border-[var(--border-soft)] bg-transparent">
-      <div className="container mx-auto max-w-5xl px-4 py-8 sm:px-6">
-        <div className="grid grid-cols-2 gap-8 rounded-lg border border-[var(--border-soft)] bg-[var(--surface)] px-5 py-6 shadow-sm sm:grid-cols-4 sm:px-7">
-          {/* Navigation */}
-          <div>
-            <h3 className="mb-3 text-sm font-semibold text-neutral-900 dark:text-white">
-              Navigation
-            </h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  href="/"
-                  className="text-neutral-600 hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors"
-                >
-                  Top Stories
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/new"
-                  className="text-neutral-600 hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors"
-                >
-                  New Stories
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Hacker News */}
-          <div>
-            <h3 className="mb-3 text-sm font-semibold text-neutral-900 dark:text-white">
-              Hacker News
-            </h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a
-                  href="https://news.ycombinator.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-neutral-600 hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors"
-                >
-                  HN Official
-                  <ExternalLink size={12} />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://hn.algolia.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-neutral-600 hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors"
-                >
-                  HN Search
-                  <ExternalLink size={12} />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/HackerNews/API"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-neutral-600 hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors"
-                >
-                  HN API
-                  <ExternalLink size={12} />
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Resources */}
-          <div>
-            <h3 className="mb-3 text-sm font-semibold text-neutral-900 dark:text-white">
-              Resources
-            </h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a
-                  href="https://news.ycombinator.com/newsguidelines.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-neutral-600 hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors"
-                >
-                  Guidelines
-                  <ExternalLink size={12} />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://news.ycombinator.com/newsfaq.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-neutral-600 hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors"
-                >
-                  FAQ
-                  <ExternalLink size={12} />
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* About */}
-          <div>
-            <h3 className="mb-3 text-sm font-semibold text-neutral-900 dark:text-white">
-              About
-            </h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a
-                  href="https://github.com/denysvitali/betternews"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-neutral-600 hover:text-orange-500 dark:text-neutral-400 dark:hover:text-orange-500 transition-colors"
-                >
-                  <Github size={14} />
-                  Source Code
-                </a>
-              </li>
-            </ul>
-          </div>
+    <footer className="mt-12 border-t border-[var(--border-soft)]">
+      <div className="container mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-bold tracking-[-0.02em] text-[var(--brand)] dark:text-white">BetterNews</p>
+          <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">The Hacker News signal, thoughtfully presented.</p>
         </div>
-
-        {/* Bottom bar */}
-        <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-[var(--border-soft)] pt-5 sm:flex-row">
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            {currentYear} BetterNews. Not affiliated with Y Combinator.
-          </p>
-          <div className="flex items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400">
-            <a
-              href={commitUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-mono hover:text-orange-500 transition-colors"
-              title={`Build: ${commitHash}`}
-            >
-              <GitCommit size={12} />
-              {commitHash}
-            </a>
-            <span className="text-neutral-300 dark:text-neutral-600">|</span>
-            <p className="inline-flex items-center gap-1">
-              Made with <Heart size={12} className="text-red-500 fill-red-500" /> for the HN community
-            </p>
-          </div>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+          {footerLinks.map((item) =>
+            "external" in item && item.external ? (
+              <a
+                key={item.href}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-orange-600 dark:text-neutral-400"
+              >
+                {item.label}
+                <ArrowUpRight size={12} />
+              </a>
+            ) : (
+              <Link key={item.href} href={item.href} className="text-xs font-medium text-neutral-500 hover:text-orange-600 dark:text-neutral-400">
+                {item.label}
+              </Link>
+            )
+          )}
+          <a
+            href="https://github.com/denysvitali/betternews"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="BetterNews source code"
+            className="text-neutral-400 transition-colors hover:text-orange-600"
+          >
+            <Github size={17} />
+          </a>
         </div>
       </div>
     </footer>

@@ -93,6 +93,21 @@ pnpm start
 pnpm lint
 ```
 
+### Reproducible development setup
+
+The repository pins Node.js and pnpm with [Mise](https://mise.jdx.dev/). To
+install the complete toolchain, project dependencies, and Chromium for the UI
+feedback loop, run:
+
+```bash
+mise trust
+mise run install
+```
+
+Start the app with `mise run dev`. Capture light, dark, desktop, and mobile UI
+screenshots with `mise run screenshots`; generated images are written to
+`screenshots/` and intentionally ignored by Git.
+
 ### Project Structure
 
 ```

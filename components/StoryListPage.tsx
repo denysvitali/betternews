@@ -63,7 +63,9 @@ function StoryListContent({ title, baseUrl, useStories }: StoryListPageProps) {
     <PullToRefresh onRefresh={handleRefresh}>
       <PageLayout>
         <PageHeader
-          title={title}
+          eyebrow="Hacker News, refined"
+          title={`${title} stories`}
+          description="A quieter view of what the technology community is reading, building, and debating right now."
           meta={
             <>
               <span>p{page}</span>
@@ -77,7 +79,7 @@ function StoryListContent({ title, baseUrl, useStories }: StoryListPageProps) {
           <PageError message="Failed to load stories. Please try again later." />
         ) : (
           <>
-            <div className="story-list flex flex-col gap-2.5">
+            <div className="story-list flex flex-col gap-3">
               {visibleStories.map(({ story, index }) => (
                 <StoryCard
                   key={story.id}

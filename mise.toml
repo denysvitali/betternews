@@ -1,0 +1,20 @@
+[tools]
+node = "24.18.0"
+pnpm = "10.22.0"
+pixi = "0.78.0"
+
+[tasks.install]
+description = "Install JavaScript dependencies and the Playwright browser"
+run = "pnpm install && pnpm exec playwright install chromium && pixi install"
+
+[tasks.dev]
+description = "Run the BetterNews development server"
+run = "pnpm dev"
+
+[tasks.screenshots]
+description = "Capture UI screenshots with Playwright"
+run = "pixi run screenshots"
+
+[tasks.check]
+description = "Run static checks and the production build"
+run = "pnpm lint && pnpm typecheck && pnpm build"

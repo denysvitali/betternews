@@ -1,0 +1,25 @@
+[workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+# Browser runtime libraries live in this project-local environment so the
+# screenshot loop works in minimal containers without root access.
+[dependencies]
+alsa-lib = "*"
+at-spi2-atk = "*"
+at-spi2-core = "*"
+"atk-1.0" = "*"
+glib = "*"
+libgbm = "*"
+libxkbcommon = "*"
+nss = "*"
+xorg-libx11 = "*"
+xorg-libxcb = "*"
+xorg-libxcomposite = "*"
+xorg-libxdamage = "*"
+xorg-libxext = "*"
+xorg-libxfixes = "*"
+xorg-libxrandr = "*"
+
+[tasks]
+screenshots = "LD_LIBRARY_PATH=\"$PIXI_PROJECT_ROOT/.pixi/envs/default/lib\" pnpm screenshots"
