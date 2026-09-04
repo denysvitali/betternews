@@ -36,8 +36,8 @@ export function BottomNav() {
   // Only show on mobile screens
   return (
     <>
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md safe-area-inset-bottom">
-        <div className="flex items-center justify-around h-16 pb-1">
+      <nav className="fixed bottom-3 left-3 right-3 z-50 rounded-2xl border border-[var(--border-soft)] bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] p-1.5 shadow-[0_12px_36px_rgba(23,61,50,0.18)] backdrop-blur-xl sm:hidden">
+        <div className="flex h-14 items-center justify-around">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -45,15 +45,13 @@ export function BottomNav() {
                 key={item.href}
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`relative flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+                className={`relative flex h-full flex-1 flex-col items-center justify-center rounded-xl transition-colors ${
                   isActive
-                    ? "text-orange-600 dark:text-orange-400"
+                    ? "bg-[var(--muted-surface)] text-orange-600 dark:text-orange-400"
                     : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300"
                 }`}
               >
-                <span className={`flex h-8 min-w-12 items-center justify-center rounded-full transition-colors ${
-                  isActive ? "bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-300" : ""
-                }`}>
+                <span className="flex h-7 min-w-12 items-center justify-center">
                   {item.icon}
                 </span>
                 <span className={`mt-0.5 text-[10px] ${isActive ? "font-bold" : "font-medium"}`}>
@@ -71,17 +69,17 @@ export function BottomNav() {
           {/* Search Button */}
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="relative flex flex-col items-center justify-center flex-1 h-full transition-colors text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300"
+                  className="relative flex h-full flex-1 flex-col items-center justify-center rounded-xl text-neutral-500 transition-colors hover:bg-[var(--muted-surface)] hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
             aria-label="Search"
           >
-            <Search size={20} />
+            <span className="flex h-7 min-w-12 items-center justify-center"><Search size={20} /></span>
             <span className="text-[10px] font-medium mt-0.5">Search</span>
           </button>
         </div>
       </nav>
 
       {/* Add padding at bottom for mobile content to not be hidden behind nav */}
-      <div className="sm:hidden h-16" />
+      <div className="h-20 sm:hidden" />
 
       {/* Search Modal */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />

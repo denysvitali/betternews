@@ -123,8 +123,8 @@ html[data-density="super"] .story-list {
 }
 
 html[data-density="super"] .story-card {
-  padding: 0.45rem 0.55rem;
-  border-radius: 0.6rem;
+  padding: 0.7rem 0.75rem;
+  border-radius: 0.9rem;
   box-shadow: none;
 }
 
@@ -132,7 +132,6 @@ html[data-density="super"] .story-card:hover {
   transform: none;
 }
 
-html[data-density="super"] .story-card .story-rank,
 html[data-density="super"] .story-card .story-mobile-thumbnail,
 html[data-density="super"] .story-card .story-external-label,
 html[data-density="super"] .story-card .story-reading,
@@ -143,8 +142,8 @@ html[data-density="super"] .story-card .story-open {
 }
 
 html[data-density="super"] .story-card .story-card-grid {
-  grid-template-columns: minmax(0, 1fr) 50px;
-  gap: 0.5rem;
+  grid-template-columns: 1.6rem minmax(0, 1fr);
+  gap: 0.65rem;
 }
 
 html[data-density="super"] .story-card .story-thumbnail {
@@ -158,13 +157,28 @@ html[data-density="super"] .story-card .story-thumbnail > div {
 }
 
 html[data-density="super"] .story-card .story-title {
-  font-size: 0.92rem;
-  line-height: 1.22;
+  font-size: 0.95rem;
+  line-height: 1.28;
 }
 
 html[data-density="super"] .story-card .story-meta {
-  font-size: 0.68rem;
-  gap: 0 0.35rem;
+  margin-top: 0.4rem;
+  font-size: 0.64rem;
+  gap: 0 0.4rem;
+}
+
+html[data-density="super"] .story-card .story-rank {
+  padding-top: 0.05rem;
+  font-size: 0.62rem;
+}
+
+html[data-density="super"] .story-card .story-score-mobile {
+  background: transparent;
+  padding: 0;
+}
+
+html[data-density="super"] .story-card .story-actions-row {
+  margin-top: 0.5rem;
 }
 
 html[data-density="super"] .story-card .story-time,
@@ -174,6 +188,24 @@ html[data-density="super"] .story-card .story-comments {
   border: 0;
   background: transparent;
   padding: 0;
+}
+
+@media (min-width: 640px) {
+  html[data-density="super"] .story-card .story-card-grid {
+    grid-template-columns: 2rem minmax(0, 1fr) 4.5rem;
+  }
+}
+
+@media (max-width: 639px) {
+  body {
+    background-image:
+      radial-gradient(circle at 0 7rem, rgba(244, 81, 44, 0.06), transparent 16rem),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent 20rem);
+  }
+
+  .dark body {
+    background-image: radial-gradient(circle at 0 7rem, rgba(255, 107, 71, 0.07), transparent 16rem);
+  }
 }
 
 html[data-density="super"] .story-page-card,

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { HNItem } from "@/lib/hn";
@@ -25,6 +26,13 @@ interface StoryListPageProps {
   /** Hook that fetches the paginated stories for the current page. */
   useStories: (page: number) => StoriesResult;
 }
+
+const MOBILE_FEEDS = [
+  { href: "/", label: "Top" },
+  { href: "/new", label: "New" },
+  { href: "/best", label: "Best" },
+  { href: "/show", label: "Show" },
+] as const;
 
 function StoryListContent({ title, baseUrl, useStories }: StoryListPageProps) {
   const searchParams = useSearchParams();
@@ -63,17 +71,33 @@ function StoryListContent({ title, baseUrl, useStories }: StoryListPageProps) {
     <PullToRefresh onRefresh={handleRefresh}>
       <PageLayout>
         <PageHeader
-          eyebrow="Hacker News, refined"
+          eyebrow="The Hacker News signal"
           title={`${title} stories`}
-          description="A quieter view of what the technology community is reading, building, and debating right now."
+          description="The stories worth your attention, ranked by the Hacker News community."
           meta={
             <>
-              <span>p{page}</span>
+              <span>Page {page}</span>
               <span aria-hidden="true">·</span>
-              <span>{visibleStories.length}</span>
+              <span>{visibleStories.length} stories</span>
             </>
           }
         />
+
+        <nav aria-label="Story feeds" className="mb-3 grid grid-cols-4 gap-1 rounded-xl border border-[var(--border-soft)] bg-[var(--surface)] p-1 shadow-sm sm:hidden">
+          {MOBILE_FEEDS.map(({ href, label }) => {
+            const active = baseUrl === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                aria-current={active ? "page" : undefined}
+                className={`rounded-lg px-2 py-2 text-center text-xs font-semibold transition-colors ${active ? "bg-[var(--brand)] text-white dark:bg-orange-500" : "text-neutral-500 hover:bg-[var(--muted-surface)] dark:text-neutral-400"}`}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
 
         {error ? (
           <PageError message="Failed to load stories. Please try again later." />

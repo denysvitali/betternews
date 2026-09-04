@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface LinkPreviewProps {
@@ -33,12 +32,13 @@ function LinkPreviewPlaceholder({
         className
       )}
     >
-      <div className="flex flex-col items-center gap-1.5 text-neutral-400 dark:text-neutral-500">
-        <ExternalLink size={18} />
-        <span className="max-w-full truncate px-2 text-[10px] font-medium">
+      <div className="flex h-full w-full flex-col items-center justify-center bg-[linear-gradient(145deg,rgba(244,81,44,0.1),transparent_55%)] px-2 text-neutral-400 dark:text-neutral-500">
+        <span className="font-mono text-xl font-semibold uppercase text-orange-500/70">
+          {domain.slice(0, 1) || "↗"}
+        </span>
+        <span className="mt-1 max-w-full truncate text-[8px] font-semibold">
           {domain}
         </span>
-        <span className="text-[10px]">No preview available</span>
       </div>
     </div>
   );
@@ -69,9 +69,14 @@ export function LinkPreview({ url, className }: LinkPreviewProps) {
         className
       )}
     >
+      <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(145deg,rgba(244,81,44,0.12),transparent_60%)]">
+        <span className="font-mono text-xl font-semibold uppercase text-orange-500/60">
+          {domain.slice(0, 1) || "↗"}
+        </span>
+      </div>
       {/* Loading skeleton */}
       {!imageLoaded && !imageError && (
-        <div className="absolute inset-0 animate-shimmer bg-[linear-gradient(110deg,rgba(245,245,245,0.7),rgba(255,255,255,0.95),rgba(245,245,245,0.7))] dark:bg-[linear-gradient(110deg,rgba(38,38,38,0.85),rgba(64,64,64,0.95),rgba(38,38,38,0.85))]" />
+        <div className="absolute inset-0 animate-shimmer bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.58),transparent)] dark:bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.08),transparent)]" />
       )}
 
       {/* Actual image */}

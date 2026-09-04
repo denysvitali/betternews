@@ -23,7 +23,7 @@ export function TimeAgo({ timestamp, addSuffix = true, className = "" }: TimeAgo
       onTouchStart={() => setShowTooltip(true)}
       onTouchEnd={() => setShowTooltip(false)}
     >
-      <span className="border-b border-dotted border-neutral-400 dark:border-neutral-600 leading-none">
+      <span className="leading-none">
         {relativeTime}
       </span>
 

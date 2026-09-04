@@ -24,7 +24,7 @@ export function PageLayout({
     <div className={cn("relative flex min-h-screen flex-col overflow-hidden bg-transparent transition-colors duration-300", className)}>
       <Navbar />
       <main className={cn(
-        "container relative mx-auto flex max-w-6xl flex-1 flex-col px-4 py-5 sm:px-6 sm:py-8",
+        "container relative mx-auto flex max-w-6xl flex-1 flex-col px-4 py-4 sm:px-6 sm:py-8",
         mainClassName
       )}>
         {children}
@@ -56,32 +56,32 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "mb-5 flex items-end justify-between gap-4 border-b border-[var(--border-soft)] pb-5 sm:mb-7 sm:pb-7",
+        "mb-4 border-b border-[var(--border-soft)] pb-4 sm:mb-7 sm:pb-7",
         className
       )}
     >
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <div className="min-w-0">
-          {eyebrow && (
-            <p className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-orange-600 dark:text-orange-400">
-              {eyebrow}
-            </p>
-          )}
-          <h1 className="text-3xl font-semibold tracking-[-0.04em] text-[var(--brand)] dark:text-white sm:text-5xl">
+      <div className="min-w-0">
+        {eyebrow && (
+          <p className="mb-2 font-mono text-[9px] font-semibold uppercase tracking-[0.24em] text-orange-600 dark:text-orange-400 sm:text-[10px] sm:tracking-[0.28em]">
+            {eyebrow}
+          </p>
+        )}
+        <div className="flex items-end justify-between gap-3">
+          <h1 className="text-[2rem] font-semibold leading-none tracking-[-0.045em] text-[var(--brand)] dark:text-white sm:text-5xl">
             {title}
           </h1>
+          {meta && (
+            <div className="mb-0.5 flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--border-soft)] bg-[var(--surface)] px-2.5 py-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-neutral-500 shadow-sm dark:text-neutral-400 sm:px-3 sm:py-2 sm:text-[10px]">
+              {meta}
+            </div>
+          )}
         </div>
         {description && (
-          <p className="max-w-xl text-sm leading-relaxed text-neutral-500 dark:text-neutral-400 sm:text-base">
+          <p className="mt-3 max-w-xl text-[13px] leading-relaxed text-neutral-500 dark:text-neutral-400 sm:text-base">
             {description}
           </p>
         )}
       </div>
-      {meta && (
-        <div className="flex shrink-0 flex-wrap items-center gap-1.5 rounded-full border border-[var(--border-soft)] bg-[var(--surface)] px-3 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-500 shadow-sm dark:text-neutral-400">
-          {meta}
-        </div>
-      )}
     </div>
   );
 }
