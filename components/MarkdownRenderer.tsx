@@ -97,7 +97,7 @@ const markdownComponents: Components = {
   ),
   blockquote: (props: MarkdownElementProps<"blockquote">) => (
     <blockquote
-      className="border-l-4 border-orange-500 pl-4 italic text-neutral-600 dark:text-neutral-400 my-2"
+      className="border-l-4 border-orange-500 pl-4 italic text-neutral-600 dark:text-neutral-400 my-2 [&_blockquote]:border-l-0 [&_blockquote]:pl-0"
       {...props}
     />
   ),
