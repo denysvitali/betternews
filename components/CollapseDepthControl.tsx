@@ -15,28 +15,25 @@ const DEPTH_OPTIONS = [
   { value: 99, label: "All" },
 ];
 
-export function CollapseDepthControl({
-  currentDepth,
-  onDepthChange,
-}: CollapseDepthControlProps) {
+export function CollapseDepthControl({ currentDepth, onDepthChange }: CollapseDepthControlProps) {
   return (
-    <div className="flex items-center gap-2">
-      <Layers size={14} className="text-neutral-500 dark:text-neutral-400" />
-      <span className="text-xs text-neutral-500 dark:text-neutral-400">
-        Collapse after level:
-      </span>
-      <div className="flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
+    <div className="flex flex-wrap items-center gap-2.5">
+      <Layers size={14} className="text-neutral-500 dark:text-neutral-400" aria-hidden="true" />
+      <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-500 dark:text-neutral-400">Thread depth</span>
+      <div className="flex items-center rounded-lg border border-[var(--border-soft)] bg-[var(--surface)] p-0.5">
         {DEPTH_OPTIONS.map((option) => (
           <button
+            type="button"
             key={option.value}
             onClick={() => onDepthChange(option.value)}
-            className={`px-2 py-1 rounded-md text-xs font-medium transition-all min-w-[28px] ${
+            className={"min-h-8 min-w-8 rounded-md px-2 py-1 text-xs font-medium transition-colors " + (
               currentDepth === option.value
-                ? "bg-white dark:bg-neutral-700 text-orange-600 dark:text-orange-500 shadow-sm"
-                : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200"
-            }`}
-            aria-label={`Set collapse depth to ${option.label}`}
-            title={`Collapse replies after level ${option.value}`}
+                ? "bg-[var(--brand)] text-white shadow-sm dark:bg-orange-600"
+                : "text-neutral-600 hover:bg-[var(--muted-surface)] hover:text-[var(--brand)] dark:text-neutral-400 dark:hover:text-neutral-100"
+            )}
+            aria-label={"Set collapse depth to " + option.label}
+            aria-pressed={currentDepth === option.value}
+            title={"Collapse replies after level " + option.label}
           >
             {option.label}
           </button>

@@ -2,87 +2,44 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Newspaper, Bookmark, Search } from "lucide-react";
+import { Bookmark, Clock3, Flame, Lightbulb, Sparkles } from "lucide-react";
 import { useBookmarks } from "@/lib/bookmarks";
-import { SearchModal } from "@/components/SearchBar";
-import { useState } from "react";
 
-interface NavItem {
-  href: string;
-  icon: React.ReactNode;
-  label: string;
-  badgeCount?: number;
-}
+const navItems = [
+  { href: "/", icon: Flame, label: "Top" },
+  { href: "/new", icon: Clock3, label: "New" },
+  { href: "/best", icon: Sparkles, label: "Best" },
+  { href: "/show", icon: Lightbulb, label: "Show" },
+  { href: "/saved", icon: Bookmark, label: "Saved" },
+] as const;
 
 export function BottomNav() {
   const pathname = usePathname();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { bookmarks } = useBookmarks();
 
-  const navItems: NavItem[] = [
-    {
-      href: "/",
-      icon: <Newspaper size={20} />,
-      label: "Home",
-    },
-    {
-      href: "/saved",
-      icon: <Bookmark size={20} />,
-      label: "Saved",
-      badgeCount: bookmarks.length > 0 ? bookmarks.length : undefined,
-    },
-  ];
-
-  // Only show on mobile screens
   return (
-    <>
-      <nav className="fixed bottom-3 left-3 right-3 z-50 rounded-2xl border border-[var(--border-soft)] bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] p-1.5 shadow-[0_12px_36px_rgba(23,61,50,0.18)] backdrop-blur-xl sm:hidden">
-        <div className="flex h-14 items-center justify-around">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
+      <nav aria-label="Mobile navigation" className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--border-soft)] bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_28px_rgba(20,44,35,0.08)] backdrop-blur-xl md:hidden">
+        <div className="mx-auto flex max-w-lg items-center justify-around gap-1">
+          {navItems.map(({ href, icon: Icon, label }) => {
+            const isActive = pathname === href;
             return (
               <Link
-                key={item.href}
-                href={item.href}
+                key={href}
+                href={href}
                 aria-current={isActive ? "page" : undefined}
-                className={`relative flex h-full flex-1 flex-col items-center justify-center rounded-xl transition-colors ${
-                  isActive
-                    ? "bg-[var(--muted-surface)] text-orange-600 dark:text-orange-400"
-                    : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300"
-                }`}
+                className={`relative flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[10px] font-semibold transition-colors ${isActive ? "bg-[var(--muted-surface)] text-[var(--accent)]" : "text-neutral-500 hover:bg-[var(--muted-surface)] dark:text-neutral-400"}`}
               >
-                <span className="flex h-7 min-w-12 items-center justify-center">
-                  {item.icon}
-                </span>
-                <span className={`mt-0.5 text-[10px] ${isActive ? "font-bold" : "font-medium"}`}>
-                  {item.label}
-                </span>
-                {item.badgeCount && (
-                  <span className="absolute top-1 right-1/4 min-w-[16px] h-4 flex items-center justify-center px-1 bg-orange-500 text-white text-[10px] font-bold rounded-full">
-                    {item.badgeCount > 9 ? "9+" : item.badgeCount}
+                <Icon size={18} strokeWidth={isActive ? 2.4 : 1.8} />
+                <span>{label}</span>
+                {href === "/saved" && bookmarks.length > 0 && (
+                  <span className="absolute right-2 top-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[var(--accent)] px-0.5 text-[9px] leading-none text-white">
+                    {bookmarks.length > 9 ? "9+" : bookmarks.length}
                   </span>
                 )}
               </Link>
             );
           })}
-
-          {/* Search Button */}
-          <button
-            onClick={() => setIsSearchOpen(true)}
-                  className="relative flex h-full flex-1 flex-col items-center justify-center rounded-xl text-neutral-500 transition-colors hover:bg-[var(--muted-surface)] hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
-            aria-label="Search"
-          >
-            <span className="flex h-7 min-w-12 items-center justify-center"><Search size={20} /></span>
-            <span className="text-[10px] font-medium mt-0.5">Search</span>
-          </button>
         </div>
       </nav>
-
-      {/* Add padding at bottom for mobile content to not be hidden behind nav */}
-      <div className="h-20 sm:hidden" />
-
-      {/* Search Modal */}
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-    </>
   );
 }

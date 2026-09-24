@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MessageSquare, Plus, Minus, ArrowUp, ArrowUpToLine } from "lucide-react";
+import { ArrowUp, ArrowUpToLine, ChevronDown, ExternalLink, MessageSquare } from "lucide-react";
 import { HNItem } from "@/lib/types";
 import Link from "next/link";
 import { TimeAgo } from "./TimeAgo";
@@ -19,130 +19,91 @@ interface CommentClientProps {
 export function CommentClient({ comment, children, level = 0, showScore = false, parentId }: CommentClientProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const descendantCount = comment.descendants || 0;
+  const replyCount = comment.kids?.length || 0;
   const author = comment.by;
 
-  // Scroll to top of comments or parent comment
   const scrollToParent = () => {
-    if (level > 0 && parentId) {
-      const parentElement = document.getElementById(`comment-${parentId}`);
-      if (parentElement) {
-        parentElement.scrollIntoView({ behavior: "smooth", block: "center" });
-        // Highlight effect
-        parentElement.classList.add("ring-2", "ring-orange-500", "ring-opacity-50");
-        setTimeout(() => {
-          parentElement.classList.remove("ring-2", "ring-orange-500", "ring-opacity-50");
-        }, 1500);
-      }
-    } else {
-      // Scroll to comments container
-      const container = document.getElementById("comments-container");
-      if (container) {
-        container.scrollIntoView({ behavior: "smooth", block: "start" });
+    const target = level > 0 && parentId
+      ? document.getElementById("comment-" + parentId)
+      : document.getElementById("comments-container");
+
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: level > 0 ? "center" : "start" });
+      if (level > 0) {
+        target.classList.add("ring-2", "ring-orange-500", "ring-opacity-50");
+        setTimeout(() => target.classList.remove("ring-2", "ring-orange-500", "ring-opacity-50"), 1500);
       }
     }
   };
 
   return (
-    <div className="comment relative flex flex-col gap-1.5 border-t border-neutral-100 py-2 pl-2 dark:border-neutral-900 first:border-0">
-      {level > 0 && (
-        <span
-          aria-hidden="true"
-          className="absolute bottom-3 left-0 top-3 w-0.5 rounded-full bg-orange-400/40 dark:bg-orange-500/30"
-        />
-      )}
-      {/* Header */}
-      <span className="comment-meta text-xs text-neutral-500 dark:text-neutral-400 select-none flex items-center flex-wrap gap-1">
-        <button
-          type="button"
-          className="inline-flex h-6 items-center gap-1 rounded px-1.5 py-0.5 align-middle text-[11px] text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          aria-label={isCollapsed ? "Expand comment" : "Collapse comment"}
-          aria-expanded={!isCollapsed}
-        >
-          {isCollapsed ? (
-            <Plus size={12} strokeWidth={2.5} className="text-orange-500" />
-          ) : (
-            <Minus size={12} strokeWidth={2.5} className="text-neutral-400" />
-          )}
-          <span className="hidden sm:inline">{isCollapsed ? "Expand" : "Collapse"}</span>
-        </button>
-        {author ? (
-          <Link
-            href={`/user/${author}`}
-            className="font-bold text-neutral-700 dark:text-neutral-300 hover:text-orange-600 dark:hover:text-orange-500 flex items-center"
-          >{author}</Link>
-        ) : (
-          <span className="font-bold text-neutral-500">unknown</span>
-        )}
-        {showScore && comment.score && (
-          <>
-            <span className="text-neutral-300 dark:text-neutral-600"> · </span>
-            <span className="flex items-center gap-0.5 text-orange-500">
-              <ArrowUp size={10} strokeWidth={2} />
-              {comment.score}
-            </span>
-          </>
-        )}
-        <span className="text-neutral-300 dark:text-neutral-600"> · </span>
-        <TimeAgo timestamp={comment.time} />
-        {descendantCount > 0 && (
-          <>
-            <span className="text-neutral-300 dark:text-neutral-600"> · </span>
-            <span className="inline-flex items-center gap-1 rounded border border-orange-200 bg-orange-50 px-1 py-0.5 text-[11px] font-medium text-orange-600 dark:border-orange-900/60 dark:bg-orange-950/30 dark:text-orange-400">
-              <MessageSquare size={10} strokeWidth={2} />
-              {descendantCount}
-            </span>
-          </>
-        )}
-        {/* Show Best Of badge for highly-discussed comments */}
-        {level === 0 && descendantCount >= 10 && (
-          <BestOfBadge descendantCount={descendantCount} />
-        )}
+    <article className={"comment relative min-w-0 " + (level === 0 ? "border-b border-[var(--border-soft)] py-5 sm:py-6" : "py-3 sm:py-4")}>
+      <div className="flex min-w-0 items-start gap-2.5 sm:gap-3">
+        <span aria-hidden="true" className={"mt-0.5 shrink-0 items-center justify-center rounded-full border border-orange-500/20 bg-orange-500/10 font-serif font-semibold uppercase text-orange-700 dark:text-orange-300 " + (level === 0 ? "flex h-8 w-8 text-sm" : "hidden h-7 w-7 text-xs sm:flex")}>
+          {author?.slice(0, 1) || "?"}
+        </span>
 
-        {/* Jump to parent button for nested comments */}
-        {level > 0 && (
-          <>
-            <span className="text-neutral-300 dark:text-neutral-600"> · </span>
-            <button
-              onClick={scrollToParent}
-              className="flex items-center gap-0.5 text-neutral-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
-              title={parentId ? "Jump to parent comment" : "Jump to top"}
-              aria-label={parentId ? "Jump to parent comment" : "Jump to top"}
-            >
-              <ArrowUpToLine size={10} strokeWidth={2} />
-              {parentId ? "Parent" : "Top"}
-            </button>
-          </>
-        )}
-      </span>
-
-      {!isCollapsed && (
-        <>
-          <div className="comment-body text-sm leading-relaxed text-neutral-800 dark:text-neutral-200 break-words pl-5">
-            <MarkdownRenderer
-              content={comment.text || ""}
-              className="[&>p]:mb-2 [&>pre]:overflow-x-auto [&>pre]:bg-neutral-100 [&>pre]:p-2 [&>pre]:rounded dark:[&>pre]:bg-neutral-900"
-              stripHtml={true}
-            />
+        <div className="min-w-0 flex-1">
+          <div className="comment-meta flex min-h-8 flex-wrap items-center gap-x-2 gap-y-1 pr-11 text-xs text-neutral-500 dark:text-neutral-400 sm:pr-0">
+            {author ? (
+              <Link href={"/user/" + author} className="font-semibold text-[var(--brand)] transition-colors hover:text-orange-600 dark:text-neutral-200 dark:hover:text-orange-400">{author}</Link>
+            ) : (
+              <span className="font-semibold text-[var(--brand)] dark:text-neutral-200">unknown</span>
+            )}
+            <span className="text-neutral-300 dark:text-neutral-600" aria-hidden="true">·</span>
+            <TimeAgo timestamp={comment.time} />
+            {showScore && typeof comment.score === "number" && (
+              <span className="inline-flex items-center gap-0.5 font-medium text-orange-600 dark:text-orange-400"><ArrowUp size={12} />{comment.score}</span>
+            )}
+            {replyCount > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--muted-surface)] px-2 py-0.5 font-medium text-neutral-600 dark:text-neutral-300">
+                <MessageSquare size={11} />{replyCount} {replyCount === 1 ? "reply" : "replies"}
+              </span>
+            )}
+            {level === 0 && descendantCount >= 10 && <BestOfBadge descendantCount={descendantCount} />}
           </div>
 
-          {children && (
-            <div className="comment-children pl-3 sm:pl-4 ml-1 sm:ml-2 border-l-2 border-orange-400/50 dark:border-orange-500/30 transition-colors">
-              {children}
+          {isCollapsed ? (
+            <button type="button" onClick={() => setIsCollapsed(false)} className="mt-1 inline-flex items-center gap-1.5 rounded-md py-1 text-xs font-medium text-neutral-500 transition-colors hover:text-orange-600 dark:text-neutral-400 dark:hover:text-orange-400">
+              <ChevronDown size={14} /> Show comment{replyCount > 0 ? " and replies" : ""}
+            </button>
+          ) : (
+            <div id={"comment-content-" + comment.id}>
+              <div className="comment-body mt-2 max-w-[76ch] break-words text-[15px] leading-[1.7] text-[var(--foreground)] sm:text-[15.5px] [&_p]:mb-3 [&_p:last-child]:mb-0 [&_pre]:overflow-x-auto">
+                <MarkdownRenderer content={comment.text || ""} stripHtml />
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
+                <a href={"https://news.ycombinator.com/item?id=" + comment.id} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 transition-colors hover:text-orange-600 dark:hover:text-orange-400">
+                  Permalink <ExternalLink size={11} />
+                </a>
+                {level > 0 && (
+                  <button type="button" onClick={scrollToParent} className="inline-flex items-center gap-1 transition-colors hover:text-orange-600 dark:hover:text-orange-400">
+                    <ArrowUpToLine size={12} /> {parentId ? "Parent" : "Top"}
+                  </button>
+                )}
+              </div>
+
+              {children && (
+                <div className={"comment-children relative mt-4 border-l-2 border-[var(--border-soft)] transition-colors hover:border-orange-400/50 sm:ml-4 sm:pl-5 " + (level === 0 ? "ml-1 pl-2" : "ml-0 pl-1.5")}>
+                  {children}
+                </div>
+              )}
             </div>
           )}
-        </>
-      )}
-      {isCollapsed && descendantCount > 0 && (
+        </div>
+
         <button
           type="button"
-          onClick={() => setIsCollapsed(false)}
-          aria-label="Expand comment replies"
-          className="ml-6 mt-1 w-fit rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 text-xs font-medium text-neutral-600 transition-colors hover:text-orange-600 dark:bg-white/6 dark:text-neutral-300 dark:hover:text-orange-400"
+          onClick={() => setIsCollapsed((collapsed) => !collapsed)}
+          aria-label={isCollapsed ? "Expand comment by " + (author || "unknown") : "Collapse comment by " + (author || "unknown")}
+          aria-expanded={!isCollapsed}
+          className="absolute right-0 top-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-[var(--muted-surface)] hover:text-[var(--brand)] dark:hover:text-neutral-200 sm:static sm:h-8 sm:w-8"
+          title={isCollapsed ? "Expand thread" : "Collapse thread"}
         >
-          +{descendantCount} replies hidden
+          <ChevronDown size={16} className={"transition-transform " + (isCollapsed ? "" : "rotate-180")} />
         </button>
-      )}
-    </div>
+      </div>
+    </article>
   );
 }

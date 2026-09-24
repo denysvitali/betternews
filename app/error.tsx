@@ -16,7 +16,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-6 px-4 text-center">
+    <main id="main-content" tabIndex={-1} className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-6 px-4 text-center">
       <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20">
         <AlertTriangle className="h-10 w-10 text-red-500" />
       </div>
@@ -38,6 +38,6 @@ export default function Error({
           Go Home
         </Button>
       </div>
-    </div>
+    </main>
   );
 }

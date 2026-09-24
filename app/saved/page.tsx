@@ -4,8 +4,9 @@ import { useBookmarks } from "@/lib/bookmarks";
 import { EmptyState } from "@/components/EmptyState";
 import { TimeAgo } from "@/components/TimeAgo";
 import { BookmarkButton } from "@/components/BookmarkButton";
-import { PageLayout, Card, Button, PageHeader } from "@/components/ui";
-import { ExternalLink, MessageSquare, Trash2 } from "lucide-react";
+import { PageLayout, PageHeader } from "@/components/ui";
+import { getDomain } from "@/lib/utils";
+import { ArrowUpRight, MessageSquare, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 export default function SavedPage() {
@@ -13,98 +14,62 @@ export default function SavedPage() {
 
   return (
     <PageLayout>
-      <div className="mb-6 sm:mb-8">
-        <PageHeader
-          title="Reading List"
-          description="Stories you bookmarked for later, kept in the browser for quick return visits."
-          eyebrow="Saved"
-          meta={
-            <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-3 py-1 font-mono dark:bg-white/6">
-              {bookmarks.length} {bookmarks.length === 1 ? "story" : "stories"}
-            </span>
-          }
-        />
-        {bookmarks.length > 0 && (
-          <button
-            onClick={() => {
-              if (confirm("Clear all saved stories?")) {
-                clearBookmarks();
-              }
-            }}
-            className="glass-panel -mt-2 inline-flex items-center gap-2 rounded-full border border-red-200/60 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50/70 dark:border-red-900/40 dark:text-red-400 dark:hover:bg-red-950/20"
-          >
-            <Trash2 size={16} />
-            <span className="hidden sm:inline">Clear all</span>
-          </button>
-        )}
-      </div>
+      <PageHeader
+        title="Your reading list"
+        description="A little space for the stories you want to come back to. Saved on this device."
+        eyebrow="The collection"
+        meta={<span>{bookmarks.length} {bookmarks.length === 1 ? "story" : "stories"}</span>}
+      />
 
       {bookmarks.length === 0 ? (
-        <Card variant="default" padding="lg" className="text-center">
+        <div className="rounded-2xl border border-dashed border-[var(--border-soft)] bg-[var(--surface)] px-5 py-12 sm:py-16">
           <EmptyState type="bookmarks" />
-        </Card>
-      ) : (
-        <div className="flex flex-col gap-4">
-          {bookmarks.map((story) => (
-            <Card key={story.id} variant="hover" padding="md">
-              <div className="flex flex-col gap-3">
-                {/* Title */}
-                <Link
-                  href={`/story/${story.id}`}
-                  className="text-base font-semibold leading-tight tracking-[-0.02em] text-neutral-900 hover:text-orange-600 dark:text-neutral-100 dark:hover:text-orange-500 sm:text-lg"
-                >
-                  {story.title}
-                </Link>
-
-                {/* Meta info */}
-                <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 sm:text-sm">
-                  {story.score && (
-                    <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-2.5 py-1 font-medium dark:bg-white/6">
-                      {story.score} points
-                    </span>
-                  )}
-                  {story.by && (
-                    <Link
-                      href={`/user/${story.by}`}
-                      className="rounded-full border border-[var(--border-soft)] px-2.5 py-1 transition-colors hover:text-orange-500"
-                    >
-                      by {story.by}
-                    </Link>
-                  )}
-                  <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-2.5 py-1 dark:bg-white/6">
-                    <TimeAgo timestamp={story.time} />
-                  </span>
-                  <span className="rounded-full border border-[var(--border-soft)] bg-white/60 px-2.5 py-1 dark:bg-white/6">
-                    Saved <TimeAgo timestamp={Math.floor(story.bookmarkedAt / 1000)} />
-                  </span>
-                </div>
-
-                {/* Actions */}
-                <div className="flex flex-wrap items-center gap-2 pt-1">
-                  <Button href={`/story/${story.id}`} variant="secondary" size="sm" className="rounded-full">
-                    <MessageSquare size={14} />
-                    <span>View</span>
-                  </Button>
-
-                  {story.url && (
-                    <Button
-                      href={story.url}
-                      target="_blank"
-                      variant="secondary"
-                      size="sm"
-                      className="rounded-full"
-                    >
-                      <ExternalLink size={14} />
-                      <span className="hidden sm:inline">Open link</span>
-                    </Button>
-                  )}
-
-                  <BookmarkButton story={story} showLabel />
-                </div>
-              </div>
-            </Card>
-          ))}
         </div>
+      ) : (
+        <section aria-label="Saved stories">
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Saved stories</h2>
+            <button
+              onClick={() => {
+                if (confirm("Clear all saved stories?")) clearBookmarks();
+              }}
+              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-2 text-xs font-medium text-neutral-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/30 dark:hover:text-red-300"
+            >
+              <Trash2 size={14} />
+              Clear all
+            </button>
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-[var(--border-soft)] bg-[var(--surface)]">
+            {bookmarks.map((story, index) => (
+              <article key={story.id} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-3 border-b border-[var(--border-soft)] p-4 last:border-b-0 sm:grid-cols-[3rem_minmax(0,1fr)_auto] sm:gap-5 sm:p-6">
+                <span className="pt-1 font-mono text-xs font-semibold text-neutral-400 dark:text-neutral-500">{String(index + 1).padStart(2, "0")}</span>
+                <div className="min-w-0">
+                  <p className="mb-1.5 truncate font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--accent)]">
+                    {story.url ? getDomain(story.url) : "Hacker News"}
+                  </p>
+                  <Link href={`/story/${story.id}`} className="text-base font-semibold leading-snug tracking-[-0.025em] text-[var(--foreground)] transition-colors hover:text-[var(--accent)] sm:text-xl">
+                    {story.title}
+                  </Link>
+                  <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-neutral-500 dark:text-neutral-400">
+                    {story.score != null && <span>{story.score} points</span>}
+                    {story.by && <Link href={`/user/${story.by}`} className="hover:text-[var(--accent)]">by {story.by}</Link>}
+                    <span>saved <TimeAgo timestamp={Math.floor(story.bookmarkedAt / 1000)} /></span>
+                  </div>
+                  <div className="mt-4 flex items-center gap-2 sm:hidden">
+                    <Link href={`/story/${story.id}`} className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--muted-surface)] px-3 py-2 text-xs font-semibold"><MessageSquare size={14} /> Discuss</Link>
+                    <BookmarkButton story={story} />
+                    {story.url && <a href={story.url} target="_blank" rel="noopener noreferrer" aria-label="Open source" className="ml-auto rounded-lg p-2 text-neutral-500 hover:text-[var(--accent)]"><ArrowUpRight size={17} /></a>}
+                  </div>
+                </div>
+                <div className="hidden items-center gap-2 self-center sm:flex">
+                  <Link href={`/story/${story.id}`} className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--muted-surface)] px-3 py-2 text-xs font-semibold transition-colors hover:text-[var(--accent)]"><MessageSquare size={14} /> Discuss</Link>
+                  <BookmarkButton story={story} />
+                  {story.url && <a href={story.url} target="_blank" rel="noopener noreferrer" aria-label="Open source" className="rounded-lg p-2 text-neutral-500 hover:text-[var(--accent)]"><ArrowUpRight size={17} /></a>}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
       )}
     </PageLayout>
   );

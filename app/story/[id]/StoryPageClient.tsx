@@ -14,14 +14,14 @@ import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { CommentSortControl, CommentSortType } from "@/components/CommentSortControl";
 import { CollapseDepthControl } from "@/components/CollapseDepthControl";
-import { ArrowLeft, ArrowUp, MessageSquare, Clock, ExternalLink, BookOpen } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, MessageSquare, Clock3, ExternalLink, BookOpen, MoveUpRight, TrendingUp } from "lucide-react";
 import { Suspense, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { StorySkeleton } from "@/components/StorySkeleton";
 import { CommentSkeleton } from "@/components/CommentSkeleton";
 import { CommentNavigation } from "@/components/CommentNavigation";
 import { getDomain, getReadingTime, convertHNUrlToRelative } from "@/lib/utils";
-import { PageLayout, PageError, Card, Badge, Skeleton } from "@/components/ui";
+import { PageLayout, PageError, Card, Skeleton } from "@/components/ui";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { parsePositiveIntParam } from "@/lib/params";
 
@@ -103,240 +103,142 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
     const relativePath = story.url ? convertHNUrlToRelative(story.url) : null;
     const finalStoryUrl = relativePath || story.url || `/story/${story.id}`;
     const isHNConverted = relativePath !== null;
-    const hnId = relativePath ? relativePath.match(/\/story\/(\d+)/)?.[1] : null;
+
+    const isExternalSource = !isHNConverted && finalStoryUrl.startsWith("http");
+    const hnUrl = "https://news.ycombinator.com/item?id=" + story.id;
+    const commentCount = story.descendants || 0;
+    const bookmarkStory = {
+        id: story.id,
+        title: story.title || "",
+        url: story.url,
+        by: story.by,
+        time: story.time,
+        score: story.score,
+    };
 
     return (
-        <PageLayout>
-            {/* Reading progress indicator */}
+        <PageLayout mainClassName="max-w-5xl">
             <ReadingProgress />
 
-            {/* Story Header */}
-            <Card variant="default" padding="md" className="story-page-card mb-4 sm:mb-5 sm:p-5">
-                <div className="flex flex-col gap-2.5 sm:gap-3">
-                    <div className="flex items-center justify-between gap-3">
-                        <Link href="/" className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 transition-colors hover:text-orange-600 dark:text-neutral-400 dark:hover:text-orange-400">
-                            <ArrowLeft size={13} />
-                            Top
-                        </Link>
+            <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-2 text-xs font-medium text-neutral-500 dark:text-neutral-400 sm:mb-6">
+                <Link href="/" className="inline-flex items-center gap-1.5 rounded-md py-1 transition-colors hover:text-orange-600 dark:hover:text-orange-400">
+                    <ArrowLeft size={14} /> Front page
+                </Link>
+                <span aria-hidden="true" className="text-neutral-300 dark:text-neutral-700">/</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--brand)] dark:text-neutral-300">Story {story.id}</span>
+            </nav>
+
+            <Card as="article" variant="default" padding="none" className="story-page-card mb-7 overflow-hidden rounded-[1.4rem] sm:mb-9 sm:rounded-[1.7rem]">
+                <div className="h-1 w-full bg-[var(--brand)] dark:bg-orange-500" />
+                <div className="px-5 pb-5 pt-6 sm:px-8 sm:pb-8 sm:pt-8 lg:px-10">
+                    <div className="mb-5 flex flex-wrap items-center justify-between gap-3 sm:mb-7">
                         <div className="flex items-center gap-2">
-                            <ShareButton title={story.title || "Story"} url={finalStoryUrl} />
-                            <BookmarkButton
-                                story={{
-                                    id: story.id,
-                                    title: story.title || "",
-                                    url: story.url,
-                                    by: story.by,
-                                    time: story.time,
-                                    score: story.score,
-                                }}
-                            />
-                        </div>
-                    </div>
-                    {/* Desktop header info */}
-                    <div className="hidden sm:flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400 flex-wrap">
-                        <StoryBadge title={story.title} type={story.type} />
-                        <Badge variant="orange" size="md" icon={<ArrowUp size={12} />}>
-                            {story.score}
-                        </Badge>
-                        <span>|</span>
-                        {author ? (
-                            <Link
-                                href={`/user/${author}`}
-                                className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors"
-                            >
-                                {author}
-                            </Link>
-                        ) : (
-                            <span className="font-medium text-neutral-500">unknown</span>
-                        )}
-                        <span>|</span>
-                        <div className="flex items-center gap-1">
-                            <Clock size={12} />
-                            <TimeAgo timestamp={story.time} />
-                        </div>
-                        {story.text && (
-                            <>
-                                <span>|</span>
-                                <div className="flex items-center gap-1 text-neutral-500">
-                                    <BookOpen size={12} />
-                                    <span>{getReadingTime(story.text)}</span>
-                                </div>
-                            </>
-                        )}
-                    </div>
-
-                    {/* Mobile header info */}
-                    <div className="flex flex-col gap-2 sm:hidden text-xs text-neutral-500 dark:text-neutral-400">
-                        <div className="flex items-center gap-2 h-4">
+                            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400">The story</span>
+                            <span className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600" aria-hidden="true" />
                             <StoryBadge title={story.title} type={story.type} />
-                            <Badge variant="orange" size="sm" icon={<ArrowUp size={10} />}>
-                                {story.score}
-                            </Badge>
+                            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500 dark:text-neutral-400">{host}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 h-4">
-                            {author ? (
-                                <Link
-                                    href={`/user/${author}`}
-                                    className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-orange-600 dark:hover:text-orange-500 transition-colors flex items-center h-full"
-                                >
-                                    {author}
-                                </Link>
-                            ) : (
-                                <span className="font-medium text-neutral-500">unknown</span>
-                            )}
-                            <span className="text-neutral-300 dark:text-neutral-600 flex items-center h-full">·</span>
-                            <span className="flex items-center h-full">
-                                <TimeAgo timestamp={story.time} addSuffix={false} />
-                            </span>
+                        <span className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-400 dark:text-neutral-500 sm:inline">BetterNews / #{story.id}</span>
+                    </div>
+
+                    <div className={story.url && !isHNConverted ? "grid gap-6 lg:grid-cols-[minmax(0,1fr)_15.5rem] lg:gap-9" : "grid gap-6"}>
+                        <div className="min-w-0">
+                            <h1 className="story-page-title max-w-3xl font-serif text-[2.15rem] font-semibold leading-[1.09] tracking-[-0.035em] text-[var(--brand)] dark:text-[#f4f1e8] sm:text-[3rem] lg:text-[3.5rem]">
+                                {story.title}
+                            </h1>
+
+                            <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-neutral-500 dark:text-neutral-400 sm:text-sm">
+                                <span className="inline-flex items-center gap-1.5 font-semibold text-orange-600 dark:text-orange-400"><TrendingUp size={15} />{story.score ?? 0} points</span>
+                                <span className="text-neutral-300 dark:text-neutral-600" aria-hidden="true">·</span>
+                                <span>by {author ? <Link href={"/user/" + author} className="font-semibold text-[var(--brand)] underline decoration-transparent underline-offset-4 transition-colors hover:decoration-orange-500 dark:text-neutral-200">{author}</Link> : "unknown"}</span>
+                                <span className="text-neutral-300 dark:text-neutral-600" aria-hidden="true">·</span>
+                                <span className="inline-flex items-center gap-1.5"><Clock3 size={14} /><TimeAgo timestamp={story.time} /></span>
+                                {story.text && <span className="inline-flex items-center gap-1.5"><BookOpen size={14} />{getReadingTime(story.text)} read</span>}
+                            </div>
+
+                            <div className="mt-7 flex flex-wrap items-center gap-3">
+                                {story.url && (
+                                    <a
+                                        href={finalStoryUrl}
+                                        target={isExternalSource ? "_blank" : undefined}
+                                        rel={isExternalSource ? "noopener noreferrer" : undefined}
+                                        className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#245a49] hover:shadow-md dark:bg-orange-600 dark:hover:bg-orange-500"
+                                    >
+                                        {isHNConverted ? "Open discussion" : "Read original story"}
+                                        <ArrowUpRight size={16} />
+                                    </a>
+                                )}
+                                <a href={hnUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-[var(--border-soft)] bg-[var(--surface)] px-4 py-2.5 text-sm font-medium text-[var(--brand)] transition-colors hover:border-orange-400/60 hover:text-orange-600 dark:text-neutral-200 dark:hover:text-orange-400">
+                                    View on Hacker News <ExternalLink size={14} />
+                                </a>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex items-start gap-2 flex-wrap">
-                        <h1 className="story-page-title text-xl font-semibold leading-tight text-neutral-900 dark:text-white sm:text-2xl lg:text-3xl">
-                            {story.title}
-                        </h1>
-                        {isHNConverted && (
-                            <span className="mt-1 inline-flex items-center gap-1 whitespace-nowrap rounded border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/30 dark:text-blue-300 sm:mt-2">
-                                <MessageSquare size={12} />
-                                Discussion{hnId ? ` #${hnId}` : ""}
-                            </span>
-                        )}
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className="inline-flex items-center gap-1 rounded border border-[var(--border-soft)] bg-white/60 px-2 py-0.5 text-xs text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
-                            <MessageSquare size={12} />
-                            {story.descendants || 0} comments
-                        </span>
-                        {story.text && (
-                            <span className="inline-flex items-center gap-1 rounded border border-[var(--border-soft)] bg-white/60 px-2 py-0.5 text-xs text-neutral-600 dark:bg-white/6 dark:text-neutral-300">
-                                <BookOpen size={12} />
-                                {getReadingTime(story.text)}
-                            </span>
-                        )}
-                    </div>
-
-                    {story.url && (
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-neutral-500">
-                            <a
-                                href={finalStoryUrl}
-                                target={!isHNConverted && finalStoryUrl.startsWith("http") ? "_blank" : undefined}
-                                rel={!isHNConverted && finalStoryUrl.startsWith("http") ? "noopener noreferrer" : undefined}
-                                className={`flex items-center gap-2 transition-colors text-xs sm:text-sm ${
-                                    isHNConverted
-                                        ? "text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                                        : "hover:text-orange-600 dark:hover:text-orange-500"
-                                }`}
-                            >
-                                {isHNConverted ? <MessageSquare size={14} /> : <ExternalLink size={14} />}
-                                <span className="truncate max-w-[200px] sm:max-w-none">
-                                    {isHNConverted ? `Discussion${hnId ? ` #${hnId}` : ""}` : story.url}
+                        {story.url && !isHNConverted && (
+                            <a href={finalStoryUrl} target={isExternalSource ? "_blank" : undefined} rel={isExternalSource ? "noopener noreferrer" : undefined} className="story-page-preview group relative block aspect-[16/10] overflow-hidden rounded-xl border border-[var(--border-soft)] bg-[var(--muted-surface)] lg:aspect-[4/5]" aria-label={"Open story at " + host}>
+                                <LinkPreview url={finalStoryUrl} />
+                                <span className="absolute bottom-0 left-0 right-0 flex items-center justify-between gap-2 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10 text-xs font-semibold text-white">
+                                    <span className="truncate">{host}</span><MoveUpRight size={16} className="shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                                 </span>
                             </a>
-                            {!isHNConverted && (
-                                <a
-                                    href={`https://news.ycombinator.com/from?site=${host}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-mono text-xs sm:text-sm hover:underline hover:text-orange-600 dark:hover:text-orange-500 transition-colors truncate max-w-[150px] sm:max-w-none"
-                                >
-                                    {host}
-                                </a>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Large Preview for the Story Page - Only show for non-HN URLs */}
-                    {story.url && !isHNConverted && (
-                        <div className="story-page-preview mt-2 aspect-video w-full max-w-2xl overflow-hidden rounded-lg border border-[var(--border-soft)] shadow-sm sm:mt-3">
-                            <LinkPreview url={finalStoryUrl} />
-                        </div>
-                    )}
+                        )}
+                    </div>
 
                     {story.text && (
-                      <div className="mt-3 sm:mt-4">
-                        <MarkdownRenderer
-                          content={story.text}
-                          className="prose-sm sm:prose-base dark:prose-invert max-w-none prose-headings:text-lg sm:prose-headings:text-xl"
-                          allowHtml={true}
-                        />
-                      </div>
+                        <div className="mt-8 border-t border-[var(--border-soft)] pt-7 sm:mt-9 sm:pt-8">
+                            <p className="mb-4 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400">From the author</p>
+                            <MarkdownRenderer content={story.text} allowHtml className="max-w-[72ch] text-[15px] leading-[1.8] text-[var(--foreground)] sm:text-base [&_p]:mb-4" />
+                        </div>
                     )}
+                </div>
 
-                    {/* Actions */}
-                    <div className="story-actions mt-2 flex items-center gap-2 border-t border-[var(--border-soft)] pt-3">
+                <div className="story-actions flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-soft)] bg-[var(--muted-surface)]/45 px-5 py-3 sm:px-8 lg:px-10">
+                    <a href="#comments-container" className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--brand)] transition-colors hover:text-orange-600 dark:text-neutral-200 dark:hover:text-orange-400">
+                        <MessageSquare size={17} className="text-orange-600 dark:text-orange-400" />
+                        Join the discussion <span className="font-normal text-neutral-500 dark:text-neutral-400">({commentCount})</span>
+                    </a>
+                    <div className="flex items-center gap-2">
                         <ShareButton title={story.title || "Story"} url={finalStoryUrl} />
-                        <BookmarkButton
-                            story={{
-                                id: story.id,
-                                title: story.title || "",
-                                url: story.url,
-                                by: author,
-                                time: story.time,
-                                score: story.score,
-                            }}
-                            showLabel
-                        />
+                        <BookmarkButton story={bookmarkStory} showLabel />
                     </div>
                 </div>
             </Card>
 
-            {/* Comments Section */}
-            <CommentNavigation totalComments={story.descendants || 0} storyId={story.id} />
+            <CommentNavigation totalComments={commentCount} storyId={story.id} />
 
-            <Card variant="default" padding="md" className="comments-card sm:p-5">
-                {/* Comments Header with Controls */}
-                <div className="mb-3 sm:mb-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-                        <h2 className="flex items-center gap-2 text-base sm:text-lg font-bold">
-                            <MessageSquare className="text-orange-500" size={20} />
-                            <span>{story.descendants || 0} Comments</span>
-                        </h2>
+            <section aria-labelledby="discussion-heading" className="mb-8">
+                <div className="mb-4 flex flex-wrap items-end justify-between gap-3 sm:mb-5">
+                    <div>
+                        <p className="mb-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400">The conversation</p>
+                        <h2 id="discussion-heading" className="font-serif text-[2rem] font-semibold leading-none tracking-[-0.03em] text-[var(--brand)] dark:text-[#f4f1e8] sm:text-[2.45rem]">Discussion <span className="font-sans text-xl font-normal text-neutral-400 dark:text-neutral-500">{commentCount}</span></h2>
                     </div>
-
-                    {/* Comment Display Controls */}
-                    <div className="comment-controls glass-panel flex flex-col gap-2 rounded-lg border border-[var(--border-soft)] px-2.5 py-2 sm:flex-row sm:items-center sm:gap-3 sm:px-3">
-                        <CommentSortControl
-                            currentSort={commentSort}
-                            onSortChange={setCommentSort}
-                            commentCount={story.descendants || 0}
-                        />
-                        <div className="hidden sm:block w-px h-6 bg-neutral-200 dark:bg-neutral-700"></div>
-                        <CollapseDepthControl
-                            currentDepth={collapseDepth}
-                            onDepthChange={setCollapseDepth}
-                        />
-                    </div>
+                    <span className="hidden items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 sm:inline-flex"><MessageSquare size={14} /> Read what the community thinks</span>
                 </div>
 
-                <div id="comments-container" className="comments-container flex flex-col gap-1.5 sm:gap-2">
-                    {sortedCommentIds.length > 0 ? (
-                        <>
-                            {sortedCommentIds.slice(0, visibleCommentCount).map((kidId) => (
-                                <Suspense key={kidId} fallback={<CommentSkeleton />}>
-                                    <Comment
-                                        id={kidId}
-                                        maxInitialDepth={collapseDepth}
-                                        sortBy={commentSort}
-                                        showScore={false}
-                                    />
-                                </Suspense>
-                            ))}
-                            {visibleCommentCount < sortedCommentIds.length && (
-                                <button
-                                    onClick={loadMoreComments}
-                                    className="glass-panel mt-2 w-full rounded-[1.1rem] border border-[var(--border-soft)] py-3 text-sm font-medium text-neutral-600 transition-colors hover:bg-white/60 disabled:cursor-not-allowed disabled:opacity-60 dark:text-neutral-300 dark:hover:bg-white/[0.04]"
-                                    disabled={visibleCommentCount >= sortedCommentIds.length}
-                                >
-                                    Load more comments ({sortedCommentIds.length - visibleCommentCount} remaining)
-                                </button>
-                            )}
-                        </>
-                    ) : (
-                        <EmptyState type="comments" />
-                    )}
-                </div>
-            </Card>
+                <Card variant="default" padding="none" className="comments-card overflow-hidden rounded-[1.4rem] sm:rounded-[1.7rem]">
+                    <div className="comment-controls flex flex-col gap-3 border-b border-[var(--border-soft)] bg-[var(--muted-surface)]/40 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                        <CommentSortControl currentSort={commentSort} onSortChange={setCommentSort} commentCount={commentCount} />
+                        <CollapseDepthControl currentDepth={collapseDepth} onDepthChange={setCollapseDepth} />
+                    </div>
+
+                    <div id="comments-container" className="comments-container scroll-mt-32 px-4 py-1 sm:px-6 sm:py-2">
+                        {sortedCommentIds.length > 0 ? (
+                            <>
+                                {sortedCommentIds.slice(0, visibleCommentCount).map((kidId) => (
+                                    <Suspense key={kidId} fallback={<CommentSkeleton />}>
+                                        <Comment id={kidId} maxInitialDepth={collapseDepth} sortBy={commentSort} showScore={false} />
+                                    </Suspense>
+                                ))}
+                                {visibleCommentCount < sortedCommentIds.length && (
+                                    <button type="button" onClick={loadMoreComments} className="my-5 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[var(--border-soft)] bg-[var(--muted-surface)]/45 px-4 py-3 text-sm font-semibold text-[var(--brand)] transition-colors hover:border-orange-400/50 hover:text-orange-600 dark:text-neutral-200 dark:hover:text-orange-400">
+                                        Load more comments <span className="font-normal text-neutral-500 dark:text-neutral-400">({sortedCommentIds.length - visibleCommentCount} remaining)</span>
+                                    </button>
+                                )}
+                            </>
+                        ) : <EmptyState type="comments" />}
+                    </div>
+                </Card>
+            </section>
 
             <KeyboardNavigation />
         </PageLayout>

@@ -10,13 +10,13 @@ const footerLinks = [
 
 export function Footer() {
   return (
-    <footer className="mt-12 border-t border-[var(--border-soft)]">
-      <div className="container mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
+    <footer className="mt-16 border-t border-[var(--border-soft)] bg-[color-mix(in_srgb,var(--surface)_65%,transparent)]">
+      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-9 sm:flex-row sm:items-end sm:justify-between sm:px-6 lg:px-8">
         <div>
-          <p className="text-sm font-bold tracking-[-0.02em] text-[var(--brand)] dark:text-white">BetterNews</p>
-          <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">The Hacker News signal, thoughtfully presented.</p>
+          <p className="editorial-title text-2xl leading-none text-[var(--brand)] dark:text-white">Good stories, less noise.</p>
+          <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">An independent, easier way to read Hacker News.</p>
         </div>
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-[var(--border-soft)] pt-5 sm:border-0 sm:pt-0">
           {footerLinks.map((item) =>
             "external" in item && item.external ? (
               <a

@@ -26,38 +26,37 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
     const comments = useMemo(() => items.filter(item => item.type === "comment"), [items]);
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-7">
             {/* User Header Card */}
-            <Card variant="default" padding="lg">
+            <Card variant="default" padding="lg" className="overflow-hidden border-0 bg-[#18392f] text-white sm:p-8">
                 <div className="flex flex-col gap-6">
                     {/* Profile Icon & Username */}
-                    <div className="flex items-center gap-4">
-                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg">
-                            <User size={40} strokeWidth={2} />
+                    <div className="flex items-center gap-4 sm:gap-6">
+                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-white/20 bg-white/10 font-serif text-4xl italic text-[#ff9b71] sm:h-20 sm:w-20">
+                            {user.id.charAt(0).toLowerCase() || <User size={36} strokeWidth={1.5} />}
                         </div>
                         <div>
-                            <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">
+                            <p className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-[#ff9b71]">Community member</p>
+                            <h1 className="editorial-title text-3xl text-white sm:text-5xl">
                                 {user.id}
                             </h1>
-                            <div className="mt-2 flex items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400">
+                            <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-white/70 sm:gap-4 sm:text-sm">
                                 <div className="flex items-center gap-1">
                                     <Calendar size={14} />
                                     <span>Joined </span>
                                     <TimeAgo timestamp={user.created} />
                                 </div>
-                                <Badge variant="orange" size="md" icon={<TrendingUp size={14} />}>
-                                    {user.karma} karma
-                                </Badge>
+                                <span className="inline-flex items-center gap-1 rounded-full border border-white/20 px-2.5 py-1 font-semibold text-white"><TrendingUp size={13} />{user.karma} karma</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Bio / About */}
                     {user.about && (
-                        <div className="rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800/50">
+                        <div className="rounded-xl border border-white/15 bg-white/10 p-4 sm:p-5">
                             <div className="flex items-start gap-2">
-                                <LinkIcon size={16} className="mt-1 text-neutral-400" />
-                                <div className="prose prose-sm dark:prose-invert max-w-none text-neutral-700 dark:text-neutral-300">
+                                <LinkIcon size={16} className="mt-1 text-[#ff9b71]" />
+                                <div className="prose prose-sm prose-invert max-w-none text-white/80">
                                     <MarkdownRenderer content={user.about} />
                                 </div>
                             </div>
@@ -67,14 +66,14 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
             </Card>
 
             {/* Tabs */}
-            <div className="flex gap-2 border-b border-neutral-200 dark:border-neutral-800">
+            <div role="tablist" aria-label="User activity" className="flex gap-1 rounded-xl border border-[var(--border-soft)] bg-[var(--surface)] p-1.5">
                 <button
                     onClick={() => setActiveTab("submissions")}
                     aria-selected={activeTab === "submissions"}
                     role="tab"
-                    className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-t ${activeTab === "submissions"
-                        ? "border-b-2 border-orange-500 text-orange-600 dark:text-orange-500"
-                        : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+                    className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-xs font-semibold transition-colors sm:text-sm ${activeTab === "submissions"
+                        ? "bg-[var(--brand)] text-white dark:bg-[var(--accent)]"
+                        : "text-neutral-500 hover:bg-[var(--muted-surface)] dark:text-neutral-400"
                         }`}
                 >
                     <FileText size={16} />
@@ -84,9 +83,9 @@ export function UserProfile({ user, items, activeTab: initialTab, loading }: Use
                     onClick={() => setActiveTab("comments")}
                     aria-selected={activeTab === "comments"}
                     role="tab"
-                    className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-t ${activeTab === "comments"
-                        ? "border-b-2 border-orange-500 text-orange-600 dark:text-orange-500"
-                        : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+                    className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-xs font-semibold transition-colors sm:text-sm ${activeTab === "comments"
+                        ? "bg-[var(--brand)] text-white dark:bg-[var(--accent)]"
+                        : "text-neutral-500 hover:bg-[var(--muted-surface)] dark:text-neutral-400"
                         }`}
                 >
                     <MessageSquare size={16} />

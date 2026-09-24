@@ -17,7 +17,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: "BetterNews",
-  description: "BetterNews - The best news aggregator",
+  description: "A clearer, calmer way to read Hacker News stories and discussions.",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.svg",
@@ -37,8 +37,8 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" }
+    { media: "(prefers-color-scheme: light)", color: "#f7f6f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#111b17" }
   ],
 };
 
@@ -76,7 +76,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <BookmarksProvider>
-            <div id="main-content">
+            <div>
               {children}
             </div>
           </BookmarksProvider>

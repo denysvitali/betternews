@@ -79,7 +79,7 @@ export const Comment = memo(function Comment({
   // Shared list of reply nodes, reused whether replies are shown directly or
   // revealed via the toggle on collapsed deep threads.
   const replyList = (
-    <div id={`comment-replies-${comment.id}`} className="mt-2">
+    <div id={`comment-replies-${comment.id}`} className="mt-1">
       {sortedKids.map((kidId) => (
         <Suspense key={kidId} fallback={<CommentSkeleton level={level + 1} />}>
           <Comment
@@ -109,7 +109,7 @@ export const Comment = memo(function Comment({
             onClick={() => setShowReplies((visible) => !visible)}
             aria-expanded={showReplies}
             aria-controls={`comment-replies-${comment.id}`}
-            className="mt-2 flex items-center gap-1.5 text-xs text-orange-600 dark:text-orange-500 hover:text-orange-700 dark:hover:text-orange-400 transition-colors py-1.5 px-2 rounded-md hover:bg-orange-50 dark:hover:bg-orange-950/30"
+            className="mt-2 inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-orange-500/20 bg-orange-500/5 px-2.5 py-1.5 text-xs font-semibold text-orange-700 transition-colors hover:border-orange-500/40 hover:bg-orange-500/10 dark:text-orange-300"
           >
             <ChevronDown size={14} className={showReplies ? "rotate-180" : ""} />
             <MessageSquare size={12} />
@@ -134,7 +134,7 @@ export const Comment = memo(function Comment({
       data-comment-author={comment.by}
       data-comment-level={level}
       data-reply-count={replyCount}
-      className="transition-all duration-300"
+      className="scroll-mt-36 rounded-xl transition-all duration-300"
     >
       <CommentClient comment={comment} level={level} showScore={showScore} parentId={parentId}>
         {replies}

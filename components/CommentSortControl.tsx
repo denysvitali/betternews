@@ -10,38 +10,34 @@ interface CommentSortControlProps {
   commentCount: number;
 }
 
-export function CommentSortControl({
-  currentSort,
-  onSortChange,
-  commentCount: _commentCount,
-}: CommentSortControlProps) {
+const sortOptions: Array<{ key: CommentSortType; label: string; icon: React.ReactNode }> = [
+  { key: "default", label: "Best", icon: <TrendingUp size={14} /> },
+  { key: "newest", label: "Newest", icon: <Clock size={14} /> },
+  { key: "oldest", label: "Oldest", icon: <ArrowUpFromDot size={14} /> },
+];
+
+export function CommentSortControl({ currentSort, onSortChange, commentCount: _commentCount }: CommentSortControlProps) {
   void _commentCount;
 
-  const sortOptions: Array<{ key: CommentSortType; label: string; icon: React.ReactNode }> = [
-    { key: "default", label: "Best", icon: <TrendingUp size={14} /> },
-    { key: "newest", label: "Newest", icon: <Clock size={14} /> },
-    { key: "oldest", label: "Oldest", icon: <ArrowUpFromDot size={14} /> },
-  ];
-
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      <span className="text-xs text-neutral-500 dark:text-neutral-400">
-        Sort by:
-      </span>
-      <div className="flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
+    <div className="flex flex-wrap items-center gap-2.5">
+      <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-500 dark:text-neutral-400">Sort</span>
+      <div className="flex items-center rounded-lg border border-[var(--border-soft)] bg-[var(--surface)] p-0.5">
         {sortOptions.map((option) => (
           <button
+            type="button"
             key={option.key}
             onClick={() => onSortChange(option.key)}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+            className={"flex min-h-8 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors " + (
               currentSort === option.key
-                ? "bg-white dark:bg-neutral-700 text-orange-600 dark:text-orange-500 shadow-sm"
-                : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200"
-            }`}
-            aria-label={`Sort comments by ${option.label}`}
+                ? "bg-[var(--brand)] text-white shadow-sm dark:bg-orange-600"
+                : "text-neutral-600 hover:bg-[var(--muted-surface)] hover:text-[var(--brand)] dark:text-neutral-400 dark:hover:text-neutral-100"
+            )}
+            aria-label={"Sort comments by " + option.label}
+            aria-pressed={currentSort === option.key}
           >
             {option.icon}
-            <span className="hidden sm:inline">{option.label}</span>
+            <span>{option.label}</span>
           </button>
         ))}
       </div>

@@ -3,14 +3,14 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f3f1eb;
-  --foreground: #17231f;
+  --background: #f7f6f2;
+  --foreground: #1d2c27;
   --surface: #fffefa;
   --surface-strong: #ffffff;
-  --border-soft: rgba(24, 55, 45, 0.14);
-  --muted-surface: #eeece5;
-  --accent: #f4512c;
-  --brand: #173d32;
+  --border-soft: rgba(30, 62, 51, 0.13);
+  --muted-surface: #f0f1eb;
+  --accent: #dd5830;
+  --brand: #18392f;
 }
 
 @theme inline {
@@ -21,13 +21,13 @@
 }
 
 .dark {
-  --background: #101613;
-  --foreground: #f4f1e8;
-  --surface: #18201d;
-  --surface-strong: #1d2824;
+  --background: #111b17;
+  --foreground: #f5f2e9;
+  --surface: #1b2822;
+  --surface-strong: #233229;
   --border-soft: rgba(255, 255, 255, 0.1);
-  --muted-surface: #222d29;
-  --accent: #ff6b47;
+  --muted-surface: #27362d;
+  --accent: #ff7952;
   --brand: #f4f1e8;
 }
 
@@ -40,15 +40,17 @@ body {
   -webkit-tap-highlight-color: transparent;
   transition: background-color 0.3s ease, color 0.3s ease;
   min-height: 100vh;
-  background-image:
-    radial-gradient(circle at 8% 4%, rgba(244, 81, 44, 0.08), transparent 24rem),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent 26rem);
+  background-image: radial-gradient(circle at 8% 0, rgba(221, 88, 48, 0.055), transparent 33rem);
 }
 
 .dark body {
-  background-image:
-    radial-gradient(circle at 8% 4%, rgba(255, 107, 71, 0.09), transparent 24rem),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 26rem);
+  background-image: radial-gradient(circle at 8% 0, rgba(255, 121, 82, 0.05), transparent 33rem);
+}
+
+.editorial-title {
+  font-family: Georgia, Cambria, "Times New Roman", serif;
+  font-weight: 700;
+  letter-spacing: -0.055em;
 }
 
 /* Improved mobile scrolling */

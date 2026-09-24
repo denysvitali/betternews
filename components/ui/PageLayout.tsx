@@ -23,16 +23,16 @@ export function PageLayout({
   return (
     <div className={cn("relative flex min-h-screen flex-col overflow-hidden bg-transparent transition-colors duration-300", className)}>
       <Navbar />
-      <main className={cn(
-        "container relative mx-auto flex max-w-6xl flex-1 flex-col px-4 py-3 sm:px-6 sm:py-8",
+      <BottomNav />
+      <main id="main-content" tabIndex={-1} className={cn(
+        "relative mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-5 sm:px-6 sm:py-9 lg:px-8",
         mainClassName
       )}>
         {children}
       </main>
       <Footer />
+      <div className="h-20 md:hidden" aria-hidden="true" />
       {showBackToTop && <BackToTop />}
-      {/* Mobile bottom navigation - only visible on small screens */}
-      <BottomNav />
     </div>
   );
 }
@@ -56,30 +56,30 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "mb-3 border-b border-[var(--border-soft)] pb-3 sm:mb-7 sm:pb-7",
+        "mb-5 border-b border-[var(--border-soft)] pb-5 sm:mb-8 sm:pb-8",
         className
       )}
     >
       <div className="min-w-0">
         {(eyebrow || meta) && (
-          <div className="mb-2 flex items-center justify-between gap-3">
+            <div className="mb-3 flex items-center justify-between gap-3 sm:mb-4">
             {eyebrow && (
-              <p className="min-w-0 truncate font-mono text-[9px] font-semibold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400 sm:text-[10px] sm:tracking-[0.28em]">
+              <p className="min-w-0 truncate font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--accent)] sm:text-[11px]">
                 {eyebrow}
               </p>
             )}
           {meta && (
-            <div className="flex shrink-0 items-center gap-1.5 font-mono text-[8px] font-semibold uppercase tracking-[0.1em] text-neutral-400 dark:text-neutral-500 sm:rounded-full sm:border sm:border-[var(--border-soft)] sm:bg-[var(--surface)] sm:px-3 sm:py-2 sm:text-[10px] sm:text-neutral-500 sm:shadow-sm">
+            <div className="flex shrink-0 items-center gap-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-neutral-500 dark:text-neutral-400 sm:rounded-full sm:border sm:border-[var(--border-soft)] sm:bg-[var(--surface)] sm:px-3 sm:py-2 sm:text-[10px]">
               {meta}
             </div>
           )}
           </div>
         )}
-        <h1 className="text-[1.85rem] font-semibold leading-none tracking-[-0.045em] text-[var(--brand)] dark:text-white sm:text-5xl">
+        <h1 className="editorial-title text-[2.55rem] leading-[0.98] text-[var(--brand)] dark:text-white sm:text-[4rem]">
           {title}
         </h1>
         {description && (
-          <p className="mt-3 hidden max-w-xl text-base leading-relaxed text-neutral-500 dark:text-neutral-400 sm:block">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 sm:mt-4 sm:text-base">
             {description}
           </p>
         )}

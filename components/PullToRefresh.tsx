@@ -128,9 +128,7 @@ export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
       {/* Content */}
       <div
         className="transition-transform duration-200 ease-out motion-reduce:transition-none"
-        style={{
-          transform: `translateY(${pullDistance}px)`,
-        }}
+        style={pullDistance > 0 ? { transform: `translateY(${pullDistance}px)` } : undefined}
       >
         {children}
       </div>
