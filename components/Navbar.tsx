@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Bookmark, Menu, Search, X, ArrowUpRight } from "lucide-react";
+import { Bookmark, SlidersHorizontal, Search, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SearchModal } from "@/components/SearchBar";
 import { DensityToggle } from "@/components/DensityToggle";
@@ -34,15 +34,14 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 w-full border-b border-[var(--border-soft)] bg-[color-mix(in_srgb,var(--background)_94%,transparent)] backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:h-20 sm:px-6 lg:px-8">
+      <nav aria-label="Main navigation" className="site-nav sticky top-0 z-50 w-full border-b border-[var(--border-soft)] bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:h-16 sm:px-6 lg:px-8">
           <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label="BetterNews home">
-            <span className="flex h-9 w-9 items-center justify-center rounded-[0.7rem] bg-[var(--accent)] font-serif text-2xl font-bold italic leading-none text-white shadow-[0_3px_0_var(--brand)] transition-transform group-hover:-rotate-6 sm:h-10 sm:w-10">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent)] font-serif text-2xl font-bold italic leading-none text-white transition-transform group-hover:-rotate-6">
               b
             </span>
             <span className="leading-none">
               <span className="block text-[18px] font-extrabold tracking-[-0.065em] text-[var(--brand)] dark:text-white sm:text-xl">better<span className="text-[var(--accent)]">news.</span></span>
-              <span className="mt-1 hidden font-mono text-[9px] font-medium uppercase tracking-[0.18em] text-neutral-500 lg:block">A clearer look at HN</span>
             </span>
           </Link>
 
@@ -94,9 +93,9 @@ export function Navbar() {
             <IconButton
               variant="ghost"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
-              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-label={isMobileMenuOpen ? "Close display settings" : "Display settings"}
               aria-expanded={isMobileMenuOpen}
-              icon={isMobileMenuOpen ? <X size={21} /> : <Menu size={21} />}
+              icon={isMobileMenuOpen ? <X size={21} /> : <SlidersHorizontal size={19} />}
               className="h-10 w-10"
             />
           </div>
@@ -104,20 +103,7 @@ export function Navbar() {
 
         {isMobileMenuOpen && (
           <div className="border-t border-[var(--border-soft)] bg-[var(--surface)] px-4 py-4 shadow-xl md:hidden">
-            <div className="mx-auto grid max-w-7xl grid-cols-2 gap-2">
-              {[...NAV_LINKS, { href: "/saved", label: "Saved" }].map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold ${pathname === href ? "bg-[var(--brand)] text-white dark:bg-[var(--accent)]" : "bg-[var(--muted-surface)] text-neutral-600 dark:text-neutral-300"}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {label}
-                  <ArrowUpRight size={14} className="opacity-50" />
-                </Link>
-              ))}
-            </div>
-            <DensityToggle className="mx-auto mt-3 flex w-full max-w-7xl justify-center rounded-xl bg-[var(--muted-surface)]" />
+            <DensityToggle className="mx-auto flex w-full max-w-6xl justify-center rounded-xl bg-[var(--muted-surface)]" />
           </div>
         )}
       </nav>

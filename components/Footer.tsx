@@ -11,9 +11,9 @@ const footerLinks = [
 export function Footer() {
   return (
     <footer className="mt-16 border-t border-[var(--border-soft)] bg-[color-mix(in_srgb,var(--surface)_65%,transparent)]">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-9 sm:flex-row sm:items-end sm:justify-between sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-9 sm:flex-row sm:items-end sm:justify-between sm:px-6 lg:px-8">
         <div>
-          <p className="editorial-title text-2xl leading-none text-[var(--brand)] dark:text-white">Good stories, less noise.</p>
+          <p className="text-lg font-semibold tracking-tight leading-none text-[var(--brand)] dark:text-white">Good stories, less noise.</p>
           <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">An independent, easier way to read Hacker News.</p>
         </div>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-[var(--border-soft)] pt-5 sm:border-0 sm:pt-0">

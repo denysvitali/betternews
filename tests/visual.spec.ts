@@ -1,6 +1,8 @@
 import { chromium, expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 
+import { mockFeed } from "./feed-fixture";
+
 const screenshotDir = "screenshots";
 
 async function loadStories(
@@ -13,6 +15,7 @@ async function loadStories(
     window.localStorage.setItem("theme", selectedTheme);
     window.localStorage.setItem("betternews-density", selectedDensity);
   }, { selectedTheme: theme, selectedDensity: density });
+  await mockFeed(page);
   await page.goto(url);
   await expect(page.locator("article").first()).toBeVisible({ timeout: 45_000 });
   await page.evaluate(async () => {
@@ -35,6 +38,8 @@ async function capture(
   const browser = await chromium.launch();
   const context = await browser.newContext({
     viewport,
+    isMobile: viewport.width < 768,
+    hasTouch: viewport.width < 768,
     colorScheme: theme,
     deviceScaleFactor: options.deviceScaleFactor,
   });
@@ -71,5 +76,6 @@ test("capture the core responsive UI", async () => {
     density: "super",
     fullPage: false,
   });
+  await capture("home-mobile-dark", { width: 390, height: 844 }, "dark", { fullPage: false });
   await capture("home-desktop-dark", { width: 1440, height: 1000 }, "dark");
 });
