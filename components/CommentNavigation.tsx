@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { ChevronUp, ChevronDown, MessageCircle } from "lucide-react";
-import { Card, Button } from "./ui";
+import { ChevronUp, ChevronDown } from "lucide-react";
 
 interface CommentNavProps {
   totalComments: number;
@@ -26,8 +25,8 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
   const scrollToComment = useCallback((commentId: number) => {
     const element = document.getElementById(`comment-${commentId}`);
     if (element) {
-      // Calculate offset: sticky nav (top-20 = 80px) + nav height (~60px) + padding
-      const offset = 160;
+      // Leave room for the shared sticky header.
+      const offset = 80;
       const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({
         top: elementPosition - offset,
@@ -84,7 +83,7 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
     };
 
     // Initial extraction
-    setTimeout(extractRootComments, 1000);
+    const extractionTimer = setTimeout(extractRootComments, 1000);
 
     // Listen for DOM changes (when comments load)
     const observer = new MutationObserver(() => {
@@ -102,6 +101,7 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
     }
 
     return () => {
+      clearTimeout(extractionTimer);
       observer.disconnect();
     };
   }, [totalComments]);
@@ -112,76 +112,21 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
   }
 
   return (
-    <div className="sticky top-20 z-40 mb-4">
-      <div className="container mx-auto max-w-5xl sm:max-w-4xl px-4 sm:px-6">
-        <Card variant="default" padding="md" className="shadow-md">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-            {/* Comment count and position info */}
-            <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
-              <MessageCircle size={16} className="text-orange-500" />
-              <span className="font-medium">
-                {totalComments} comments
-              </span>
-              {rootComments.length > 0 && (
-                <>
-                  <span>•</span>
-                  <span className="text-xs sm:text-sm">
-                    {currentIndex + 1} of {rootComments.length} root
-                  </span>
-                </>
-              )}
-            </div>
-
-            {/* Navigation controls */}
-            <div className="flex items-center gap-2">
-              {/* Dropdown for mobile */}
-              <div className="sm:hidden">
-                <select
-                  value={currentIndex}
-                  onChange={(e) => {
-                    const index = parseInt(e.target.value);
-                    setCurrentIndex(index);
-                    scrollToComment(rootComments[index].id);
-                  }}
-                  className="text-xs bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded px-2 py-1 text-neutral-700 dark:text-neutral-300"
-                >
-                  {rootComments.map((comment, index) => (
-                    <option key={comment.id} value={index}>
-                      {index + 1}. {comment.author}
-                      {comment.commentCount && comment.commentCount > 0 && ` (${comment.commentCount})`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Previous/Next buttons */}
-              <div className="hidden sm:flex items-center gap-1">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={navigatePrevious}
-                  disabled={currentIndex === 0}
-                  aria-label="Previous root comment"
-                >
-                  <ChevronUp size={16} />
-                  <span className="hidden md:inline">Prev</span>
-                </Button>
-
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={navigateNext}
-                  disabled={currentIndex === rootComments.length - 1}
-                  aria-label="Next root comment"
-                >
-                  <span className="hidden md:inline">Next</span>
-                  <ChevronDown size={16} />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </div>
+    <div className="thread-navigation">
+      <label className="discussion-select">
+        <span>Thread</span>
+        <select aria-label="Jump to thread" value={Math.min(currentIndex, rootComments.length - 1)} onChange={(event) => {
+          const index = Number(event.target.value);
+          setCurrentIndex(index);
+          scrollToComment(rootComments[index].id);
+        }}>
+          {rootComments.map((comment, index) => (
+            <option key={comment.id} value={index}>{index + 1}. {comment.author}</option>
+          ))}
+        </select>
+      </label>
+      <button type="button" onClick={navigatePrevious} disabled={currentIndex === 0} aria-label="Previous root comment"><ChevronUp size={15} /></button>
+      <button type="button" onClick={navigateNext} disabled={currentIndex >= rootComments.length - 1} aria-label="Next root comment"><ChevronDown size={15} /></button>
     </div>
   );
 }

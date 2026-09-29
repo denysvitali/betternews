@@ -78,7 +78,7 @@ export function ShareButton({ title, url, className = "" }: ShareButtonProps) {
         size="sm"
         aria-label="Share"
       >
-        <Share2 size={11} />
+        <Share2 size={14} />
         <span className="hidden sm:inline">Share</span>
       </Button>
 

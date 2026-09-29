@@ -37,13 +37,9 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
   };
 
   return (
-    <article className={"comment relative min-w-0 " + (level === 0 ? "border-b border-[var(--border-soft)] py-4 sm:py-6" : "py-2.5 sm:py-4")}>
+    <article className={"comment relative min-w-0 " + (level === 0 ? "border-b border-[var(--border-soft)] py-4" : "py-2")}>
       <div className="relative flex min-h-8 min-w-0 items-center gap-2.5 sm:gap-3">
-        <span aria-hidden="true" className={"shrink-0 items-center justify-center rounded-full border border-orange-500/20 bg-orange-500/10 font-serif font-semibold uppercase text-orange-700 dark:text-orange-300 " + (level === 0 ? "flex h-8 w-8 text-sm" : "hidden h-7 w-7 text-xs sm:flex")}>
-          {author?.slice(0, 1) || "?"}
-        </span>
-
-        <div className="comment-meta flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1 pr-9 text-xs text-neutral-500 dark:text-neutral-400 sm:pr-9">
+        <div className="comment-meta flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1 pr-11 text-[11px] text-neutral-500 dark:text-neutral-400 sm:pr-11">
           {author ? (
             <Link href={"/user/" + author} className="font-semibold text-[var(--brand)] transition-colors hover:text-orange-600 dark:text-neutral-200 dark:hover:text-orange-400">{author}</Link>
           ) : (
@@ -55,7 +51,7 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
             <span className="inline-flex items-center gap-0.5 font-medium text-orange-600 dark:text-orange-400"><ArrowUp size={12} />{comment.score}</span>
           )}
           {replyCount > 0 && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--muted-surface)] px-2 py-0.5 font-medium text-neutral-600 dark:text-neutral-300">
+            <span className="inline-flex items-center gap-1 font-medium text-neutral-600 dark:text-neutral-300">
               <MessageSquare size={11} />{replyCount} {replyCount === 1 ? "reply" : "replies"}
             </span>
           )}
@@ -67,21 +63,22 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
           onClick={() => setIsCollapsed((collapsed) => !collapsed)}
           aria-label={isCollapsed ? "Expand comment by " + (author || "unknown") : "Collapse comment by " + (author || "unknown")}
           aria-expanded={!isCollapsed}
-          className="absolute right-0 top-0 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-[var(--muted-surface)] hover:text-[var(--brand)] dark:hover:text-neutral-200"
+          aria-controls={"comment-content-" + comment.id}
+          className="absolute right-0 -top-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-[var(--muted-surface)] hover:text-[var(--brand)] dark:hover:text-neutral-200"
           title={isCollapsed ? "Expand thread" : "Collapse thread"}
         >
           <ChevronDown size={16} className={"transition-transform " + (isCollapsed ? "" : "rotate-180")} />
         </button>
       </div>
 
-      <div className="min-w-0 sm:pl-11">
+      <div className="min-w-0">
         {isCollapsed ? (
           <button type="button" onClick={() => setIsCollapsed(false)} className="mt-1 inline-flex min-h-8 items-center gap-1.5 rounded-md py-1 text-xs font-medium text-neutral-500 transition-colors hover:text-orange-600 dark:text-neutral-400 dark:hover:text-orange-400">
             <ChevronDown size={14} /> Show comment{replyCount > 0 ? " and replies" : ""}
           </button>
         ) : (
           <div id={"comment-content-" + comment.id}>
-            <div className="comment-body mt-2 max-w-[76ch] break-words text-[15px] leading-[1.62] text-[var(--foreground)] sm:text-[15.5px] sm:leading-[1.7] [&_p]:mb-3 [&_p:last-child]:mb-0 [&_pre]:overflow-x-auto">
+            <div className="comment-body mt-1.5 max-w-[76ch] break-words text-[14px] leading-[1.65] text-[var(--foreground)] sm:text-[14.5px] [&_p]:mb-3 [&_p:last-child]:mb-0 [&_pre]:overflow-x-auto">
               <MarkdownRenderer content={comment.text || ""} stripHtml />
             </div>
 
@@ -97,7 +94,7 @@ export function CommentClient({ comment, children, level = 0, showScore = false,
             </div>
 
             {children && (
-              <div className={"comment-children relative mt-3 border-l border-[var(--border-soft)] transition-colors hover:border-orange-400/70 sm:ml-4 sm:border-l-2 sm:pl-5 " + (level === 0 ? "ml-1 pl-3" : "ml-0 pl-2")}>
+              <div className="comment-children relative mt-2 border-l border-[var(--border-soft)] pl-3">
                 {children}
               </div>
             )}

@@ -178,44 +178,71 @@ html[data-density="super"] .story-actions-row { margin-top: 0; }
   .story-open { font-size: 10px; }
 }
 
-html[data-density="super"] .story-page-card,
-html[data-density="super"] .comments-card {
-  padding: 0.75rem;
-  border-radius: 0.75rem;
+/* Article pages follow the same compact rhythm as the feed. */
+.story-detail { max-width: 960px; }
+.story-breadcrumb { margin: -5px 0 14px; font-size: 12px; color: var(--secondary); }
+.story-breadcrumb a { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; }
+.story-breadcrumb a:hover { color: var(--accent); }
+.story-page-card { position: relative; margin-bottom: 24px; padding: 22px 24px 16px; border: 1px solid var(--border-soft); border-radius: 12px; background: var(--surface); }
+.story-source-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 9px; }
+.story-source-host { max-width: 100%; overflow-wrap: anywhere; font-size: 11px; color: var(--secondary); }
+.story-page-title { max-width: 38ch; color: var(--foreground); font-size: 30px; font-weight: 700; line-height: 1.3; letter-spacing: -0.8px; overflow-wrap: anywhere; }
+.story-detail-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 13px; font-size: 11px; line-height: 1.6; color: var(--secondary); }
+.story-detail-meta a { color: var(--foreground); font-weight: 600; }
+.story-detail-meta a:hover { color: var(--accent); }
+.story-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 14px; font-size: 11px; color: var(--secondary); }
+.story-source-link { display: inline-flex; min-height: 36px; align-items: center; gap: 6px; border-radius: 7px; padding: 0 11px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.story-source-link:hover { background: color-mix(in srgb, var(--accent) 16%, var(--surface)); }
+.story-hn-link { display: inline-flex; align-items: center; min-height: 36px; }
+.story-hn-link:hover { color: var(--accent); }
+.story-detail-buttons { display: flex; gap: 4px; margin-left: auto; }
+.story-detail-buttons button { min-width: 36px; min-height: 36px; background: transparent; color: var(--secondary); }
+.story-detail-buttons button:hover { background: var(--muted-surface); color: var(--accent); }
+.story-author-text { border-top: 1px solid var(--border-soft); margin-top: 18px; padding-top: 18px; font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; }
+.story-author-text p { margin-bottom: 12px; }
+.story-author-text p:last-child { margin-bottom: 0; }
+.story-author-text a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.story-author-text pre { max-width: 100%; overflow-x: auto; }
+.discussion-section { margin-bottom: 24px; }
+.discussion-heading-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.discussion-heading-row h2 { font-size: 17px; font-weight: 650; letter-spacing: -0.3px; }
+.discussion-heading-row h2 span { margin-left: 5px; font-size: 13px; font-weight: 400; color: var(--secondary); }
+.discussion-jump { display: inline-flex; align-items: center; gap: 5px; min-height: 36px; font-size: 11px; color: var(--secondary); }
+.comments-card { border: 1px solid var(--border-soft); border-radius: 12px; background: var(--surface); }
+.comment-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; border-bottom: 1px solid var(--border-soft); padding: 8px 20px; color: var(--secondary); }
+.discussion-select { display: inline-flex; align-items: center; gap: 7px; min-width: 0; font-size: 11px; }
+.discussion-select select { max-width: 140px; min-height: 36px; min-width: 64px; border: 1px solid var(--border-soft); border-radius: 6px; background: var(--surface); padding: 0 6px; color: var(--foreground); font: inherit; }
+.thread-navigation { display: flex; align-items: center; gap: 3px; margin-left: auto; }
+.thread-navigation button { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; min-width: 32px; border-radius: 6px; }
+.thread-navigation button:hover:not(:disabled) { color: var(--accent); background: var(--muted-surface); }
+.thread-navigation button:disabled { opacity: 0.3; }
+.comments-container { padding: 0 20px; scroll-margin-top: 80px; }
+.comments-container > [data-comment-level="0"]:last-child > .comment { border-bottom: 0; }
+.comment [data-comment-level] { scroll-margin-top: 80px; }
+.comment-body { overflow-wrap: anywhere; }
+.comment-body > div > p:last-child { margin-bottom: 0; }
+.comment-body pre, .comment-body table { max-width: 100%; overflow-x: auto; }
+.comment-body table { display: block; }
+.load-comments { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 5px; width: 100%; min-height: 44px; margin: 14px 0; border: 1px solid var(--border-soft); border-radius: 7px; color: var(--foreground); font-size: 12px; }
+.load-comments span { color: var(--secondary); }
+.load-comments:hover { color: var(--accent); background: var(--muted-surface); }
+html[data-density="super"] .story-page-card { padding: 16px; }
+html[data-density="super"] .story-page-title { font-size: 22px; }
+html[data-density="super"] .comment { padding-top: 8px; padding-bottom: 8px; }
+html[data-density="super"] .comment-body { font-size: 13px; line-height: 1.55; }
+@media (pointer: coarse) {
+  .story-source-link, .story-hn-link, .story-detail-buttons button, .discussion-select select, .thread-navigation button { min-height: 44px; }
+  .story-detail-buttons button, .thread-navigation button { min-width: 44px; }
 }
-
-html[data-density="super"] .story-page-title {
-  font-size: 1.2rem;
-}
-
-html[data-density="super"] .story-page-preview,
-html[data-density="super"] .story-actions,
-html[data-density="super"] .comment-controls {
-  display: none;
-}
-
-html[data-density="super"] .comments-container {
-  gap: 0;
-}
-
-html[data-density="super"] .comment {
-  padding-top: 0.35rem;
-  padding-bottom: 0.35rem;
-}
-
-html[data-density="super"] .comment-meta {
-  font-size: 0.68rem;
-}
-
-html[data-density="super"] .comment-body {
-  padding-left: 0.75rem;
-  font-size: 0.82rem;
-  line-height: 1.45;
-}
-
-html[data-density="super"] .comment-children {
-  margin-left: 0.25rem;
-  padding-left: 0.5rem;
+@media (max-width: 639px) {
+  .story-page-card { padding: 16px; margin-bottom: 18px; }
+  .story-page-title { font-size: 23px; letter-spacing: -0.5px; line-height: 1.35; }
+  .story-detail-meta { column-gap: 7px; }
+  .story-actions { gap: 8px; margin-top: 10px; }
+  .comment-controls { padding: 8px 12px; gap: 6px 14px; }
+  .comments-container { padding: 0 14px; }
+  .thread-navigation { margin-left: 0; }
+  .comment-children { padding-left: 10px; }
 }
 
 :where(a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])):focus-visible {
