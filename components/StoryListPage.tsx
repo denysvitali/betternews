@@ -1,12 +1,13 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { Radio } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ChevronUp, Radio } from "lucide-react";
 import { HNItem } from "@/lib/hn";
 import { PAGINATION } from "@/lib/types";
 import { StoryCard } from "@/components/StoryCard";
 import { Pagination } from "@/components/Pagination";
+import { FeedKeyboardNavigation } from "@/components/FeedKeyboardNavigation";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { PageLayout, PageLoading, PageError } from "@/components/ui";
 import { parsePositiveIntParam } from "@/lib/params";
@@ -35,6 +36,7 @@ const FEED_DESCRIPTIONS: Record<string, string> = {
 };
 
 function StoryListContent({ title, baseUrl, useStories }: StoryListPageProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const page = parsePositiveIntParam(searchParams.get("page"));
   const { stories, loading, error, refetch } = useStories(page);
@@ -65,6 +67,10 @@ function StoryListContent({ title, baseUrl, useStories }: StoryListPageProps) {
       return true;
     });
 
+  const loadedPageNumbers = [...loadedPages.keys()];
+  const firstLoadedPage = loadedPageNumbers.length ? Math.min(...loadedPageNumbers) : page;
+  const nextPage = (loadedPageNumbers.length ? Math.max(...loadedPageNumbers) : page) + 1;
+
   const handleRefresh = useCallback(async () => {
     await refetch();
   }, [refetch]);
@@ -89,13 +95,23 @@ function StoryListContent({ title, baseUrl, useStories }: StoryListPageProps) {
           <PageError message="Failed to load stories. Please try again later." />
         ) : visibleStories.length > 0 ? (
           <>
+            {firstLoadedPage > 1 && (
+              <button
+                type="button"
+                className="feed-more-button feed-earlier"
+                onClick={() => router.push(`${baseUrl}?page=${firstLoadedPage - 1}`, { scroll: false })}
+              >
+                <ChevronUp size={14} aria-hidden="true" /> Show earlier stories
+              </button>
+            )}
             <section aria-label={`${title} stories`} className="story-list">
               {visibleStories.map(({ story, index }) => (
-                <StoryCard key={story.id} story={story} index={index} featured={index === 0} />
+                <StoryCard key={story.id} story={story} index={index} />
               ))}
             </section>
 
-            <Pagination currentPage={page} baseUrl={baseUrl} loading={loading} />
+            <Pagination nextPage={nextPage} baseUrl={baseUrl} loading={loading} />
+            <FeedKeyboardNavigation />
           </>
         ) : (
           <div className="rounded-[1.25rem] border border-[var(--border-soft)] bg-[var(--surface)] px-5 py-10 text-center text-sm text-[#647368] dark:text-[#a9b8ac]">

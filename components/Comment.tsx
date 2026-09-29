@@ -15,6 +15,7 @@ interface CommentProps {
   sortBy?: CommentSortType;
   showScore?: boolean;
   parentId?: number;
+  storyAuthor?: string;
 }
 
 // Default depth after which replies are collapsed
@@ -48,7 +49,8 @@ export const Comment = memo(function Comment({
   maxInitialDepth = DEFAULT_MAX_INITIAL_DEPTH,
   sortBy = "default",
   showScore = false,
-  parentId
+  parentId,
+  storyAuthor
 }: CommentProps) {
   const { comment, loading, error } = useComment(id);
   const [showReplies, setShowReplies] = useState(false);
@@ -89,6 +91,7 @@ export const Comment = memo(function Comment({
             sortBy={sortBy}
             showScore={showScore}
             parentId={comment.id}
+            storyAuthor={storyAuthor}
           />
         </Suspense>
       ))}
@@ -136,7 +139,7 @@ export const Comment = memo(function Comment({
       data-reply-count={replyCount}
       className="scroll-mt-36 rounded-xl transition-all duration-300"
     >
-      <CommentClient comment={comment} level={level} showScore={showScore} parentId={parentId}>
+      <CommentClient comment={comment} level={level} showScore={showScore} parentId={parentId} storyAuthor={storyAuthor}>
         {replies}
       </CommentClient>
     </div>

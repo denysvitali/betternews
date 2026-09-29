@@ -17,7 +17,7 @@ export async function mockDiscussion(page: Page) {
     } else if (id >= 1000) {
       const nested = id >= 2000;
       await route.fulfill({ json: {
-        id, type: "comment", by: nested ? `reply${id}` : `reader${id - 1000}`,
+        id, type: "comment", by: id === 1002 ? "ilamont" : nested ? `reply${id}` : `reader${id - 1000}`,
         time: now - 10000 + id, parent: id === 2001 ? 1001 : id === 3001 ? 2001 : id === 4001 ? 3001 : 1,
         text: nested ? "There is a useful distinction here. Clear information matters more than a complicated interface." : "<p>The interesting part is how much trust we place in everyday systems. A small improvement to the way this works could make a real difference.</p>",
         kids: id === 1001 ? [2001] : id === 2001 ? [3001] : id === 3001 ? [4001] : [],

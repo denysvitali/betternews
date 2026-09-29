@@ -8,15 +8,26 @@ interface CommentSortControlProps {
   commentCount: number;
 }
 
+const OPTIONS: { value: CommentSortType; label: string }[] = [
+  { value: "default", label: "Best" },
+  { value: "newest", label: "Newest" },
+  { value: "oldest", label: "Oldest" },
+];
+
 export function CommentSortControl({ currentSort, onSortChange }: CommentSortControlProps) {
   return (
-    <label className="discussion-select">
-      <span>Sort</span>
-      <select aria-label="Sort comments" value={currentSort} onChange={(event) => onSortChange(event.target.value as CommentSortType)}>
-        <option value="default">Best</option>
-        <option value="newest">Newest</option>
-        <option value="oldest">Oldest</option>
-      </select>
-    </label>
+    <div role="radiogroup" aria-label="Sort comments" className="segmented">
+      {OPTIONS.map(({ value, label }) => (
+        <button
+          key={value}
+          type="button"
+          role="radio"
+          aria-checked={currentSort === value}
+          onClick={() => onSortChange(value)}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
   );
 }

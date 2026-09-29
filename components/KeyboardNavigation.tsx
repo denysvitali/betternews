@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useState } from "react";
-import { Card, Button } from "./ui";
+import { ShortcutsDialog, ShortcutsHint } from "./ShortcutsDialog";
 
 interface KeyboardNavigationProps {
   enabled?: boolean;
@@ -102,7 +102,7 @@ export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) 
 
     // Find the collapse button within this comment
     const collapseBtn = currentComment.querySelector(
-      'button[aria-label="Collapse comment"], button[aria-label="Expand comment"]'
+      'button[aria-label^="Collapse comment"], button[aria-label^="Expand comment"]'
     );
     if (collapseBtn) {
       (collapseBtn as HTMLButtonElement).click();
@@ -165,50 +165,8 @@ export function KeyboardNavigation({ enabled = true }: KeyboardNavigationProps) 
 
   return (
     <>
-      {/* Keyboard shortcut hint */}
-      <div className="fixed bottom-4 right-4 z-50 hidden sm:block">
-        <button
-          onClick={() => setShowHelp(prev => !prev)}
-          className="flex items-center gap-1.5 rounded-lg bg-neutral-900/90 dark:bg-white/90 px-3 py-2 text-xs font-medium text-white dark:text-neutral-900 shadow-lg backdrop-blur-sm transition-all hover:scale-105"
-          title="Keyboard shortcuts"
-        >
-          <kbd className="rounded bg-neutral-700 dark:bg-neutral-300 px-1.5 py-0.5 text-[10px]">?</kbd>
-          <span>Shortcuts</span>
-        </button>
-      </div>
-
-      {/* Help modal */}
-      {showHelp && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-          onClick={() => setShowHelp(false)}
-        >
-          <Card
-            className="mx-4 max-w-sm shadow-2xl"
-            padding="lg"
-            onClick={e => e.stopPropagation()}
-          >
-            <h3 className="mb-4 text-lg font-bold text-neutral-900 dark:text-white">
-              Keyboard Shortcuts
-            </h3>
-            <div className="space-y-3 text-sm">
-              {SHORTCUTS.map(({ key, label }) => (
-                <div key={key} className="flex items-center justify-between">
-                  <span className="text-neutral-600 dark:text-neutral-400">{label}</span>
-                  <kbd className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs dark:bg-neutral-800">{key}</kbd>
-                </div>
-              ))}
-            </div>
-            <Button
-              variant="primary"
-              onClick={() => setShowHelp(false)}
-              className="mt-6 w-full"
-            >
-              Got it
-            </Button>
-          </Card>
-        </div>
-      )}
+      <ShortcutsHint onClick={() => setShowHelp(true)} />
+      <ShortcutsDialog open={showHelp} onClose={() => setShowHelp(false)} shortcuts={SHORTCUTS} />
     </>
   );
 }

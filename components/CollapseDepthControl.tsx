@@ -10,7 +10,7 @@ export function CollapseDepthControl({ currentDepth, onDepthChange }: CollapseDe
     <label className="discussion-select">
       <span>Depth</span>
       <select aria-label="Thread depth" value={currentDepth} onChange={(event) => onDepthChange(Number(event.target.value))}>
-        {[1, 2, 3, 4].map((depth) => <option key={depth} value={depth}>{depth} levels</option>)}
+        {[1, 2, 3, 4].map((depth) => <option key={depth} value={depth}>{depth} {depth === 1 ? "level" : "levels"}</option>)}
         <option value={99}>All replies</option>
       </select>
     </label>

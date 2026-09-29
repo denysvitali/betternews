@@ -49,13 +49,13 @@ export function DensityToggle({ className = "" }: { className?: string }) {
     <button
       type="button"
       onClick={toggleDensity}
-      className={`inline-flex items-center gap-2 rounded-full border border-[var(--border-soft)] px-3 py-2 text-xs font-medium transition-colors hover:text-orange-600 dark:hover:text-orange-400 ${className}`}
+      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition-colors hover:text-orange-600 dark:hover:text-orange-400 ${isSuper ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]" : "border-[var(--border-soft)]"} ${className}`}
       aria-pressed={isSuper}
       aria-label={isSuper ? "Use normal density" : "Use super compact density"}
-      title={isSuper ? "Normal density" : "Super compact"}
+      title={isSuper ? "Compact view is on. Switch back to comfortable spacing" : "Switch to compact view: tighter rows, more stories per screen"}
     >
       <Minimize2 size={14} />
-      <span>{isSuper ? "Normal" : "Super compact"}</span>
+      <span>Compact</span>
     </button>
   );
 }

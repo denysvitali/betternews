@@ -41,14 +41,17 @@ test("discussion sorting, collapsing, depth and loading remain available", async
   await expect(page.locator("#comment-4001")).toHaveCount(0);
   await page.getByRole("combobox", { name: "Thread depth", exact: true }).selectOption("99");
   await expect(page.locator("#comment-4001")).toBeVisible();
-  await page.getByRole("combobox", { name: "Sort comments", exact: true }).selectOption("newest");
+  await page.getByRole("radio", { name: "Newest", exact: true }).click();
   await expect(page.locator('[data-comment-level="0"]').first()).toHaveAttribute("data-comment-id", "1024");
-  await page.getByRole("combobox", { name: "Sort comments", exact: true }).selectOption("oldest");
+  await page.getByRole("radio", { name: "Oldest", exact: true }).click();
   await expect(page.locator('[data-comment-level="0"]').first()).toHaveAttribute("data-comment-id", "1001");
   await page.getByRole("button", { name: /Load more comments/ }).click();
   await expect(page.locator('[data-comment-level="0"]')).toHaveCount(24);
-  await page.getByRole("combobox", { name: "Jump to thread", exact: true }).selectOption("1");
+  await page.getByRole("button", { name: "Next root comment", exact: true }).click();
   await expect(page.locator("#comment-1002")).toBeInViewport();
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.getByRole("combobox", { name: "Jump to thread", exact: true }).selectOption("2");
+  await expect(page.locator("#comment-1003")).toBeInViewport();
 });
 
 test("story themes, compact density and text submissions", async ({ browser }) => {
@@ -60,14 +63,14 @@ test("story themes, compact density and text submissions", async ({ browser }) =
     await mockDiscussion(page);
     await page.goto("/story/1");
     await expect(page.locator("#comment-1001")).toBeVisible();
-    await expect(page.getByRole("combobox", { name: "Jump to thread", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Next root comment", exact: true })).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     await page.screenshot({ path: `screenshots/story-mobile-${theme}.png`, animations: "disabled" });
     await page.getByRole("button", { name: "Display settings" }).click();
     await page.getByRole("button", { name: "Use super compact density" }).click();
     await page.getByRole("button", { name: "Close display settings" }).click();
     await expect(page.getByRole("link", { name: "Read original", exact: true })).toBeVisible();
-    await expect(page.getByRole("combobox", { name: "Sort comments", exact: true })).toBeVisible();
+    await expect(page.getByRole("radiogroup", { name: "Sort comments", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Share", exact: true }).click();
     await expect(page.getByRole("button", { name: "Copy link", exact: true })).toBeVisible();
     await page.goto("/story/5");

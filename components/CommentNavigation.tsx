@@ -26,7 +26,7 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
     const element = document.getElementById(`comment-${commentId}`);
     if (element) {
       // Leave room for the shared sticky header.
-      const offset = 80;
+      const offset = 120;
       const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({
         top: elementPosition - offset,
@@ -113,7 +113,7 @@ export function CommentNavigation({ totalComments, storyId }: CommentNavProps) {
 
   return (
     <div className="thread-navigation">
-      <label className="discussion-select">
+      <label className="discussion-select thread-jump">
         <span>Thread</span>
         <select aria-label="Jump to thread" value={Math.min(currentIndex, rootComments.length - 1)} onChange={(event) => {
           const index = Number(event.target.value);

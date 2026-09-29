@@ -13,14 +13,16 @@ import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { CommentSortControl, CommentSortType } from "@/components/CommentSortControl";
 import { CollapseDepthControl } from "@/components/CollapseDepthControl";
-import { ArrowLeft, ArrowUpRight, MessageCircle, ArrowUp } from "lucide-react";
-import { Suspense, useState, useCallback, useMemo } from "react";
+import { ArrowLeft, ArrowUpRight, ArrowUp } from "lucide-react";
+import { Suspense, useState, useCallback, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { StorySkeleton } from "@/components/StorySkeleton";
 import { CommentSkeleton } from "@/components/CommentSkeleton";
 import { CommentNavigation } from "@/components/CommentNavigation";
 import { getDomain, convertHNUrlToRelative } from "@/lib/utils";
 import { PageLayout, PageError, Card, Skeleton } from "@/components/ui";
+import { StickyStoryBar } from "@/components/StickyStoryBar";
+import { recordCommentsSeen } from "@/lib/history";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { parsePositiveIntParam } from "@/lib/params";
 
@@ -71,6 +73,11 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
         () => sortCommentIds(story?.kids ?? [], commentSort, commentTimes),
         [story?.kids, commentSort, commentTimes]
     );
+    const storyIdForHistory = story?.id;
+    const seenCommentCount = story?.descendants ?? 0;
+    useEffect(() => {
+        if (storyIdForHistory) recordCommentsSeen(storyIdForHistory, seenCommentCount);
+    }, [storyIdForHistory, seenCommentCount]);
     const invalidStoryId = !initialStory && storyId < 1;
     const loading = !initialStory && fetching;
     const error = !initialStory && fetchError;
@@ -118,6 +125,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
     return (
         <PageLayout mainClassName="story-detail">
             <ReadingProgress />
+            <StickyStoryBar title={getCleanTitle(story.title || "Untitled story")} score={story.score ?? 0} comments={commentCount} />
 
             <nav aria-label="Breadcrumb" className="story-breadcrumb">
                 <Link href="/"><ArrowLeft size={14} aria-hidden="true" /> Back to stories</Link>
@@ -157,7 +165,6 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
             <section aria-labelledby="discussion-heading" className="discussion-section">
                 <div className="discussion-heading-row">
                     <h2 id="discussion-heading">Discussion <span>{commentCount}</span></h2>
-                    <a href="#comments-container" className="discussion-jump"><MessageCircle size={13} aria-hidden="true" /> Comments</a>
                 </div>
                 <div className="comments-card">
                     <div className="comment-controls">
@@ -170,7 +177,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                             <>
                                 {sortedCommentIds.slice(0, visibleCommentCount).map((kidId) => (
                                     <Suspense key={kidId} fallback={<CommentSkeleton />}>
-                                        <Comment id={kidId} maxInitialDepth={collapseDepth} sortBy={commentSort} showScore={false} />
+                                        <Comment id={kidId} maxInitialDepth={collapseDepth} sortBy={commentSort} showScore={false} storyAuthor={author} />
                                     </Suspense>
                                 ))}
                                 {visibleCommentCount < sortedCommentIds.length && (
