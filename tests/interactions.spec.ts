@@ -80,6 +80,9 @@ test("discussion flags OP, collapses from the author row and shows a sticky stor
   await expect(page.locator("#comment-1002")).toBeVisible();
   await expect(page.locator("#comment-1002 .comment-op").first()).toHaveText("OP");
   await expect(page.locator("#comment-1001 .comment-op")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Permalink", exact: true })).toHaveCount(0);
+  await expect(page.locator("#comment-1001 .comment-timestamp").first()).toHaveAttribute("href", "https://news.ycombinator.com/item?id=1001");
+  await expect(page.locator("#comment-2001 .comment-timestamp").first()).toHaveAttribute("href", "https://news.ycombinator.com/item?id=2001");
   await expect(page.getByRole("link", { name: "Comments", exact: true })).toHaveCount(0);
 
   // The header text lines up with the comment body, and the collapse control
