@@ -82,10 +82,14 @@ test("discussion flags OP, collapses from the author row and shows a sticky stor
   await expect(page.locator("#comment-1001 .comment-op")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Comments", exact: true })).toHaveCount(0);
 
-  // The collapse control sits beside the author, not at the far edge.
-  const toggle = await page.getByRole("button", { name: "Collapse comment by reader1", exact: true }).boundingBox();
+  // The header text lines up with the comment body, and the collapse control
+  // stays in the header row instead of jumping to the far edge.
   const author = await page.locator("#comment-1001").getByRole("link", { name: "reader1", exact: true }).boundingBox();
-  expect(Math.abs(toggle!.x - author!.x)).toBeLessThan(40);
+  const body = await page.locator("#comment-1001 .comment-body").first().boundingBox();
+  const toggle = await page.getByRole("button", { name: "Collapse comment by reader1", exact: true }).boundingBox();
+  expect(author!.x).toBe(body!.x);
+  expect(toggle!.x - author!.x).toBeLessThan(320);
+  expect(Math.abs(toggle!.y - author!.y)).toBeLessThan(20);
 
   const bar = page.locator(".sticky-story-bar");
   await expect(bar).toHaveAttribute("data-visible", "false");

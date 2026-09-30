@@ -207,6 +207,7 @@ html[data-density="super"] .story-comments, html[data-density="super"] .story-op
   .story-comments { order: 2; width: auto; padding: 0 6px; }
   .story-bookmark { order: 3; margin-left: auto; }
   .story-open { order: 4; width: auto; min-width: 52px; text-align: right; font-size: 11px; }
+  .story-comments, .story-bookmark, .story-open { margin-block: -4px; }
   html[data-density="super"] .story-card { padding-top: 10px; padding-bottom: 2px; }
   html[data-density="super"] .story-actions-row { margin-top: 0; }
 }
@@ -270,7 +271,7 @@ html[data-density="super"] .story-comments, html[data-density="super"] .story-op
 .sticky-story-stats { display: inline-flex; flex-shrink: 0; align-items: center; gap: 4px; font-size: 12px; color: var(--secondary); }
 .sticky-story-stats svg + svg, .sticky-story-stats svg:last-child { margin-left: 8px; }
 @media (min-width: 640px) { .sticky-story-bar { top: 64px; } }
-.comment-toggle { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; width: 28px; height: 28px; margin-left: -6px; border-radius: 6px; color: var(--secondary); transition: background-color 150ms, color 150ms; }
+.comment-toggle { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; color: var(--secondary); transition: background-color 150ms, color 150ms; }
 .comment-toggle:hover { background: var(--muted-surface); color: var(--foreground); }
 .comment-op { border-radius: 4px; padding: 0 5px; background: var(--accent-soft); color: var(--accent); font-size: 10px; font-weight: 700; line-height: 16px; letter-spacing: 0.04em; }
 /* Reply rails cycle through hues by depth so nested threads are easy to follow. */
@@ -299,8 +300,8 @@ html[data-density="super"] .comment { padding-top: 8px; padding-bottom: 8px; }
 html[data-density="super"] .comment-body { font-size: 13px; line-height: 1.55; }
 @media (max-width: 639px) { .thread-jump { display: none; } }
 @media (pointer: coarse) {
-  .comment-toggle { width: 44px; height: 44px; margin: -8px -4px -8px -12px; }
-  .comment-action { min-height: 40px; }
+  .comment-toggle { width: 44px; height: 44px; margin: -8px -8px -8px -4px; }
+  .comment-action { min-height: 32px; margin-block: -2px; }
   .segmented button { min-height: 40px; }
   .story-source-link, .story-hn-link, .story-detail-buttons button, .discussion-select select, .thread-navigation button { min-height: 44px; }
   .story-detail-buttons button, .thread-navigation button { min-width: 44px; }
@@ -310,9 +311,11 @@ html[data-density="super"] .comment-body { font-size: 13px; line-height: 1.55; }
   .story-page-title { font-size: 23px; letter-spacing: -0.5px; line-height: 1.35; }
   .story-detail-meta { column-gap: 7px; }
   .story-actions { gap: 8px; margin-top: 10px; }
-  .comment-controls { padding: 8px 12px; gap: 6px 14px; }
+  .comment-controls { padding: 8px 12px; gap: 8px 14px; }
+  .comment-controls .segmented { width: 100%; }
+  .comment-controls .segmented button { flex: 1; }
   .comments-container { padding: 0 14px; }
-  .thread-navigation { margin-left: 0; }
+  .thread-navigation { margin-left: auto; }
   .comment-children { padding-left: 10px; }
 }
 

@@ -1,13 +1,23 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
 import StoryPageClient from './story/[id]/StoryPageClient';
 import UserPageClient from './user/[username]/UserPageClient';
 import { FileQuestion, Home } from "lucide-react";
-import { PageLayout, Button } from "@/components/ui";
+import { PageLayout, PageLoading, Button } from "@/components/ui";
+
+// Static hosting serves this page for every story/user URL, so its prerendered
+// HTML must not claim "not found" before the client knows which route it is on.
+const subscribe = () => () => {};
 
 export default function NotFound() {
   const pathname = usePathname();
+  const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
+
+  if (!hydrated) {
+    return <PageLoading />;
+  }
 
   // Check if the path matches a story or user route pattern
   const storyMatch = pathname?.match(/\/story\/(\d+)$/);
