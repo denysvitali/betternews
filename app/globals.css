@@ -334,3 +334,34 @@ html[data-density="super"] .comment-body { font-size: 13px; line-height: 1.55; }
     scroll-behavior: auto !important;
   }
 }
+
+/* Saved stories, profiles and search use the same reading surfaces. */
+.saved-toolbar { display: flex; justify-content: flex-end; margin-top: -10px; margin-bottom: 8px; }
+.saved-toolbar button { display: inline-flex; align-items: center; gap: 5px; min-height: 36px; padding: 0 8px; border-radius: 6px; color: var(--secondary); font-size: 11px; }
+.saved-toolbar button:hover { color: var(--accent); background: var(--accent-soft); }
+.profile-header { padding: 20px; border: 1px solid var(--border-soft); border-radius: 12px; background: var(--surface); }
+.profile-eyebrow { font-size: 11px; color: var(--secondary); margin-bottom: 7px; }
+.profile-header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.7px; overflow-wrap: anywhere; }
+.profile-stats { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 11px; color: var(--secondary); }
+.profile-bio { max-width: 72ch; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-soft); font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
+.profile-bio a, .profile-comment-body a { color: var(--accent); text-decoration: underline; }
+.profile-tabs { display: flex; gap: 20px; margin: 16px 0 12px; border-bottom: 1px solid var(--border-soft); }
+.profile-tabs button { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; border-bottom: 2px solid transparent; color: var(--secondary); font-size: 12px; }
+.profile-tabs button[aria-pressed="true"] { border-color: var(--accent); color: var(--foreground); font-weight: 600; }
+.profile-tabs span { font-size: 10px; color: var(--secondary); }
+.profile-comment { padding: 16px 20px; border-bottom: 1px solid var(--border-soft); }
+.profile-comment:last-child { border: 0; }
+.profile-comment-time { color: var(--secondary); font-size: 11px; margin-bottom: 8px; }
+.profile-comment-body { font-size: 14px; line-height: 1.65; overflow-wrap: anywhere; }
+.profile-comment-body pre { max-width: 100%; overflow-x: auto; }
+.profile-context { display: inline-flex; align-items: center; min-height: 36px; color: var(--accent); font-size: 11px; }
+.search-dialog .search-result button { background: transparent; }
+.search-dialog .search-result button:hover { background: var(--accent-soft); color: var(--accent); }
+.search-dialog .search-result a { overflow-wrap: anywhere; }
+html[data-density="super"] .profile-header { padding: 16px; }
+html[data-density="super"] .profile-comment { padding: 10px 16px; }
+@media (max-width: 639px) {
+  .profile-header { padding: 16px; }
+  .profile-header h1 { font-size: 25px; }
+  .profile-comment { padding: 14px; }
+}

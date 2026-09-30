@@ -57,15 +57,15 @@ export function EmptyState({ type = "default", title, description, actionLabel, 
   const Icon = config.icon;
 
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4">
-      <div className={`relative mb-4 rounded-full ${config.iconBg} p-6`}>
-        <Icon size={32} className={config.iconColor} strokeWidth={1.5} />
+    <div className="flex flex-col items-center justify-center py-8 px-4">
+      <div className={`relative mb-3 rounded-lg ${config.iconBg} p-3`}>
+        <Icon size={22} className={config.iconColor} strokeWidth={1.5} />
       </div>
 
-      <h3 className="mb-1 text-lg font-semibold text-neutral-900 dark:text-white text-center">
+      <h3 className="mb-1 text-base font-semibold text-neutral-900 dark:text-white text-center">
         {title || config.title}
       </h3>
-      <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center max-w-xs mb-4">
+      <p className="text-xs leading-relaxed text-neutral-500 dark:text-neutral-400 text-center max-w-xs mb-4">
         {description || config.description}
       </p>
 

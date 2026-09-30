@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from "react";
+import { useState, useEffect, useSyncExternalStore, useCallback, createContext, useContext, ReactNode } from "react";
 import { useRef } from "react";
 
 interface BookmarkedStory {
@@ -21,6 +21,9 @@ interface BookmarksContextType {
   toggleBookmark: (story: Omit<BookmarkedStory, "bookmarkedAt">) => void;
   clearBookmarks: () => void;
 }
+
+const EMPTY_BOOKMARKS: BookmarkedStory[] = [];
+const subscribeToHydration = () => () => {};
 
 const STORAGE_KEY = "betternews_bookmarks";
 
@@ -48,6 +51,9 @@ const BookmarksContext = createContext<BookmarksContextType | null>(null);
 export function BookmarksProvider({ children }: { children: ReactNode }) {
   const [bookmarks, setBookmarks] = useState<BookmarkedStory[]>(getStoredBookmarks);
   const hasPersistedInitialValue = useRef(false);
+  // Device storage is exposed after hydration, so saved pages match their server HTML.
+  const hydrated = useSyncExternalStore(subscribeToHydration, () => true, () => false);
+  const visibleBookmarks = hydrated ? bookmarks : EMPTY_BOOKMARKS;
 
   // Save bookmarks to localStorage when they change
   useEffect(() => {
@@ -60,8 +66,8 @@ export function BookmarksProvider({ children }: { children: ReactNode }) {
   }, [bookmarks]);
 
   const isBookmarked = useCallback(
-    (id: number) => bookmarks.some((b) => b.id === id),
-    [bookmarks]
+    (id: number) => visibleBookmarks.some((b) => b.id === id),
+    [visibleBookmarks]
   );
 
   const addBookmark = useCallback(
@@ -96,7 +102,7 @@ export function BookmarksProvider({ children }: { children: ReactNode }) {
   return (
     <BookmarksContext.Provider
       value={{
-        bookmarks,
+        bookmarks: visibleBookmarks,
         isBookmarked,
         addBookmark,
         removeBookmark,

@@ -215,7 +215,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
       {/* Search Results */}
       {showResults && results.length > 0 && (
         <div id={searchResultsId} role="listbox" aria-label="Search results">
-        <Card className="mt-2 max-h-[40vh] sm:max-h-96 overflow-y-auto shadow-lg" padding="none">
+        <Card className="search-results mt-3 max-h-[55dvh] overflow-y-auto rounded-lg shadow-none" padding="none">
           {results.map((result) => {
             const domain = result.url ? getDomain(result.url) : null;
             const bookmarked = isBookmarked(result.id);
@@ -229,7 +229,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
                 key={result.id}
                 role="option"
                 aria-selected={false}
-                className="flex flex-col gap-2 border-b border-neutral-100 p-3 transition-colors hover:bg-neutral-50 last:border-0 dark:border-neutral-700 dark:hover:bg-neutral-700"
+                className="search-result flex flex-col gap-1 border-b border-[var(--border-soft)] px-3 py-3 transition-colors hover:bg-[var(--muted-surface)] last:border-0"
               >
                 <div className="flex items-start gap-2">
                   <Link
@@ -237,14 +237,14 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
                     onClick={handleResultClick}
                     className="flex-1 min-w-0"
                   >
-                    <span className="text-sm font-medium text-neutral-900 dark:text-white line-clamp-2 leading-snug">
+                    <span className="text-sm font-semibold text-[var(--foreground)] line-clamp-2 leading-relaxed">
                       {result.title}
                     </span>
                   </Link>
                 </div>
 
                 {/* Metadata row */}
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-neutral-500 dark:text-neutral-400">
                   {result.score && <span>{result.score} points</span>}
                   <span className="text-neutral-300 dark:text-neutral-600">·</span>
                   {result.by && <span>by {result.by}</span>}
@@ -265,7 +265,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
                   {domain && (
                     <>
                       <span className="text-neutral-300 dark:text-neutral-600">·</span>
-                      <span className="font-mono text-neutral-600 dark:text-neutral-500 truncate max-w-[120px]">{domain}</span>
+                      <span className="font-mono text-neutral-600 dark:text-neutral-400 truncate max-w-[120px]">{domain}</span>
                     </>
                   )}
                 </div>
@@ -449,7 +449,7 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-[15vh]"
+      className="search-dialog fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto px-3 py-4 sm:pt-[12vh]"
       role="dialog"
       aria-modal="true"
       aria-label="Search"
@@ -461,8 +461,12 @@ export function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       />
 
       {/* Modal */}
-      <div ref={modalRef} className="relative mx-4 w-full max-w-lg">
-        <Card className="shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200" padding="md">
+      <div ref={modalRef} className="relative w-full max-w-xl">
+        <Card className="rounded-xl shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200" padding="sm">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-base font-semibold tracking-tight">Search stories</h2>
+            <button type="button" onClick={onClose} aria-label="Close search" className="flex h-11 w-11 items-center justify-center rounded-lg text-[var(--secondary)] hover:bg-[var(--muted-surface)]"><X size={18} /></button>
+          </div>
           <SearchBar onClose={onClose} isOpen={isOpen} />
         </Card>
       </div>
