@@ -7,7 +7,7 @@ import { useDebounce } from "@/lib/hooks";
 import { useBookmarks } from "@/lib/bookmarks";
 import { TimeAgo } from "./TimeAgo";
 import { Card, Button } from "./ui";
-import { getDomain } from "@/lib/utils";
+import { getDomain, storyHref } from "@/lib/utils";
 
 const ALGOLIA_API = "https://hn.algolia.com/api/v1";
 
@@ -233,7 +233,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
               >
                 <div className="flex items-start gap-2">
                   <Link
-                    href={`/story/${result.id}`}
+                    href={storyHref(result.id)}
                     onClick={handleResultClick}
                     className="flex-1 min-w-0"
                   >
@@ -325,7 +325,7 @@ export function SearchBar({ onClose, isOpen }: SearchBarProps) {
                   </button>
 
                   <Link
-                    href={`/story/${result.id}`}
+                    href={storyHref(result.id)}
                     onClick={handleResultClick}
                     className="ml-auto text-xs text-orange-600 hover:text-orange-700 dark:text-orange-500 dark:hover:text-orange-400 font-medium"
                   >

@@ -32,7 +32,7 @@ for (const width of [320, 390, 768, 1440]) {
 test("discussion sorting, collapsing, depth and loading remain available", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await mockDiscussion(page);
-  await page.goto("/story/1");
+  await page.goto("/story?id=1");
   await expect(page.locator("#comment-1001")).toBeVisible();
   await page.getByRole("button", { name: "Collapse comment by reader1", exact: true }).click();
   await expect(page.locator("#comment-1001 .comment-body")).toHaveCount(0);
@@ -61,7 +61,7 @@ test("story themes, compact density and text submissions", async ({ browser }) =
     const page = await context.newPage();
     await page.addInitScript((selectedTheme) => localStorage.setItem("theme", selectedTheme), theme);
     await mockDiscussion(page);
-    await page.goto("/story/1");
+    await page.goto("/story?id=1");
     await expect(page.locator("#comment-1001")).toBeVisible();
     await expect(page.getByRole("button", { name: "Next root comment", exact: true })).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
@@ -73,7 +73,7 @@ test("story themes, compact density and text submissions", async ({ browser }) =
     await expect(page.getByRole("radiogroup", { name: "Sort comments", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Share", exact: true }).click();
     await expect(page.getByRole("button", { name: "Copy link", exact: true })).toBeVisible();
-    await page.goto("/story/5");
+    await page.goto("/story?id=5");
     await expect(page.locator(".story-author-text")).toContainText("Small projects are welcome too.");
     await expect(page.getByRole("link", { name: "Read original", exact: true })).toHaveCount(0);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("What are you working on this month?");

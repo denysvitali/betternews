@@ -50,11 +50,20 @@ export function formatFullDate(timestamp: number): string {
 }
 
 /**
+ * Client-navigable path for a story discussion. Static hosting only prerenders
+ * `/story`, so the id lives in the query string; `/story/<id>` still resolves
+ * through the 404 fallback for old links.
+ */
+export function storyHref(id: number | string): string {
+  return `/story?id=${id}`;
+}
+
+/**
  * Converts Hacker News URLs to relative bttrne.ws paths
  * Examples:
- * - https://news.ycombinator.com/item?id=45913663 -> /story/45913663
- * - http://news.ycombinator.com/item?id=45913663&foo=bar -> /story/45913663
- * - https://www.news.ycombinator.com/item?id=45913663 -> /story/45913663
+ * - https://news.ycombinator.com/item?id=45913663 -> /story?id=45913663
+ * - http://news.ycombinator.com/item?id=45913663&foo=bar -> /story?id=45913663
+ * - https://www.news.ycombinator.com/item?id=45913663 -> /story?id=45913663
  * - https://news.ycombinator.com/user?id=user -> [unchanged, not a story]
  */
 export function convertHNUrlToRelative(url: string): string | null {
@@ -80,7 +89,7 @@ export function convertHNUrlToRelative(url: string): string | null {
     if (hostname === 'hacker-news.firebaseio.com') {
       const pathMatch = parsedUrl.pathname.match(/\/v0\/item\/(\d+)\.json$/);
       if (pathMatch) {
-        return `/story/${pathMatch[1]}`;
+        return storyHref(pathMatch[1]);
       }
       return null;
     }
@@ -90,7 +99,7 @@ export function convertHNUrlToRelative(url: string): string | null {
     const id = searchParams.get('id');
 
     if (id && /^\d+$/.test(id)) {
-      return `/story/${id}`;
+      return storyHref(id);
     }
 
     return null; // No valid ID found

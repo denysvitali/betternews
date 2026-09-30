@@ -13,7 +13,7 @@ for (const width of [320, 390, 768, 1440]) {
     expect(bounds!.y + bounds!.height).toBeLessThan(780);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
     await expect(page.locator(".story-card").first().locator(".story-title")).toHaveAttribute("href", "https://postalemployeenetwork.com/story/1");
-    await expect(page.locator(".story-card").nth(4).locator(".story-title")).toHaveAttribute("href", "/story/5");
+    await expect(page.locator(".story-card").nth(4).locator(".story-title")).toHaveAttribute("href", "/story?id=5");
     const save = page.locator(".story-card").first().getByRole("button", { name: "Add to reading list" });
     await save.click();
     await expect(page.locator(".story-card").first().getByRole("button", { name: "Remove from reading list" })).toBeVisible();

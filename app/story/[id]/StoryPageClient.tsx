@@ -19,7 +19,7 @@ import Link from "next/link";
 import { StorySkeleton } from "@/components/StorySkeleton";
 import { CommentSkeleton } from "@/components/CommentSkeleton";
 import { CommentNavigation } from "@/components/CommentNavigation";
-import { getDomain, convertHNUrlToRelative } from "@/lib/utils";
+import { getDomain, convertHNUrlToRelative, storyHref } from "@/lib/utils";
 import { PageLayout, PageError, Card, Skeleton } from "@/components/ui";
 import { StickyStoryBar } from "@/components/StickyStoryBar";
 import { recordCommentsSeen } from "@/lib/history";
@@ -31,7 +31,7 @@ interface StoryPageClientProps {
     storyId?: number;
 }
 
-function StoryLoadingState() {
+export function StoryLoadingState() {
     return (
         <PageLayout showBackToTop={false} mainClassName="story-detail">
             <div className="mb-5">
@@ -107,7 +107,7 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
 
     // Convert HN URLs to relative paths
     const relativePath = story.url ? convertHNUrlToRelative(story.url) : null;
-    const finalStoryUrl = relativePath || story.url || `/story/${story.id}`;
+    const finalStoryUrl = relativePath || story.url || storyHref(story.id);
     const isHNConverted = relativePath !== null;
 
     const isExternalSource = !isHNConverted && finalStoryUrl.startsWith("http");
@@ -145,9 +145,15 @@ export default function StoryPageClient({ initialStory, storyId: propStoryId }: 
                 </div>
                 <div className="story-actions">
                     {story.url && (
-                        <a href={finalStoryUrl} target={isExternalSource ? "_blank" : undefined} rel={isExternalSource ? "noopener noreferrer" : undefined} className="story-source-link">
-                            {isHNConverted ? "Open discussion" : "Read original"}<ArrowUpRight size={14} aria-hidden="true" />
-                        </a>
+                        isExternalSource ? (
+                            <a href={finalStoryUrl} target="_blank" rel="noopener noreferrer" className="story-source-link">
+                                Read original<ArrowUpRight size={14} aria-hidden="true" />
+                            </a>
+                        ) : (
+                            <Link href={finalStoryUrl} className="story-source-link">
+                                Open discussion<ArrowUpRight size={14} aria-hidden="true" />
+                            </Link>
+                        )
                     )}
                     <a href={hnUrl} target="_blank" rel="noopener noreferrer" className="story-hn-link">On HN ↗</a>
                     <div className="story-detail-buttons">

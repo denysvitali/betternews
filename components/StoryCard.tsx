@@ -4,7 +4,7 @@ import { memo, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { ArrowUp, BookOpen, Flame, MessageCircle } from "lucide-react";
 import { HNItem } from "@/lib/hn";
-import { convertHNUrlToRelative, getDomain, getReadingTime } from "@/lib/utils";
+import { convertHNUrlToRelative, getDomain, getReadingTime, storyHref } from "@/lib/utils";
 import { setStoryVisited, useHistoryEntry } from "@/lib/history";
 import { useBookmarks } from "@/lib/bookmarks";
 import { useSwipeActions } from "@/lib/useSwipeActions";
@@ -35,7 +35,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
     [story.text]
   );
   const { finalStoryUrl, isHNConverted } = useMemo(() => {
-    if (!story.url) return { finalStoryUrl: `/story/${story.id}`, isHNConverted: false };
+    if (!story.url) return { finalStoryUrl: storyHref(story.id), isHNConverted: false };
     const relativePath = convertHNUrlToRelative(story.url);
     return relativePath
       ? { finalStoryUrl: relativePath, isHNConverted: true }
@@ -113,7 +113,7 @@ export const StoryCard = memo(function StoryCard({ story, index }: StoryCardProp
       </div>
       <div className="story-actions-row">
         <Link
-          href={`/story/${story.id}`}
+          href={storyHref(story.id)}
           aria-label={`${comments} comments${newComments > 0 ? `, ${newComments} new` : ""}`}
           className={`story-comments${hot ? " story-comments-hot" : ""}`}
           onClick={markVisited}

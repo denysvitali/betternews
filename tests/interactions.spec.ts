@@ -38,7 +38,7 @@ test("opened stories dim and new comments are flagged", async ({ page }) => {
   const fresh = page.locator('.story-card[data-story-id="5"]');
   await expect(fresh).not.toHaveAttribute("data-visited", "true");
   await fresh.locator(".story-title").click();
-  await expect(page).toHaveURL(/\/story\/5$/);
+  await expect(page).toHaveURL(/\/story\?id=5$/);
   await page.goBack();
   await expect(page.locator('.story-card[data-story-id="5"]')).toHaveAttribute("data-visited", "true");
 });
@@ -76,7 +76,7 @@ test("compact density is a labelled toggle", async ({ page }) => {
 test("discussion flags OP, collapses from the author row and shows a sticky story bar", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await mockDiscussion(page);
-  await page.goto("/story/1");
+  await page.goto("/story?id=1");
   await expect(page.locator("#comment-1002")).toBeVisible();
   await expect(page.locator("#comment-1002 .comment-op").first()).toHaveText("OP");
   await expect(page.locator("#comment-1001 .comment-op")).toHaveCount(0);
@@ -102,7 +102,7 @@ test("discussion flags OP, collapses from the author row and shows a sticky stor
 
 test("discussion view records the seen comment count", async ({ page }) => {
   await mockDiscussion(page);
-  await page.goto("/story/1");
+  await page.goto("/story?id=1");
   await expect(page.locator("#comment-1001")).toBeVisible();
   const history = await page.evaluate(() => JSON.parse(localStorage.getItem("betternews_history") || "{}"));
   expect(history["1"]).toMatchObject({ visited: true, comments: 27 });
@@ -136,4 +136,27 @@ test("swiping a row right saves it and left toggles read", async ({ browser }) =
   await swipe(200, 240);
   await expect(card.getByRole("button", { name: "Remove from reading list" })).toBeVisible();
   await context.close();
+});
+
+test("opening a story is a client-side navigation and old /story/<id> links still work", async ({ page }) => {
+  await mockDiscussion(page);
+  await page.goto("/");
+  await expect(page.locator(".story-card")).toHaveCount(30);
+  await page.evaluate(() => { (window as unknown as { __shell: number }).__shell = 1; });
+  await page.locator('.story-card[data-story-id="1"]').getByRole("link", { name: /comments/ }).click();
+  await expect(page).toHaveURL(/\/story\?id=1$/);
+  await expect(page.locator("#comment-1001")).toBeVisible();
+  // The document was not reloaded, so the marker survives.
+  expect(await page.evaluate(() => (window as unknown as { __shell?: number }).__shell)).toBe(1);
+  await page.goBack();
+  await expect(page.getByRole("heading", { name: "Top stories." })).toBeVisible();
+
+  await page.goto("/story/1");
+  await expect(page.locator("#comment-1001")).toBeVisible();
+});
+
+test("story route without a valid id reports not found instead of hanging", async ({ page }) => {
+  await mockDiscussion(page);
+  await page.goto("/story?id=abc");
+  await expect(page.getByText("Story not found or failed to load.")).toBeVisible();
 });
